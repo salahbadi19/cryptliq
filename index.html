@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>منصّة تحليل السيولة – Crypto Liquidity Dashboard (V3.1 كاملة)</title>
+  <title>منصّة تحليل السيولة – نسخة الأخبار من بينانس + 20 عملة مرئية</title>
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,41 +11,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
   <style>
     :root{
-      /* ثيم المنصّة الأصلي (لا تغيير) */
-      --bg:#0b0f16;          /* خلفية */
-      --panel:#121826;       /* بانلز */
-      --panel-2:#0f1b2d;     /* بانلز أغمق قليلًا */
-      --text:#e6f0ff;        /* نص فاتح */
-      --muted:#92a0b3;       /* نص ثانوي */
-      --neon:#20d3ff;        /* نيون سماوي */
-      --neon-2:#8a2eff;      /* نيون بنفسجي */
-      --up:#19d47b;          /* أخضر */
-      --down:#ff4d5a;        /* أحمر */
-      --warn:#ffbf47;        /* أصفر */
-      --shadow: 0 10px 35px rgba(0,0,0,.35);
+      --bg:#0b0f16; --panel:#121826; --panel-2:#0f1b2d; --text:#e6f0ff; --muted:#92a0b3; --neon:#20d3ff; --neon-2:#8a2eff; --up:#19d47b; --down:#ff4d5a; --warn:#ffbf47; --shadow: 0 10px 35px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; font-family:'Cairo', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 90% -10%, rgba(32,211,255,.08), transparent 60%),
-                  radial-gradient(900px 500px at -10% -20%, rgba(138,46,255,.09), transparent 60%),
-                  var(--bg);
-      color:var(--text);
-      overflow-x:hidden;
-    }
+    body{margin:0; font-family:'Cairo', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(1200px 600px at 90% -10%, rgba(32,211,255,.08), transparent 60%), radial-gradient(900px 500px at -10% -20%, rgba(138,46,255,.09), transparent 60%), var(--bg); color:var(--text); overflow-x:hidden}
     a{color:var(--neon); text-decoration:none}
-    header{
-      padding:14px 18px; display:flex; align-items:center; gap:12px; justify-content:space-between;
-      position:sticky; top:0; z-index:40; backdrop-filter:saturate(140%) blur(6px);
-      background:linear-gradient(180deg, rgba(11,15,22,.92), rgba(11,15,22,.65)); border-bottom:1px solid rgba(255,255,255,.06)
-    }
+    header{padding:14px 18px; display:flex; align-items:center; gap:12px; justify-content:space-between; position:sticky; top:0; z-index:40; backdrop-filter:saturate(140%) blur(6px); background:linear-gradient(180deg, rgba(11,15,22,.92), rgba(11,15,22,.65)); border-bottom:1px solid rgba(255,255,255,.06)}
     .brand{display:flex; align-items:center; gap:12px}
     .logo{width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, var(--neon), var(--neon-2)); box-shadow:0 0 24px rgba(32,211,255,.35), 0 0 24px rgba(138,46,255,.25) inset}
     .title{font-weight:700; letter-spacing:.3px}
     .note{color:var(--muted); font-size:.9rem}
 
-    /* Ticker (كل الأزواج) */
+    /* Ticker */
     .ticker-wrap{position:relative; overflow:hidden; border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06); background:#0b121d}
     .ticker{display:flex; gap:26px; white-space:nowrap; animation:ticker 120s linear infinite}
     .ticker:hover{animation-play-state:paused}
@@ -57,45 +35,37 @@
 
     .container{max-width:1280px; margin:20px auto; padding:0 16px}
 
-    /* Search / بدون نصوص إضافية */
-    .search-row{display:grid; grid-template-columns:1fr 260px; gap:12px; align-items:center; margin:14px 0 18px}
+    /* Search */
+    .search-row{display:grid; grid-template-columns:1fr 320px; gap:12px; align-items:center; margin:14px 0 18px}
     .search{position:relative}
-    .search input{
-      width:100%; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(180deg, rgba(18,24,38,.85), rgba(18,24,38,.65)); color:var(--text);
-      outline:none; box-shadow:var(--shadow)
-    }
-    .suggestions{position:absolute; top:100%; right:0; left:0; background:var(--panel);
-      border:1px solid rgba(255,255,255,.08); border-top:none; z-index:45; max-height:260px; overflow:auto;
-      display:none; border-radius:0 0 14px 14px; box-shadow:var(--shadow)
-    }
+    .search input{width:100%; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(18,24,38,.85), rgba(18,24,38,.65)); color:var(--text); outline:none; box-shadow:var(--shadow)}
+    .suggestions{position:absolute; top:100%; right:0; left:0; background:var(--panel); border:1px solid rgba(255,255,255,.08); border-top:none; z-index:45; max-height:260px; overflow:auto; display:none; border-radius:0 0 14px 14px; box-shadow:var(--shadow)}
     .suggestions.show{display:block}
     .suggestions button{width:100%; text-align:right; background:transparent; color:var(--text); border:0; padding:10px 14px; cursor:pointer}
     .suggestions button:hover{background:#0e1522}
 
-    /* Cards */
+    .kpis{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
+    .pill{padding:6px 12px; border-radius:999px; font-weight:700; font-size:.85rem; background:linear-gradient(180deg, #121826, #0f1b2d); border:1px solid rgba(255,255,255,.08)}
+
     .grid{display:grid; gap:14px}
     @media(min-width:960px){.grid{grid-template-columns:1.15fr .85fr}}
 
-    .card{background:linear-gradient(180deg, rgba(18,24,38,.9), rgba(15,27,45,.9)); border:1px solid rgba(255,255,255,.07);
-      border-radius:18px; padding:16px; box-shadow:var(--shadow)}
+    .card{background:linear-gradient(180deg, rgba(18,24,38,.9), rgba(15,27,45,.9)); border:1px solid rgba(255,255,255,.07); border-radius:18px; padding:16px; box-shadow:var(--shadow)}
     .card h3{margin:0 0 10px; font-size:1.05rem}
 
     .table{width:100%; border-collapse:collapse}
     .table th,.table td{padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.06); font-size:.95rem}
     .table th{color:var(--muted); font-weight:600; cursor:pointer; user-select:none}
-    .pill{padding:4px 10px; border-radius:999px; font-weight:700; font-size:.85rem}
 
-    .btn{padding:8px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.08); color:var(--text); background:linear-gradient(180deg, #121826, #0f1b2d); cursor:pointer}
-    .btn:hover{filter:brightness(1.15)}
-
-    /* Buy/Sell bar */
-    .bar{height:14px; background:#141b2a; border-radius:10px; overflow:hidden; display:flex; border:1px solid rgba(255,255,255,.06)}
+    /* Idle animated buy/sell bars BEFORE opening modal */
+    .bar{height:14px; background:#141b2a; border-radius:10px; overflow:hidden; display:flex; border:1px solid rgba(255,255,255,.06); position:relative}
     .bar .buy{background:linear-gradient(90deg, rgba(25,212,123,.95), rgba(25,212,123,.55))}
     .bar .sell{background:linear-gradient(90deg, rgba(255,77,90,.95), rgba(255,77,90,.55))}
+    .bar.idle::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent); animation:shimmer 2.2s linear infinite}
+    @keyframes shimmer{from{transform:translateX(-100%)} to{transform:translateX(100%)} }
 
     /* News */
-    .news-list{max-height:340px; overflow:auto}
+    .news-list{max-height:360px; overflow:auto}
     .news-item{display:grid; grid-template-columns:1fr 120px 120px; gap:12px; align-items:center; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,.08)}
     .glow{animation:glow 1s ease-in-out 5 alternate}
     @keyframes glow{from{box-shadow:0 0 0 rgba(255,191,71,.0)} to{box-shadow:0 0 24px rgba(255,191,71,.35)} }
@@ -108,7 +78,7 @@
     .row .up{color:var(--up)}
     .row .down{color:var(--down)}
 
-    /* Bottom advanced table */
+    /* Bottom table */
     .bottom{margin:18px 0}
     .filter-bar{display:flex; gap:10px; align-items:center; margin-bottom:10px}
     .mini-indicator{height:10px; border-radius:999px; overflow:hidden; display:flex; width:160px; border:1px solid rgba(255,255,255,.08)}
@@ -116,12 +86,7 @@
     /* Modal – لون مختلف فقط للمودال */
     .overlay{position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; z-index:80}
     .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:90}
-    .modal .box{
-      width:min(1100px, 94vw); max-height:88vh; overflow:auto; padding:18px; border-radius:18px;
-      background:linear-gradient(180deg, rgba(14,27,55,1), rgba(10,22,48,1));
-      border:1px solid rgba(32,211,255,.25);
-      box-shadow:0 0 32px rgba(32,211,255,.25), 0 0 32px rgba(138,46,255,.2);
-    }
+    .modal .box{width:min(1100px, 94vw); max-height:88vh; overflow:auto; padding:18px; border-radius:18px; background:linear-gradient(180deg, rgba(14,27,55,1), rgba(10,22,48,1)); border:1px solid rgba(32,211,255,.25); box-shadow:0 0 32px rgba(32,211,255,.25), 0 0 32px rgba(138,46,255,.2)}
     .modal .box h3{margin:0 0 10px}
     .close{background:transparent; border:0; color:var(--muted); font-size:1.1rem; cursor:pointer}
     .ob{display:grid; grid-template-columns:1fr 1fr; gap:12px}
@@ -134,12 +99,7 @@
     .duo .bar{height:18px}
 
     footer{margin:24px 0 30px; color:var(--muted); display:flex; align-items:center; justify-content:space-between}
-    /* زر إنستغرام الرسمي مع أيقونة أصلية ولون خاص */
-    .insta{
-      display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.08);
-      background: linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5);
-      color:#fff; font-weight:700
-    }
+    .insta{display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.08); background: linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5); color:#fff; font-weight:700}
     .insta img{width:18px; height:18px; border-radius:4px}
   </style>
 </head>
@@ -152,13 +112,11 @@
         <small class="note">تم برمجتها من أجل تسهيل القراءة للمبتدئين لدفتر الطلبات</small>
       </div>
     </div>
-    <div style="opacity:.85"></div>
+    <div id="global-flow" class="pill" title="تدفّق السوق اللحظي">شراء/بيع عام: <strong><span id="gf-buy">50%</span> / <span id="gf-sell">50%</span></strong></div>
   </header>
 
   <!-- Ticker: كل العملات (USDT) -->
-  <div class="ticker-wrap">
-    <div id="ticker" class="ticker"></div>
-  </div>
+  <div class="ticker-wrap"><div id="ticker" class="ticker"></div></div>
 
   <main class="container">
     <!-- Search + KPIs -->
@@ -167,16 +125,13 @@
         <input id="search" type="text" placeholder="ابحث عن عملة…" autocomplete="off" />
         <div id="suggestions" class="suggestions"></div>
       </div>
-      <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <div>مؤشرات عامة</div>
-        <div id="market-cards" style="display:flex; gap:10px; flex-wrap:wrap"></div>
-      </div>
+      <div id="market-cards" class="kpis"></div>
     </div>
 
     <div class="grid">
-      <!-- يسار: جدول التحليلات المباشرة (يحلل 120 عملة فقط لأداء أفضل) -->
+      <!-- يسار: جدول التحليلات (20 عملة فقط) -->
       <section class="card">
-        <h3>التحليلات المباشرة (120 عملة مختارة للأداء)</h3>
+        <h3>التحليلات المباشرة (أعلى 20 حجمًا)</h3>
         <table class="table" id="live-table">
           <thead>
           <tr>
@@ -193,16 +148,16 @@
         </table>
       </section>
 
-      <!-- يمين: الأخبار -->
+      <!-- يمين: الأخبار (من Binance) -->
       <aside class="card">
-        <h3>الأخبار</h3>
+        <h3>آخر أخبار Binance</h3>
         <div class="news-list" id="news-list"></div>
       </aside>
     </div>
 
     <!-- Gainers / Losers -->
     <section class="card" style="margin-top:14px">
-      <h3>الأكثر ربحاً / الأكثر خسارة (كل الأزواج USDT)</h3>
+      <h3>الأكثر ربحاً / الأكثر خسارة (USDT)</h3>
       <div class="cols">
         <div>
           <div class="row" style="font-weight:600; color:var(--muted)"><div>الرمز</div><div>السعر</div><div>التغير%</div><div>الحجم ($)</div><div>الدوميننس*</div><div>تحليل</div></div>
@@ -213,15 +168,15 @@
           <div id="losers" class="list"></div>
         </div>
       </div>
-      <small style="color:var(--muted)">* الدوميننس هنا تقدير سريع لنسبة سيولة الرمز من إجمالي أحجام العينة الظاهرة.</small>
+      <small style="color:var(--muted)">* تقدير سريع لنسبة حجم الرمز من إجمالي أحجام العينة.</small>
     </section>
 
-    <!-- جدول متقدم أسفل الصفحة: يعرض كل عملة + شريط قوة داخلي + زر تحليل -->
+    <!-- جدول متقدم أسفل الصفحة: 20 عملة فقط مرئية -->
     <section class="card bottom">
       <div class="filter-bar">
-        <strong>لوحة العملات الكاملة (متقدمة)</strong>
+        <strong>لوحة العملات (20 من أصل ~600)</strong>
         <div class="mini-indicator"><span id="mini-buy" style="display:block; background:var(--up); width:50%"></span><span id="mini-sell" style="display:block; background:var(--down); width:50%"></span></div>
-        <small style="color:var(--muted)">أخضر = شراء • أحمر = بيع (يركّز على صفقات الحيتان)</small>
+        <small style="color:var(--muted)">أخضر = شراء • أحمر = بيع</small>
       </div>
       <table class="table" id="full-table">
         <thead>
@@ -247,7 +202,7 @@
     </a>
   </footer>
 
-  <!-- Modal: Liquidity Analysis (لون مختلف فقط هنا) -->
+  <!-- Modal: Liquidity Analysis -->
   <div id="overlay" class="overlay"></div>
   <div id="modal" class="modal" aria-hidden="true">
     <div class="box">
@@ -255,12 +210,10 @@
         <h3>تحليل السيولة – <span id="m-symbol"></span></h3>
         <button id="m-close" class="close"><i class="fa-solid fa-xmark"></i> إغلاق</button>
       </div>
-
       <div class="duo" style="margin-bottom:12px">
         <div style="color:var(--muted)">قوة الشراء/البيع</div>
         <div class="bar"><div id="m-buy" class="buy" style="width:50%"></div><div id="m-sell" class="sell" style="width:50%"></div></div>
       </div>
-
       <div class="ob">
         <div class="ob-col">
           <strong>طلبات الشراء (Bids)</strong>
@@ -271,7 +224,6 @@
           <div id="m-asks"></div>
         </div>
       </div>
-
       <div style="margin-top:12px; color:var(--muted)">* دفتر الطلبات حي • تركيز على صفقات الحيتان في البتكوين (إخفاء الصفقات الصغيرة).</div>
       <div class="card" style="margin-top:12px">
         <h3 style="margin:0 0 8px">شريط صفقات الحيتان – Whale Tape</h3>
@@ -283,42 +235,36 @@
   <script>
     const API = {
       tick24: 'https://api.binance.com/api/v3/ticker/24hr',
-      klines: (s, i='1m', l=60)=>`https://api.binance.com/api/v3/klines?symbol=${s}&interval=${i}&limit=${l}`
+      klines: (s, i='1m', l=60)=>`https://api.binance.com/api/v3/klines?symbol=${s}&interval=${i}&limit=${l}`,
+      // مصادر أخبار محتملة من Binance (محاولات متعددة + CORS proxy احتياطي)
+      news: [
+        'https://www.binance.com/en/blog/rss',
+        'https://www.binance.com/en/support/announcement/rss'
+      ],
+      proxy: url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
     };
 
     const el = id => document.getElementById(id);
-    const fmtUSD = n => {
-      if(!n && n!==0) return '-';
-      const a = Math.abs(n);
-      if(a>=1e12) return (n/1e12).toFixed(2)+'T$';
-      if(a>=1e9)  return (n/1e9).toFixed(2)+'B$';
-      if(a>=1e6)  return (n/1e6).toFixed(2)+'M$';
-      if(a>=1e3)  return (n/1e3).toFixed(2)+'K$';
-      return Number(n).toLocaleString('en-US',{maximumFractionDigits:2})+'$';
-    };
+    const fmtUSD = n => { if(!n && n!==0) return '-'; const a = Math.abs(n); if(a>=1e12) return (n/1e12).toFixed(2)+'T$'; if(a>=1e9) return (n/1e9).toFixed(2)+'B$'; if(a>=1e6) return (n/1e6).toFixed(2)+'M$'; if(a>=1e3) return (n/1e3).toFixed(2)+'K$'; return Number(n).toLocaleString('en-US',{maximumFractionDigits:2})+'$'; };
     const pct = x => (x>0?'+':'') + Number(x).toFixed(2)+'%';
-
-    // سنة الفوتر
     el('year').textContent = new Date().getFullYear();
 
-    let ALL = []; // كل أزواج USDT (24hr)
+    let ALL = []; // كل أزواج USDT
+    let TOP20 = []; // أعلى 20 حجمًا للعرض في الجداول
 
-    // تحميل كل الأزواج
     async function loadAll(){
       const res = await fetch(API.tick24);
       const data = await res.json();
       ALL = data.filter(d=> d.symbol.endsWith('USDT'));
+      TOP20 = [...ALL].sort((a,b)=> Number(b.quoteVolume)-Number(a.quoteVolume)).slice(0,20);
       buildTicker(ALL);            // الشريط العلوي: كل العملات
       buildKPIs(ALL);
-      buildLiveTable(select120(ALL)); // التحليلات: 120 فقط
+      buildLiveTable(TOP20);       // 20 فقط
       buildGainersLosers(ALL);
-      buildFullTable(ALL);
+      buildFullTable(TOP20);       // 20 فقط
       setupSearch(ALL.map(d=>d.symbol));
-    }
-
-    function select120(list){
-      // نختار 120 عملة بأكبر أحجام 24س لأداء أفضل
-      return [...list].sort((a,b)=> Number(b.quoteVolume)-Number(a.quoteVolume)).slice(0,120);
+      bootGlobalFlow();            // تشغيل شريط القوة العالمي قبل أي فتح
+      fetchBinanceNews();          // جلب الأخبار من Binance
     }
 
     function buildKPIs(list){
@@ -334,31 +280,25 @@
         {label:'Bitcoin Dominance*', val: pct(btcDom)}
       ];
       for(const it of items){
-        const b = document.createElement('div');
-        b.className='pill';
-        b.style.background='linear-gradient(180deg, #121826, #0f1b2d)';
-        b.style.border='1px solid rgba(255,255,255,.08)';
-        b.textContent=`${it.label}: ${it.val}`;
-        wrap.appendChild(b);
+        const b = document.createElement('div'); b.className='pill'; b.textContent=`${it.label}: ${it.val}`; wrap.appendChild(b);
       }
     }
 
     function buildTicker(list){
       const container = el('ticker');
       const seq = [...list].sort((a,b)=> Number(b.quoteVolume)-Number(a.quoteVolume));
-      const take = seq.slice(0, 600); // 600 زوج لتمرير أطول
+      const take = seq.slice(0, 1000);
       const render = (arr)=> arr.map(d=>{
         const ch = Number(d.priceChangePercent);
         return `<div class="tick-item"><span class="tick-sym">${d.symbol}</span> <span>${Number(d.lastPrice).toLocaleString('en-US')}</span> <span class="chg ${ch>=0?'up':'down'}">${pct(ch)}</span></div>`;
       }).join('');
-      container.innerHTML = render(take) + render(take); // تكرار لمشهد تمرير لا نهائي
+      container.innerHTML = render(take) + render(take);
     }
 
-    // ===== جدول التحليلات المباشرة (قابل للفرز) =====
+    // ===== جدول التحليلات (20 فقط) =====
     let liveSortKey = 'symbol', liveSortAsc = true;
     function buildLiveTable(list){
-      const body = el('live-body');
-      body.innerHTML = '';
+      const body = el('live-body'); body.innerHTML = '';
       const sorted = sortBy(list, liveSortKey, liveSortAsc);
       for(const d of sorted){
         const sym = d.symbol;
@@ -369,15 +309,12 @@
           <td class="${(Number(d.priceChangePercent)||0)>=0?'up':'down'}">${pct(Number(d.priceChangePercent||0))}</td>
           <td data-rsi="${sym}">—</td>
           <td>${fmtUSD(d.quoteVolume||0)}</td>
-          <td><div class="bar"><div style="width:50%" class="buy"></div><div style="width:50%" class="sell"></div></div></td>
+          <td><div class="bar idle"><div style="width:50%" class="buy"></div><div style="width:50%" class="sell"></div></div></td>
           <td><button class="btn" data-analyze="${sym}">تحليل</button></td>`;
         body.appendChild(tr);
       }
-      document.querySelectorAll('#live-table thead th[data-sort]').forEach(th=>{
-        th.onclick = ()=>{ liveSortKey = th.dataset.sort; liveSortAsc = liveSortKey===th.dataset.sort ? !liveSortAsc : true; buildLiveTable(select120(ALL)); };
-      });
+      document.querySelectorAll('#live-table thead th[data-sort]').forEach(th=>{ th.onclick = ()=>{ liveSortKey = th.dataset.sort; liveSortAsc = liveSortKey===th.dataset.sort ? !liveSortAsc : true; buildLiveTable(TOP20); }; });
       document.querySelectorAll('[data-analyze]').forEach(btn=> btn.addEventListener('click',()=>openModal(btn.dataset.analyze)));
-      // RSI سريع
       computeRSI(Array.from(new Set(list.map(d=>d.symbol))));
     }
 
@@ -393,8 +330,8 @@
     // ===== Gainers / Losers =====
     function buildGainersLosers(list){
       const srt = (list.slice()).sort((a,b)=> Number(b.priceChangePercent)-Number(a.priceChangePercent));
-      const gain = srt.filter(d=> Number(d.priceChangePercent) >= 0);
-      const loss = srt.filter(d=> Number(d.priceChangePercent) < 0).reverse();
+      const gain = srt.filter(d=> Number(d.priceChangePercent) >= 0).slice(0,200);
+      const loss = srt.filter(d=> Number(d.priceChangePercent) < 0).reverse().slice(0,200);
       const totalVol = list.reduce((s,d)=>s+Number(d.quoteVolume||0),0);
       const dom = d=> Number(d.quoteVolume)/totalVol*100;
       const makeRow = (d)=>{
@@ -403,201 +340,116 @@
       };
       el('gainers').innerHTML = gain.map(makeRow).join('');
       el('losers').innerHTML  = loss.map(makeRow).join('');
-      document.querySelectorAll('[data-analyze]').forEach(btn=>{
-        btn.addEventListener('click', ()=> openModal(btn.dataset.analyze));
-      });
+      document.querySelectorAll('[data-analyze]').forEach(btn=>{ btn.addEventListener('click', ()=> openModal(btn.dataset.analyze)); });
     }
 
-    // ===== جدول كامل متقدم أسفل الصفحة (كل الأزواج) =====
+    // ===== جدول أسفل الصفحة (20 فقط) =====
     let fullSortKey='symbol', fullSortAsc=true;
     function buildFullTable(list){
-      const body = el('full-body');
-      const sorted = sortBy(list, fullSortKey, fullSortAsc);
-      body.innerHTML='';
+      const body = el('full-body'); const sorted = sortBy(list, fullSortKey, fullSortAsc); body.innerHTML='';
       for(const d of sorted){
-        const sym = d.symbol;
-        const buyPct = 50; // سيتم تحديثه عند التحليل أو عبر تجميعات مستقبلية
+        const sym = d.symbol; const buyPct = 50;
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${sym}</td>
           <td>${Number(d.lastPrice||0).toLocaleString('en-US')}</td>
           <td class="${(Number(d.priceChangePercent)||0)>=0?'up':'down'}">${pct(Number(d.priceChangePercent||0))}</td>
           <td>${fmtUSD(d.quoteVolume||0)}</td>
-          <td>
-            <div class="bar"><div style="width:${buyPct}%" class="buy"></div><div style="width:${100-buyPct}%" class="sell"></div></div>
-          </td>
+          <td><div class="bar idle"><div style="width:${buyPct}%" class="buy"></div><div style="width:${100-buyPct}%" class="sell"></div></div></td>
           <td><button class="btn" data-analyze="${sym}">تحليل</button></td>`;
         body.appendChild(tr);
       }
-      document.querySelectorAll('#full-table thead th[data-sortf]').forEach(th=>{
-        th.onclick = ()=>{ fullSortKey = th.dataset.sortf; fullSortAsc = fullSortKey===th.dataset.sortf ? !fullSortAsc : true; buildFullTable(ALL); };
-      });
+      document.querySelectorAll('#full-table thead th[data-sortf]').forEach(th=>{ th.onclick = ()=>{ fullSortKey = th.dataset.sortf; fullSortAsc = fullSortKey===th.dataset.sortf ? !fullSortAsc : true; buildFullTable(TOP20); }; });
       document.querySelectorAll('#full-body [data-analyze]').forEach(btn=> btn.addEventListener('click',()=>openModal(btn.dataset.analyze)));
     }
 
     // ===== RSI quick approximation =====
     async function computeRSI(symbols){
       for(const s of symbols){
-        try{
-          const res = await fetch(API.klines(s, '1m', 60));
-          const kl = await res.json();
-          const closes = kl.map(k=>Number(k[4]));
-          const rsi = calcRSI(closes);
-          const cell = document.querySelector(`[data-rsi="${s}"]`);
-          if(cell) cell.textContent = rsi? rsi.toFixed(0): '—';
-        }catch{}
+        try{ const res = await fetch(API.klines(s, '1m', 60)); const kl = await res.json(); const closes = kl.map(k=>Number(k[4])); const rsi = calcRSI(closes); const cell = document.querySelector(`[data-rsi="${s}"]`); if(cell) cell.textContent = rsi? rsi.toFixed(0): '—'; }catch{}
       }
     }
     function calcRSI(closes, period=14){
-      if(!closes || closes.length < period+1) return null;
-      let gains=0, losses=0;
-      for(let i=1;i<=period;i++){
-        const d = closes[i]-closes[i-1];
-        if(d>=0) gains+=d; else losses-=d;
-      }
-      gains/=period; losses/=period;
-      for(let i=period+1;i<closes.length;i++){
-        const d = closes[i]-closes[i-1];
-        gains = (gains*(period-1) + (d>0? d:0))/period;
-        losses = (losses*(period-1) + (d<0? -d:0))/period;
-      }
-      const rs = losses===0? 100: gains/losses;
-      const rsi = 100 - (100/(1+rs));
-      return rsi;
-    }
+      if(!closes || closes.length < period+1) return null; let gains=0, losses=0; for(let i=1;i<=period;i++){ const d = closes[i]-closes[i-1]; if(d>=0) gains+=d; else losses-=d; } gains/=period; losses/=period; for(let i=period+1;i<closes.length;i++){ const d = closes[i]-closes[i-1]; gains = (gains*(period-1) + (d>0? d:0))/period; losses = (losses*(period-1) + (d<0? -d:0))/period; } const rs = losses===0? 100: gains/losses; return 100 - (100/(1+rs)); }
 
-    // ===== البحث + اقتراحات (بدون نصوص إضافية) =====
+    // ===== البحث + اقتراحات =====
     function setupSearch(symbolList){
-      const input = el('search');
-      const box = el('suggestions');
-      let filtered = [];
-      function render(){
-        if(!filtered.length){ box.classList.remove('show'); box.innerHTML=''; return; }
-        box.innerHTML = filtered.slice(0, 30).map(sym=>`<button data-sym="${sym}">${sym}</button>`).join('');
-        box.classList.add('show');
-        box.querySelectorAll('button').forEach(b=> b.addEventListener('click',()=>{
-          input.value=b.dataset.sym; box.classList.remove('show');
-          const sel = ALL.filter(d=>d.symbol===b.dataset.sym);
-          buildLiveTable(select120(ALL)); // نحافظ على 120 في التحليلات العامة
-          buildFullTable(sel);            // إظهار الجدول الكامل مفلترًا على الرمز
-          openModal(b.dataset.sym);       // بدء التحليل مباشرة
-        }));
-      }
-      input.addEventListener('input', ()=>{
-        const q = input.value.toUpperCase().trim();
-        filtered = q? symbolList.filter(s=> s.includes(q)) : [];
-        render();
-      });
+      const input = el('search'); const box = el('suggestions'); let filtered = [];
+      function render(){ if(!filtered.length){ box.classList.remove('show'); box.innerHTML=''; return; } box.innerHTML = filtered.slice(0, 30).map(sym=>`<button data-sym="${sym}">${sym}</button>`).join(''); box.classList.add('show'); box.querySelectorAll('button').forEach(b=> b.addEventListener('click',()=>{ input.value=b.dataset.sym; box.classList.remove('show'); const sel = ALL.filter(d=>d.symbol===b.dataset.sym); buildFullTable(sel.slice(0,20)); openModal(b.dataset.sym); })); }
+      input.addEventListener('input', ()=>{ const q = input.value.toUpperCase().trim(); filtered = q? symbolList.filter(s=> s.includes(q)) : []; render(); });
       input.addEventListener('blur', ()=> setTimeout(()=> box.classList.remove('show'), 200));
     }
 
-    // ===== مودال تحليل السيولة – دفتر أوامر حي لكل عملة + Whale Tape للبتكوين =====
+    // ===== شريط قوة عام قبل فتح أي عملة (يعمل من تدفق BTCUSDT) =====
+    function bootGlobalFlow(){
+      try{
+        const tws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
+        let buy=0, sell=0, lastReset=Date.now();
+        tws.onmessage = (e)=>{
+          const t = JSON.parse(e.data); const price = Number(t.p), qty = Number(t.q); const isSell = t.m === true; const usd = price*qty; if(isSell) sell+=usd; else buy+=usd; const total = buy+sell; const bw = total? (buy/total*100):50; el('gf-buy').textContent = bw.toFixed(0)+'%'; el('gf-sell').textContent = (100-bw).toFixed(0)+'%'; updateMini(buy, sell); if(Date.now()-lastReset>15000){ buy=0; sell=0; lastReset=Date.now(); }
+        };
+      }catch(err){ console.warn('Global flow WS issue', err); }
+    }
+
+    function updateMini(buy, sell){ const total = buy+sell; const bw = total? (buy/total*100):50; el('mini-buy').style.width = bw+'%'; el('mini-sell').style.width = (100-bw)+'%'; }
+
+    // ===== مودال تحليل السيولة =====
     let MOD_WS = {depth:null, trade:null};
-    const WHALE_THRESHOLD_BTC = 50000; // 50k$ فأكثر للحوت في BTC
-    const WHALE_THRESHOLD_DEFAULT = 10000; // 10k$ للرموز الأخرى
+    const WHALE_THRESHOLD_BTC = 50000; // 50k$ للحوت في BTC
+    const WHALE_THRESHOLD_DEFAULT = 10000; // 10k$ لباقي العملات
 
     function openModal(symbol){
-      el('m-symbol').textContent = symbol;
-      el('overlay').style.display='block';
-      el('modal').style.display='flex';
-      setTimeout(()=>{ // بدء تعبئة تدريجي
-        el('m-buy').style.width='50%';
-        el('m-sell').style.width='50%';
-      },0);
-      el('whale-tape').innerHTML='';
-      connectDepth(symbol);
+      el('m-symbol').textContent = symbol; el('overlay').style.display='block'; el('modal').style.display='flex'; setTimeout(()=>{ el('m-buy').style.width='50%'; el('m-sell').style.width='50%'; },0); el('whale-tape').innerHTML=''; connectDepth(symbol);
     }
-    function closeModal(){
-      el('overlay').style.display='none';
-      el('modal').style.display='none';
-      for(const k in MOD_WS){ try{ MOD_WS[k] && MOD_WS[k].close(); }catch{} MOD_WS[k]=null; }
-      el('m-bids').innerHTML='';
-      el('m-asks').innerHTML='';
-      el('whale-tape').innerHTML='';
-    }
-    el('overlay').addEventListener('click', closeModal);
-    el('m-close').addEventListener('click', closeModal);
+    function closeModal(){ el('overlay').style.display='none'; el('modal').style.display='none'; for(const k in MOD_WS){ try{ MOD_WS[k] && MOD_WS[k].close(); }catch{} MOD_WS[k]=null; } el('m-bids').innerHTML=''; el('m-asks').innerHTML=''; el('whale-tape').innerHTML=''; }
+    el('overlay').addEventListener('click', closeModal); el('m-close').addEventListener('click', closeModal);
 
     function connectDepth(symbol){
       const dws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth10@100ms`);
       const tws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
       MOD_WS.depth=dws; MOD_WS.trade=tws;
-
-      dws.onmessage = (e)=>{
-        const d = JSON.parse(e.data);
-        renderOB('m-bids', d.bids, true);
-        renderOB('m-asks', d.asks, false);
-      };
-      let buy=0, sell=0;
-      tws.onmessage = (e)=>{
-        const t = JSON.parse(e.data);
-        const price = Number(t.p), qty = Number(t.q);
-        const isSell = t.m === true; // buyer is maker => sell
-        const usd = price*qty;
-        const sym = symbol.toUpperCase();
-        const th = sym==='BTCUSDT'? WHALE_THRESHOLD_BTC : WHALE_THRESHOLD_DEFAULT;
-        if(isSell) sell+=usd; else buy+=usd;
-        const total = buy+sell; const bw = total? (buy/total*100):50;
-        el('m-buy').style.width = bw+'%';
-        el('m-sell').style.width = (100-bw)+'%';
-        updateMini(buy, sell); // تحديث الميني-انديكيتر العام
-
-        // شريط الحيتان: إظهار الصفقات الكبيرة فقط
-        if(usd >= th){
-          const row = document.createElement('div');
-          row.className='lv';
-          row.innerHTML = `<span class="${isSell?'down':'up'}">${isSell?'بيع كبير':'شراء كبير'}</span>
-            <div class="barline"><span style="width:100%; background:${isSell?'rgba(255,77,90,.55)':'rgba(25,212,123,.55)'}"></span></div>
-            <span>${fmtUSD(usd)}</span>`;
-          el('whale-tape').prepend(row);
-          while(el('whale-tape').children.length>120) el('whale-tape').removeChild(el('whale-tape').lastChild);
-        }
-      };
+      dws.onmessage = (e)=>{ const d = JSON.parse(e.data); renderOB('m-bids', d.bids, true); renderOB('m-asks', d.asks, false); };
+      let buy=0, sell=0; tws.onmessage = (e)=>{ const t = JSON.parse(e.data); const price = Number(t.p), qty = Number(t.q); const isSell = t.m === true; const usd = price*qty; const sym = symbol.toUpperCase(); const th = sym==='BTCUSDT'? WHALE_THRESHOLD_BTC : WHALE_THRESHOLD_DEFAULT; if(isSell) sell+=usd; else buy+=usd; const total = buy+sell; const bw = total? (buy/total*100):50; el('m-buy').style.width = bw+'%'; el('m-sell').style.width = (100-bw)+'%'; if(usd >= th){ const row = document.createElement('div'); row.className='lv'; row.innerHTML = `<span class="${isSell?'down':'up'}">${isSell?'بيع كبير':'شراء كبير'}</span><div class="barline"><span style="width:100%; background:${isSell?'rgba(255,77,90,.55)':'rgba(25,212,123,.55)'}"></span></div><span>${fmtUSD(usd)}</span>`; el('whale-tape').prepend(row); while(el('whale-tape').children.length>120) el('whale-tape').removeChild(el('whale-tape').lastChild); } };
     }
 
     function renderOB(containerId, levels, isBid){
-      const cont = el(containerId); cont.innerHTML = '';
-      const maxUSD = Math.max(...levels.map(([p,q])=> Number(p)*Number(q)));
-      levels.slice(0, 20).forEach(([p,q])=>{
-        const price = Number(p), qty = Number(q), usd = price*qty;
-        const row = document.createElement('div'); row.className='lv';
-        const pc = isBid? 'up':'down';
-        const barPct = maxUSD? (usd/maxUSD*100):0;
-        row.innerHTML = `<span class="${pc}">${price.toLocaleString('en-US')}</span><div class="barline"><span style="width:${barPct}%; background:${isBid?'rgba(25,212,123,.55)':'rgba(255,77,90,.55)'}"></span></div><span>${fmtUSD(usd)}</span>`;
-        cont.appendChild(row);
+      const cont = el(containerId); cont.innerHTML = ''; const maxUSD = Math.max(...levels.map(([p,q])=> Number(p)*Number(q)));
+      levels.slice(0, 20).forEach(([p,q])=>{ const price = Number(p), qty = Number(q), usd = price*qty; const row = document.createElement('div'); row.className='lv'; const pc = isBid? 'up':'down'; const barPct = maxUSD? (usd/maxUSD*100):0; row.innerHTML = `<span class="${pc}">${price.toLocaleString('en-US')}</span><div class="barline"><span style="width:${barPct}%; background:${isBid?'rgba(25,212,123,.55)':'rgba(255,77,90,.55)'}"></span></div><span>${fmtUSD(usd)}</span>`; cont.appendChild(row); });
+    }
+
+    // ===== أخبار Binance (RSS مع Proxy احتياطي) =====
+    async function fetchBinanceNews(){
+      for(const url of API.news){
+        try{
+          let txt = '';
+          try{ const r = await fetch(url); txt = await r.text(); }
+          catch{ const r2 = await fetch(API.proxy(url)); const j = await r2.json(); txt = j.contents; }
+          const items = parseRSSItems(txt).slice(0, 30);
+          if(items.length){ renderNews(items); return; }
+        }catch(err){ console.warn('News source failed', url, err); }
+      }
+      // فشل الجميع
+      renderNews([]);
+    }
+    function parseRSSItems(xmlText){
+      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const arr = Array.from(doc.querySelectorAll('item')).map(it=>({
+        title: it.querySelector('title')?.textContent?.trim() || '',
+        link: it.querySelector('link')?.textContent?.trim() || '#',
+        pub: it.querySelector('pubDate')?.textContent?.trim() || ''
+      }));
+      return arr;
+    }
+    function renderNews(items){
+      const list = el('news-list'); list.innerHTML='';
+      if(!items.length){ list.innerHTML = '<div class="news-item">تعذّر تحميل أخبار Binance حاليًا.</div>'; return; }
+      items.forEach((n,i)=>{
+        const row = document.createElement('a'); row.target='_blank'; row.href=n.link; row.className='news-item'+(i<5?' glow':''); row.innerHTML = `<div>${n.title}</div><div>${new Date(n.pub).toLocaleString()}</div><div style="color:var(--muted)">Binance</div>`; list.appendChild(row); if(i<5) setTimeout(()=> row.classList.remove('glow'), 5000);
       });
     }
 
-    // ===== الأخبار (نموذجية مع وميض 5 ثوان) =====
-    function pushNews(title, source){
-      const list = el('news-list');
-      const row = document.createElement('div'); row.className='news-item glow';
-      row.innerHTML = `<div>${title}</div><div>${new Date().toLocaleTimeString()}</div><div style="color:var(--muted)">${source||'—'}</div>`;
-      list.prepend(row);
-      setTimeout(()=> row.classList.remove('glow'), 5000);
-      while(list.children.length>50) list.removeChild(list.lastChild);
-    }
-    setInterval(()=>{
-      const samples = [
-        'تحديث: ارتفاع السيولة على BTCUSDT بنسبة 3% خلال 10 دقائق (يركّز على صفقات الحيتان)',
-        'خبر: حركة مفاجئة على SOLUSDT عند منطقة مقاومة',
-        'مشتريات حوت على ETHUSDT بأكثر من 1.2M$'
-      ];
-      pushNews(samples[Math.floor(Math.random()*samples.length)], 'نموذجي');
-    }, 22000);
-
-    // ===== ميني انديكيتر عام (تجميعي) =====
-    function updateMini(buy, sell){
-      const total = buy+sell; const bw = total? (buy/total*100):50;
-      el('mini-buy').style.width = bw+'%';
-      el('mini-sell').style.width = (100-bw)+'%';
-    }
-
-    // بدء التشغيل
-    loadAll().catch(err=>{
-      console.error(err);
-      el('ticker').textContent = 'تعذر تحميل بيانات Binance مؤقتاً. ارفع الملف على استضافة للسماح بالطلبات الخارجية.';
-    });
+    // ===== تشغيل =====
+    loadAll().catch(err=>{ console.error(err); el('ticker').textContent = 'تعذر تحميل بيانات Binance مؤقتاً. ارفع الملف على استضافة للسماح بالطلبات الخارجية.'; });
   </script>
 </body>
 </html>
