@@ -1,185 +1,552 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quotex Pro</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      background: #1e293b;
-    }
-    header img {
-      height: 40px;
-      margin-right: 10px;
-    }
-    #toolbar {
-      display: flex;
-      gap: 10px;
-      padding: 10px;
-      background: #1e293b;
-    }
-    button {
-      padding: 6px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #chart {
-      flex: 1;
-      background: #0f172a;
-      position: relative;
-    }
-    canvas {
-      width: 100%;
-      height: 100%;
-    }
-    #editor-container {
-      display: none;
-      background: #1e293b;
-      padding: 10px;
-    }
-    textarea {
-      width: 100%;
-      height: 100px;
-      background: #0f172a;
-      color: #00ffcc;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      padding: 10px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>منصة السيولة — بوت + شارت + محرر JS</title>
+<style>
+  :root{
+    --bg:#0b0f16; --panel:#101722; --panel-2:#0f1520; --text:#e9f0ff; --muted:#9bb0c6;
+    --accent:#4da3ff; --accent-2:#22c55e; --accent-3:#ef4444;
+    --card:#0c111a; --radius:14px; --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0; font-family:Inter, 'Noto Sans Arabic', system-ui, "Segoe UI", Roboto; background:linear-gradient(180deg,var(--bg),#07090c 80%); color:var(--text); -webkit-font-smoothing:antialiased;}
+  .app{display:grid; grid-template-columns:320px 1fr; gap:14px; padding:14px; height:100vh}
+  .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--panel); border:1px solid rgba(23,34,53,0.6); border-radius:var(--radius); padding:14px; display:flex; flex-direction:column; gap:12px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); backdrop-filter: blur(6px);}
+  .brand{display:flex; gap:10px; align-items:center}
+  #logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:block;object-fit:cover}
+  .title{font-weight:800;font-size:15px}
+  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01)); border:1px solid rgba(22,34,51,0.6); border-radius:12px; padding:12px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  .input,select,button{text-align:right}
+  select,input[type=text],button{width:100%; padding:8px 10px; border-radius:10px; border:1px solid #162633; background:#071019; color:var(--text); outline:none; transition:transform .16s ease, box-shadow .16s ease}
+  select:focus,input[type=text]:focus,button:focus{box-shadow:0 6px 18px rgba(77,163,255,0.08); transform:translateY(-1px)}
+  .row{display:flex; gap:8px}
+  .row > *{flex:1}
+  .btn{cursor:pointer;padding:8px 10px;border-radius:10px;border:0;background:transparent;color:var(--text);font-weight:600}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#7c3aed);border:0;color:#07111a;box-shadow:0 8px 24px rgba(77,163,255,0.12)}
+  .btn-green{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#07111a}
+  .btn-red{background:linear-gradient(135deg,#b91c1c,#ef4444);border:0;color:#07111a}
+  .main{background:linear-gradient(180deg,var(--panel-2), rgba(255,255,255,0.01)); border:1px solid rgba(23,34,53,0.6); border-radius:var(--radius); padding:12px; display:flex; flex-direction:column; box-shadow: 0 10px 30px rgba(2,6,23,0.6)}
+  .topbar{display:flex; gap:10px; align-items:center; padding:8px; background:linear-gradient(180deg,#071019,#05080b); border-radius:10px}
+  .badge{background:rgba(9,17,29,0.7); border:1px solid rgba(27,42,64,0.6); color:var(--muted); padding:6px 10px; border-radius:999px; font-size:13px}
+  .chart-wrap{position:relative; flex:1; margin-top:12px; background:linear-gradient(180deg,#060a11,#03060a); border-radius:12px; overflow:hidden; display:flex}
+  canvas{display:block; width:100%; height:100%}
+  .legend{position:absolute; top:12px; left:12px; background:linear-gradient(180deg, rgba(7,12,20,0.75), rgba(7,12,20,0.5)); border:1px solid rgba(26,39,64,0.6); padding:8px 10px; border-radius:8px; font-size:12px; color:var(--muted)}
+  .controls-inline{display:flex; gap:8px; align-items:center}
+  /* modal */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200}
+  .modal .box{background:linear-gradient(180deg,#07111a,#051017);border:1px solid rgba(27,42,64,0.6);padding:16px;border-radius:10px;min-width:320px}
+  .bottom-editor{height:220px;background:linear-gradient(180deg,#071019,#031018);border-top:1px solid #102033;padding:8px;display:flex;flex-direction:column;gap:8px}
+  textarea{flex:1;background:#031019;color:#bfe; border:1px solid #193042;border-radius:8px;padding:8px;resize:vertical;font-family:monospace}
+  .symbols-list{max-height:240px; overflow:auto; border:1px solid #122033; border-radius:8px; padding:8px; background:#061019}
+  .small{font-size:12px;color:var(--muted)}
+  .tf-list{display:flex;flex-wrap:wrap;gap:6px}
+  .tf-item{background:#0b1220;border:1px solid #1b2a40;padding:6px 8px;border-radius:8px;cursor:pointer;user-select:none}
+  .tf-item.active{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#07111a}
+  /* subtle hovers */
+  .card:hover, .modal .box:hover{transform:translateY(-3px); transition:transform .18s ease}
+  button.btn:hover{transform:translateY(-2px)}
+  /* responsive */
+  @media(max-width:1100px){ .app{grid-template-columns:1fr} .sidebar{order:2; position:sticky; top:12px} .main{order:1} }
+  @media(max-width:600px){ .sidebar{padding:10px} .title{font-size:14px} #logo{width:40px;height:40px} .topbar{flex-wrap:wrap} .controls-inline{order:3;width:100%;justify-content:flex-end} }
+</style>
 </head>
 <body>
-  <header>
-    <!-- شعار المنصة: استبدل الرابط برابط شعارك الحقيقي -->
-    <img src="https://via.placeholder.com/150x40?text=Quotex+Pro" alt="Quotex Pro Logo">
-    <h1>Quotex Pro</h1>
-  </header>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img id="logo" src="https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="logo" />
+        <div>
+          <div class="title">منصة السيولة</div>
+          <div class="small">بوت شارت داخلي • يدعم محرّر JS</div>
+        </div>
+      </div>
 
-  <div id="toolbar">
-    <button onclick="toggleTimeframes()">📊 الفريمات</button>
-    <button onclick="toggleEditor()">⚙️ المؤشرات</button>
-    <button onclick="toggleSymbols()">💹 العملات</button>
+      <div class="card">
+        <label>الزوج/الأصل</label>
+        <select id="symbolSelect">
+          <option>BTC/USDT</option><option>ETH/USDT</option><option>EUR/USD</option><option>GOLD/USD</option><option>OTC/A</option>
+        </select>
+        <div style="margin-top:8px">
+          <label>أيقونة الفريمات</label>
+          <div class="tf-list" id="tfList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>أداء البوت</label>
+        <div class="row">
+          <button id="startBtn" class="btn btn-primary">تشغيل البوت</button>
+          <button id="stopBtn" class="btn btn-red">إيقاف</button>
+        </div>
+        <div style="margin-top:8px" class="row">
+          <button id="addSymbolBtn" class="btn">إضافة رمز</button>
+          <button id="openEditorBtn" class="btn">محرّر المؤشرات (JS)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>خيارات عامة</label>
+        <div class="row">
+          <div><label>سرعة التيك (ms)</label><input id="tickSpeed" type="text" value="200" /></div>
+          <div><label>عدد الشموع</label><input id="barsOnScreen" type="text" value="140" /></div>
+        </div>
+      </div>
+
+      <div class="card small">
+        <div>ملاحظة: شعار الموقع مُحدّث، يمكنك تغييره بوضع رابط جديد في وسم &lt;img id="logo"&gt;</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="badge" id="pairBadge">BTC/USDT</div>
+        <div class="badge" id="tfBadge">TF: 15s</div>
+        <div class="badge" id="priceBadge">السعر: —</div>
+        <div class="badge" id="statusBadge">متوقف</div>
+        <div style="margin-inline-start:auto" class="controls-inline">
+          <button id="zoomIn" class="btn">+</button>
+          <button id="zoomOut" class="btn">−</button>
+          <button id="resetView" class="btn">Reset</button>
+          <button id="autoFollow" class="btn">Auto-follow</button>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="chart"></canvas>
+        <div class="legend" id="legend">شموع: 0 • SMA20: — • سيولة: —</div>
+      </div>
+
+      <!-- محرر JS -->
+      <div class="bottom-editor" id="editorWrap" style="display:none">
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="small">محرّر JS: أكتب دالة تحلل المصفوفة ohlcv ثم ارجع مصفوفة إu0020شارات overlays</div>
+          <div style="margin-inline-start:auto;display:flex;gap:8px">
+            <button id="runCode" class="btn btn-primary">تشغيل</button>
+            <button id="closeEditor" class="btn">إخفاء</button>
+          </div>
+        </div>
+        <textarea id="codeArea">// مثال: return overlays = [{type:'signal',time:ohlcv[ohlcv.length-1].t,price:ohlcv[ohlcv.length-1].c,pos:'below',text:'BUY',color:'#00ff66'}];\n// المتغيرات المتاحة: ohlcv (array), api (helpers object)\n// يجب أن تقوم الدالة بإرجاع مصفوفة overlays</textarea>
+      </div>
+    </main>
   </div>
 
-  <div id="chart">
-    <canvas id="chartCanvas"></canvas>
+  <!-- مودال اضافة رموز -->
+  <div class="modal" id="symbolsModal">
+    <div class="box">
+      <h4>إضافة رمز</h4>
+      <input id="symbolSearch" placeholder="ابحث أو اكتب رمز (مثال: OTC/A)" />
+      <div class="symbols-list" id="symbolsList">
+        <!-- سيتم ملؤها ديناميكياً -->
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-start">
+        <button id="closeSymbols" class="btn">إغلاق</button>
+      </div>
+    </div>
   </div>
 
-  <!-- محرر الكود -->
-  <div id="editor-container">
-    <textarea id="editor">// Example: Buy/Sell indicator
-function indicator(ctx, candles, chartHeight, chartWidth, candleWidth) {
-  ctx.font = "12px Arial";
-  for (let i = 1; i < candles.length; i++) {
-    const c = candles[i];
-    const prev = candles[i - 1];
-    if (c.close > prev.close) {
-      ctx.fillStyle = "green";
-      ctx.fillText("BUY", i * candleWidth + candleWidth / 4, chartHeight - c.close - 10);
-    } else if (c.close < prev.close) {
-      ctx.fillStyle = "red";
-      ctx.fillText("SELL", i * candleWidth + candleWidth / 4, chartHeight - c.close + 15);
+<script>
+/* ========= إعداد الواجهة ======== */
+const logoEl = document.getElementById('logo');
+// الشعار مضاف مسبقاً إلى الرابط الذي زودتني به
+// logoEl.src = 'https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high';
+
+const tfOptions = [
+  {label:'5s', v:5}, {label:'10s', v:10}, {label:'15s', v:15}, {label:'30s', v:30},
+  {label:'1m', v:60}, {label:'5m', v:300}, {label:'15m', v:900},{label:'30m', v:1800},
+  {label:'1h', v:3600}, {label:'4h', v:14400}, {label:'1d', v:86400}
+];
+const tfList = document.getElementById('tfList');
+let activeTF = 15;
+tfOptions.forEach(o=>{
+  const d = document.createElement('div'); d.className='tf-item'+(o.v===activeTF?' active':''); d.textContent=o.label;
+  d.addEventListener('click',()=>{ setTF(o.v); document.querySelectorAll('.tf-item').forEach(x=>x.classList.remove('active')); d.classList.add('active');});
+  tfList.appendChild(d);
+});
+
+/* ========= Canvas chart engine ========= */
+const canvas = document.getElementById('chart');
+const ctx = canvas.getContext('2d');
+const wrap = document.getElementById('chartWrap');
+let dpr = window.devicePixelRatio || 1;
+function resizeCanvas(){
+  const rect = wrap.getBoundingClientRect();
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+}
+window.addEventListener('resize',()=>{ dpr = window.devicePixelRatio||1; resizeCanvas(); draw(); });
+resizeCanvas();
+
+/* البيانات والبوت */
+let ohlcv = []; // {t,o,h,l,c,v}
+let currentBar = null;
+let symbol = 'BTC/USDT';
+let running = false;
+let tickIntervalMs = 200;
+let barsOnScreen = 140;
+let priceMin = 0, priceMax = 1; // نطاق العرض الحالي
+let followAuto = true;
+
+/* ضبط من الواجهة */
+document.getElementById('startBtn').addEventListener('click',startBot);
+document.getElementById('stopBtn').addEventListener('click',stopBot);
+document.getElementById('openEditorBtn').addEventListener('click',()=>{ document.getElementById('editorWrap').style.display='flex'; });
+document.getElementById('closeEditor').addEventListener('click',()=>{ document.getElementById('editorWrap').style.display='none'; });
+document.getElementById('runCode').addEventListener('click', runUserCode);
+document.getElementById('addSymbolBtn').addEventListener('click', ()=>{ document.getElementById('symbolsModal').style.display='flex'; populateSymbols(); });
+document.getElementById('closeSymbols').addEventListener('click', ()=>{ document.getElementById('symbolsModal').style.display='none'; });
+document.getElementById('barsOnScreen').addEventListener('change', e=>{ barsOnScreen = parseInt(e.target.value)||140; draw(); });
+document.getElementById('tickSpeed').addEventListener('change', e=>{ tickIntervalMs = parseInt(e.target.value)||200; if(running){ stopBot(); startBot(); } });
+document.getElementById('autoFollow').addEventListener('click', ()=>{ followAuto = !followAuto; document.getElementById('autoFollow').textContent = followAuto? 'Auto-follow' : 'Manual'; });
+
+const pairBadge = document.getElementById('pairBadge');
+const tfBadge = document.getElementById('tfBadge');
+const priceBadge = document.getElementById('priceBadge');
+const statusBadge = document.getElementById('statusBadge');
+const legend = document.getElementById('legend');
+
+function setTF(sec){
+  activeTF = sec;
+  tfBadge.textContent = 'TF: ' + (sec < 60 ? sec + 's' : (sec%3600===0 ? (sec/3600+'h') : (sec/60+'m')));
+  resetData(); // إعادة ضبط الشمعة الحالية
+}
+
+/* helper RNG */
+function RNG(seed){
+  let s = 0;
+  for(let i=0;i<(seed||'').length;i++) s = (s*31 + seed.charCodeAt(i))>>>0;
+  return ()=> (s = (s*1664525 + 1013904223)>>>0, s/2**32);
+}
+let rng = RNG('salaheedin');
+
+/* إنشاء شمعات أولية */
+function resetData(){
+  ohlcv = [];
+  currentBar = null;
+  priceMin = 0; priceMax = 1;
+  updateLegend();
+  draw();
+}
+
+/* بوت بسيط يولّد سعر مع ترند */
+let tickLoop = null;
+function startBot(){
+  if(running) return;
+  running = true; statusBadge.textContent='يعمل';
+  // init base price
+  let base = symbol.includes('BTC')?30000: symbol.includes('ETH')?2000: symbol.includes('GOLD')?2400: 1.0;
+  if(ohlcv.length===0){
+    // seed with some history
+    let t0 = Date.now() - activeTF*1000 * 200;
+    let p = base;
+    for(let i=0;i<80;i++){
+      const o = p;
+      p = p * (1 + (rng()-0.5)*0.01);
+      const c = p;
+      const h = Math.max(o,c) * (1 + Math.random()*0.002);
+      const l = Math.min(o,c) * (1 - Math.random()*0.002);
+      ohlcv.push({t: t0 + i*activeTF*1000, o, h, l, c, v: Math.random()*100});
     }
   }
-}</textarea>
-    <button onclick="runIndicator()">▶️ تشغيل</button>
-  </div>
+  if(!currentBar) {
+    currentBar = {t: Date.now(), o: ohlcv.length ? ohlcv[ohlcv.length-1].c : base, h:0,l:0,c:0,v:0};
+    currentBar.o = currentBar.o || base; currentBar.h = currentBar.o; currentBar.l = currentBar.o; currentBar.c = currentBar.o;
+  }
+  tickLoop = setInterval(()=>{ tick(); }, tickIntervalMs);
+}
 
-  <script>
-    const canvas = document.getElementById("chartCanvas");
-    const ctx = canvas.getContext("2d");
-    let candles = [];
-    let indicatorFn = null;
+function stopBot(){
+  if(!running) return;
+  running = false; statusBadge.textContent='متوقف';
+  clearInterval(tickLoop);
+}
 
-    function resizeCanvas() {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+/* tick: تحديث الشمعة الحالية تدريجياً */
+function tick(){
+  // حركة بطيئة تحاكي السوق
+  const dtFactor = tickIntervalMs/200;
+  const change = (rng()-0.5) * 0.002 * dtFactor;
+  currentBar.c = Math.max(0.00001, currentBar.c * (1 + change));
+  currentBar.h = Math.max(currentBar.h || currentBar.c, currentBar.c);
+  currentBar.l = (currentBar.l?Math.min(currentBar.l,currentBar.c):currentBar.c);
+  currentBar.v += Math.abs(change)*1000;
 
-    // توليد بيانات شموع وهمية
-    function generateCandle(prevClose) {
-      const open = prevClose;
-      const close = open + (Math.random() - 0.5) * 20;
-      const high = Math.max(open, close) + Math.random() * 10;
-      const low = Math.min(open, close) - Math.random() * 10;
-      return { open, high, low, close };
-    }
+  // إغلاق الشمعة عند انتهاء TF
+  const now = Date.now();
+  if(!currentBar.startTime) currentBar.startTime = now;
+  if(now - currentBar.startTime >= activeTF*1000){
+    currentBar.t = now;
+    ohlcv.push({...currentBar});
+    if(ohlcv.length > 5000) ohlcv.shift();
+    currentBar = {t: now, o: ohlcv[ohlcv.length-1].c, h:ohlcv[ohlcv.length-1].c, l:ohlcv[ohlcv.length-1].c, c:ohlcv[ohlcv.length-1].c, v:0};
+    // after close update overlays via user code (optional)
+    if(userOverlaysFn) try{ userOverlays = userOverlaysFn(ohlcv, helpers) || []; }catch(e){ console.error('user overlays error',e); }
+  }
+  // adjust visible price window smoothly (Auto Y-Shift)
+  adjustPriceWindow();
+  // update UI
+  priceBadge.textContent = 'السعر: ' + currentBar.c.toFixed(4);
+  updateLegend();
+  draw();
+}
 
-    function drawChart() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const candleWidth = 8;
-      const chartHeight = canvas.height - 20;
+/* Auto Y-Shift logic: if price goes outside current [min,max] we shift window rather than rescale fully */
+let displayMin = 0, displayMax = 1;
+function adjustPriceWindow(){
+  const visible = getVisibleBars();
+  if(visible.length===0) return;
+  const arr = visible.concat(currentBar? [currentBar] : []);
+  const vmin = Math.min(...arr.map(b=>b.l));
+  const vmax = Math.max(...arr.map(b=>b.h));
+  if(displayMin===displayMax){ displayMin = vmin - 1; displayMax = vmax + 1; }
+  const margin = (displayMax - displayMin) * 0.12;
+  let targetMin = displayMin, targetMax = displayMax;
+  if(vmax > displayMax - margin) {
+    const shift = vmax - (displayMax - margin);
+    targetMin += shift; targetMax += shift;
+  }
+  if(vmin < displayMin + margin) {
+    const shift = (displayMin + margin) - vmin;
+    targetMin -= shift; targetMax -= shift;
+  }
+  const needExpandTop = vmax > targetMax;
+  const needExpandBottom = vmin < targetMin;
+  if(needExpandTop || needExpandBottom){
+    targetMin = Math.min(targetMin, vmin - margin);
+    targetMax = Math.max(targetMax, vmax + margin);
+  }
+  const alpha = 0.25;
+  displayMin = displayMin + (targetMin - displayMin) * alpha;
+  displayMax = displayMax + (targetMax - displayMax) * alpha;
+}
 
-      candles.slice(-Math.floor(canvas.width / candleWidth)).forEach((c, i) => {
-        const x = i * candleWidth + 10;
-        const yOpen = chartHeight - c.open;
-        const yClose = chartHeight - c.close;
-        const yHigh = chartHeight - c.high;
-        const yLow = chartHeight - c.low;
+/* get visible bars */
+function getVisibleBars(){
+  const total = ohlcv.length;
+  const start = Math.max(0, total - barsOnScreen);
+  return ohlcv.slice(start);
+}
 
-        ctx.strokeStyle = c.close > c.open ? "#22c55e" : "#ef4444";
-        ctx.beginPath();
-        ctx.moveTo(x + candleWidth / 2, yHigh);
-        ctx.lineTo(x + candleWidth / 2, yLow);
-        ctx.stroke();
+/* draw function */
+function draw(){
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  // background
+  ctx.fillStyle = '#060a11';
+  ctx.fillRect(0,0,w,h);
+  // grid horizontal
+  ctx.strokeStyle = '#0f2330'; ctx.lineWidth = 1 * dpr;
+  const gridLines = 6;
+  for(let i=0;i<=gridLines;i++){
+    const y = (i/(gridLines)) * h;
+    ctx.beginPath(); ctx.moveTo(60*dpr, y); ctx.lineTo(w - 20*dpr, y); ctx.stroke();
+  }
+  // axes price labels
+  ctx.fillStyle = '#9bb0c6'; ctx.font = (12 * dpr) + 'px sans-serif';
+  for(let i=0;i<=gridLines;i++){
+    const p = displayMax - (displayMax - displayMin)*(i/gridLines);
+    const y = (i/(gridLines)) * h;
+    ctx.fillText(p.toFixed(4), 6 * dpr, y+4*dpr);
+  }
+  // draw candles
+  const slice = getVisibleBars();
+  const n = slice.length;
+  const areaW = w - (60*dpr) - 20*dpr;
+  const step = areaW / Math.max(1, barsOnScreen);
+  const candleW = Math.max(1 * dpr, step * 0.7);
+  for(let i=0;i<barsOnScreen;i++){
+    const idx = Math.max(0, ohlcv.length - barsOnScreen + i);
+    const b = ohlcv[idx];
+    const x = 60*dpr + i * step;
+    if(!b) continue;
+    drawCandleAt(b, x, candleW, step);
+  }
+  // draw currentBar at the end if followAuto
+  if(currentBar){
+    const i = Math.min(barsOnScreen-1, Math.max(0, barsOnScreen-1));
+    const x = 60*dpr + i * step;
+    drawCandleAt(currentBar, x, candleW, step, true);
+  }
+  // draw user overlays (signals)
+  if(userOverlays && userOverlays.length){
+    userOverlays.forEach(s=>{
+      if(s.type==='signal'){
+        const idx = findBarIndexByTime(s.time);
+        if(idx===-1) return;
+        const rel = idx - Math.max(0, ohlcv.length - barsOnScreen);
+        if(rel<0 || rel>=barsOnScreen) return;
+        const x = 60*dpr + rel * step;
+        const py = priceToY(s.price !== undefined ? s.price : (ohlcv[idx].c));
+        drawSignal(x, py, s);
+      }
+    });
+  }
+}
 
-        ctx.fillStyle = c.close > c.open ? "#22c55e" : "#ef4444";
-        ctx.fillRect(x, Math.min(yOpen, yClose), candleWidth, Math.abs(yClose - yOpen) || 1);
-      });
+/* draw a candle */
+function drawCandleAt(b, x, wC, step, isCurrent=false){
+  const top = priceToY(b.h), bottom = priceToY(b.l);
+  const openY = priceToY(b.o), closeY = priceToY(b.c);
+  const up = b.c >= b.o;
+  ctx.strokeStyle = up ? '#11a86a' : '#d93b44';
+  ctx.fillStyle = up ? '#00d36f' : '#ff4d4f';
+  // wick
+  ctx.lineWidth = Math.max(1, 1 * dpr);
+  ctx.beginPath(); ctx.moveTo(x + wC/2, top); ctx.lineTo(x + wC/2, bottom); ctx.stroke();
+  // body
+  const bodyX = x + (-wC/2);
+  const bodyY = Math.min(openY, closeY);
+  const bodyH = Math.max(1, Math.abs(openY - closeY));
+  ctx.fillRect(bodyX, bodyY, wC, bodyH);
+}
 
-      if (indicatorFn) {
-        indicatorFn(ctx, candles, chartHeight, canvas.width, candleWidth);
+/* small offset to center rectangles at integer pixels */
+function stepOffset(wC){ return -wC/2; }
+
+function priceToY(price){
+  const h = canvas.height;
+  const t = (displayMax - price) / (displayMax - displayMin || 1);
+  return t * h;
+}
+
+/* find bar index by time (closest) */
+function findBarIndexByTime(time){
+  if(!time) return -1;
+  let best = -1, bestDiff = Infinity;
+  for(let i=0;i<ohlcv.length;i++){
+    const d = Math.abs((ohlcv[i].t || 0) - time);
+    if(d < bestDiff){ bestDiff = d; best = i; }
+  }
+  return best;
+}
+
+/* draw signal */
+function drawSignal(x,y,s){
+  const size = 12 * dpr;
+  ctx.fillStyle = s.color || (s.text && s.text.toUpperCase().includes('BUY') ? '#00d36f' : '#ff4d4f');
+  ctx.strokeStyle = '#07111a';
+  ctx.lineWidth = 1 * dpr;
+  ctx.beginPath();
+  if(s.pos === 'below'){
+    ctx.arc(x, y + 14*dpr, size*0.6, 0, Math.PI*2);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#07111a'; ctx.font = (9*dpr) + 'px sans-serif'; ctx.textAlign='center'; ctx.fillText(s.text || 'BUY', x, y + 18*dpr);
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(x - size*0.7, y - 10*dpr);
+    ctx.lineTo(x, y - (20*dpr));
+    ctx.lineTo(x + size*0.7, y - 10*dpr);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#07111a'; ctx.font = (9*dpr) + 'px sans-serif'; ctx.textAlign='center'; ctx.fillText(s.text || 'SELL', x, y - 22*dpr);
+  }
+}
+
+/* helpers available to user code */
+const helpers = {
+  findBarIndexByTime,
+  priceToY,
+  // simple SMA
+  sma: (arr, period) => {
+    const res = [];
+    for(let i=0;i<arr.length;i++){
+      if(i+1<period) res.push(null);
+      else{
+        let s=0; for(let k=i+1-period;k<=i;k++) s+=arr[k].c;
+        res.push(s/period);
       }
     }
+    return res;
+  }
+};
 
-    function update() {
-      if (candles.length === 0) {
-        candles.push(generateCandle(200));
-      } else {
-        candles.push(generateCandle(candles[candles.length - 1].close));
-      }
-      if (candles.length > 500) candles.shift();
-      drawChart();
-      setTimeout(update, 2000); // كل شمعة جديدة كل ثانيتين
-    }
-    update();
+/* user overlays (from editor) */
+let userOverlays = [];
+let userOverlaysFn = null;
 
-    function toggleEditor() {
-      const ed = document.getElementById("editor-container");
-      ed.style.display = ed.style.display === "block" ? "none" : "block";
-    }
+/* run user JS code safely (simple sandbox) */
+function runUserCode(){
+  const code = document.getElementById('codeArea').value;
+  try{
+    const fn = new Function('ohlcv','helpers','api', '"use strict";\n' + code);
+    const out = fn(ohlcv, helpers, {});
+    if(Array.isArray(out)) userOverlays = out;
+    else userOverlays = [];
+    userOverlaysFn = function(ohlcvArg, helpersArg){
+      try{ const result = fn(ohlcvArg, helpersArg, {}); return Array.isArray(result)? result : []; } catch(e){ console.error('user code runtime error',e); return []; }
+    };
+    document.getElementById('editorWrap').style.display='none';
+    draw();
+  }catch(e){
+    alert('خطأ في الكود: ' + (e && e.message ? e.message : e));
+    console.error(e);
+  }
+}
 
-    function runIndicator() {
-      const code = document.getElementById("editor").value;
-      try {
-        indicatorFn = new Function("ctx", "candles", "chartHeight", "chartWidth", "candleWidth", code + "\nreturn indicator;")();
-      } catch (e) {
-        alert("خطأ في الكود: " + e.message);
-      }
-    }
+/* ========== Pan & Zoom ========== */
+let isPanning=false, panStartX=0, panStartIndexOffset=0;
+let indexOffset = 0; // currently unused but kept for future precise pan
 
-    function toggleTimeframes() {
-      alert("هنا ستظهر قائمة الفريمات: 5s, 10s, 15s ... 1D");
-    }
+wrap.addEventListener('wheel',(e)=>{
+  e.preventDefault();
+  if(e.ctrlKey){
+    // vertical zoom? ignore
+  } else {
+    const delta = e.deltaY > 0 ? 1.12 : 0.88;
+    barsOnScreen = Math.min(800, Math.max(20, Math.round(barsOnScreen * delta)));
+    document.getElementById('barsOnScreen').value = barsOnScreen;
+    draw();
+  }
+},{passive:false});
 
-    function toggleSymbols() {
-      alert("هنا ستظهر قائمة العملات مع دعم OTC");
-    }
-  </script>
+wrap.addEventListener('mousedown',(e)=>{
+  isPanning=true; panStartX = e.clientX; panStartIndexOffset = indexOffset;
+  wrap.style.cursor='grabbing';
+});
+window.addEventListener('mouseup',()=>{ isPanning=false; wrap.style.cursor='default'; });
+window.addEventListener('mousemove',(e)=>{
+  if(!isPanning) return;
+  const dx = e.clientX - panStartX;
+  const moveBars = Math.round(-dx / 20);
+  indexOffset = Math.max(0, panStartIndexOffset + moveBars);
+  draw();
+});
+
+/* zoom buttons */
+document.getElementById('zoomIn').addEventListener('click', ()=>{ barsOnScreen = Math.max(20, Math.round(barsOnScreen*0.8)); document.getElementById('barsOnScreen').value = barsOnScreen; draw();});
+document.getElementById('zoomOut').addEventListener('click', ()=>{ barsOnScreen = Math.min(800, Math.round(barsOnScreen*1.2)); document.getElementById('barsOnScreen').value = barsOnScreen; draw();});
+document.getElementById('resetView').addEventListener('click', ()=>{ barsOnScreen = 140; document.getElementById('barsOnScreen').value = barsOnScreen; displayMin = Math.min(...(ohlcv.map(b=>b.l).length? ohlcv.map(b=>b.l):[0])) - 1; displayMax = Math.max(...(ohlcv.map(b=>b.h).length? ohlcv.map(b=>b.h):[1])) + 1; draw(); });
+
+/* symbols modal populate */
+const sampleSymbols = ['BTC/USDT','ETH/USDT','XRP/USDT','BCH/USDT','LTC/USDT','EUR/USD','USD/JPY','GOLD/USD','OTC/A','OTC/B','ABC/OTC'];
+function populateSymbols(){
+  const list = document.getElementById('symbolsList'); list.innerHTML = '';
+  sampleSymbols.forEach(s=>{
+    const el = document.createElement('div'); el.style.padding='6px'; el.style.borderBottom='1px solid #07202a';
+    el.style.cursor='pointer'; el.textContent = s;
+    el.addEventListener('click', ()=>{ symbol = s; pairBadge.textContent = s; document.getElementById('symbolsModal').style.display='none'; resetData(); });
+    list.appendChild(el);
+  });
+  const input = document.getElementById('symbolSearch');
+  input.value = '';
+  input.onkeydown = (e)=>{ if(e.key==='Enter'){ const val = input.value.trim(); if(val){ symbol = val; pairBadge.textContent = val; document.getElementById('symbolsModal').style.display='none'; resetData(); } } };
+}
+
+/* legend update */
+function updateLegend(){
+  const smaArr = helpers.sma(ohlcv,20);
+  const sma20 = smaArr.length? smaArr[smaArr.length-1] : null;
+  legend.textContent = 'شموع: ' + (ohlcv.length) + ' • SMA20: ' + (sma20? sma20.toFixed(4): '—') + ' • سيولة: — • Bars: ' + barsOnScreen;
+}
+
+/* init */
+resetData();
+draw();
+
+/* export (optional) */
+</script>
 </body>
 </html>
