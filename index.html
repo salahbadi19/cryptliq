@@ -1,552 +1,411 @@
-<!doctype html>
+<!--
+Quotex Pro - Minimal Starter (single-file frontend) + backend ws-server example + README
+Files included in this document:
+1) index.html  (complete single-file frontend)
+2) ws-server.js (Node.js WebSocket simulator)
+3) package.json (backend)
+4) docker-compose.yml (optional)
+5) README.md (how to run)
+
+Open the file `index.html` in a browser (or serve via simple HTTP server). Start the ws-server with Node to provide live OHLCV updates, or the frontend will fallback to internal simulator.
+-->
+
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>منصة السيولة — بوت + شارت + محرر JS</title>
-<style>
-  :root{
-    --bg:#0b0f16; --panel:#101722; --panel-2:#0f1520; --text:#e9f0ff; --muted:#9bb0c6;
-    --accent:#4da3ff; --accent-2:#22c55e; --accent-3:#ef4444;
-    --card:#0c111a; --radius:14px; --glass: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%; margin:0; font-family:Inter, 'Noto Sans Arabic', system-ui, "Segoe UI", Roboto; background:linear-gradient(180deg,var(--bg),#07090c 80%); color:var(--text); -webkit-font-smoothing:antialiased;}
-  .app{display:grid; grid-template-columns:320px 1fr; gap:14px; padding:14px; height:100vh}
-  .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--panel); border:1px solid rgba(23,34,53,0.6); border-radius:var(--radius); padding:14px; display:flex; flex-direction:column; gap:12px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); backdrop-filter: blur(6px);}
-  .brand{display:flex; gap:10px; align-items:center}
-  #logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:block;object-fit:cover}
-  .title{font-weight:800;font-size:15px}
-  .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.01)); border:1px solid rgba(22,34,51,0.6); border-radius:12px; padding:12px}
-  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-  .input,select,button{text-align:right}
-  select,input[type=text],button{width:100%; padding:8px 10px; border-radius:10px; border:1px solid #162633; background:#071019; color:var(--text); outline:none; transition:transform .16s ease, box-shadow .16s ease}
-  select:focus,input[type=text]:focus,button:focus{box-shadow:0 6px 18px rgba(77,163,255,0.08); transform:translateY(-1px)}
-  .row{display:flex; gap:8px}
-  .row > *{flex:1}
-  .btn{cursor:pointer;padding:8px 10px;border-radius:10px;border:0;background:transparent;color:var(--text);font-weight:600}
-  .btn-primary{background:linear-gradient(135deg,var(--accent),#7c3aed);border:0;color:#07111a;box-shadow:0 8px 24px rgba(77,163,255,0.12)}
-  .btn-green{background:linear-gradient(135deg,#16a34a,#22c55e);border:0;color:#07111a}
-  .btn-red{background:linear-gradient(135deg,#b91c1c,#ef4444);border:0;color:#07111a}
-  .main{background:linear-gradient(180deg,var(--panel-2), rgba(255,255,255,0.01)); border:1px solid rgba(23,34,53,0.6); border-radius:var(--radius); padding:12px; display:flex; flex-direction:column; box-shadow: 0 10px 30px rgba(2,6,23,0.6)}
-  .topbar{display:flex; gap:10px; align-items:center; padding:8px; background:linear-gradient(180deg,#071019,#05080b); border-radius:10px}
-  .badge{background:rgba(9,17,29,0.7); border:1px solid rgba(27,42,64,0.6); color:var(--muted); padding:6px 10px; border-radius:999px; font-size:13px}
-  .chart-wrap{position:relative; flex:1; margin-top:12px; background:linear-gradient(180deg,#060a11,#03060a); border-radius:12px; overflow:hidden; display:flex}
-  canvas{display:block; width:100%; height:100%}
-  .legend{position:absolute; top:12px; left:12px; background:linear-gradient(180deg, rgba(7,12,20,0.75), rgba(7,12,20,0.5)); border:1px solid rgba(26,39,64,0.6); padding:8px 10px; border-radius:8px; font-size:12px; color:var(--muted)}
-  .controls-inline{display:flex; gap:8px; align-items:center}
-  /* modal */
-  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200}
-  .modal .box{background:linear-gradient(180deg,#07111a,#051017);border:1px solid rgba(27,42,64,0.6);padding:16px;border-radius:10px;min-width:320px}
-  .bottom-editor{height:220px;background:linear-gradient(180deg,#071019,#031018);border-top:1px solid #102033;padding:8px;display:flex;flex-direction:column;gap:8px}
-  textarea{flex:1;background:#031019;color:#bfe; border:1px solid #193042;border-radius:8px;padding:8px;resize:vertical;font-family:monospace}
-  .symbols-list{max-height:240px; overflow:auto; border:1px solid #122033; border-radius:8px; padding:8px; background:#061019}
-  .small{font-size:12px;color:var(--muted)}
-  .tf-list{display:flex;flex-wrap:wrap;gap:6px}
-  .tf-item{background:#0b1220;border:1px solid #1b2a40;padding:6px 8px;border-radius:8px;cursor:pointer;user-select:none}
-  .tf-item.active{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#07111a}
-  /* subtle hovers */
-  .card:hover, .modal .box:hover{transform:translateY(-3px); transition:transform .18s ease}
-  button.btn:hover{transform:translateY(-2px)}
-  /* responsive */
-  @media(max-width:1100px){ .app{grid-template-columns:1fr} .sidebar{order:2; position:sticky; top:12px} .main{order:1} }
-  @media(max-width:600px){ .sidebar{padding:10px} .title{font-size:14px} #logo{width:40px;height:40px} .topbar{flex-wrap:wrap} .controls-inline{order:3;width:100%;justify-content:flex-end} }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quotex Pro — Starter</title>
+  <link rel="icon" href="https://i.imgur.com/5nHaOsf_d.jpeg" />
+  <style>
+    /* Tailwind-like minimal styles (no Tailwind dependency) */
+    :root{--bg:#0b1020;--panel:#0f1724;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;background:var(--bg);color:#e6eef8;font-family:Inter, system-ui, sans-serif}
+    .app{display:flex;height:100vh;gap:12px;padding:12px}
+    .sidebar{width:300px;background:var(--panel);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .main{flex:1;display:flex;flex-direction:column;gap:10px}
+    .topbar{height:48px;background:var(--panel);border-radius:8px;padding:8px;display:flex;align-items:center;gap:8px}
+    .chart-wrap{flex:1;background:linear-gradient(180deg,#071025 0%, #081428 100%);border-radius:10px;padding:8px}
+    button{background:var(--glass);border:1px solid rgba(255,255,255,0.03);color:inherit;padding:6px 10px;border-radius:8px;cursor:pointer}
+    select,input,textarea{background:#071022;border:1px solid rgba(255,255,255,0.04);color:inherit;padding:6px;border-radius:6px}
+    .controls{display:flex;gap:8px;align-items:center}
+    .editor{height:220px;resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+    .badge{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.03)}
+    .footer{height:40px;display:flex;gap:8px;align-items:center}
+    @media(max-width:900px){.sidebar{display:none}} 
+  </style>
+  <!-- Lightweight Charts CDN -->
+  <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <img id="logo" src="https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="logo" />
-        <div>
-          <div class="title">منصة السيولة</div>
-          <div class="small">بوت شارت داخلي • يدعم محرّر JS</div>
-        </div>
+    <div class="sidebar" id="sidebar">
+      <h3 style="margin:0">Quotex Pro</h3>
+      <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" style="width:64px;border-radius:8px">
+
+      <div class="small">رمز:</div>
+      <select id="symbolSelect">
+        <option value="TEST/USDT">TEST/USDT</option>
+        <option value="BTC/USDT">BTC/USDT</option>
+        <option value="ETH/USDT">ETH/USDT</option>
+      </select>
+
+      <div class="small">الإطار الزمني (TF):</div>
+      <select id="tfSelect">
+        <option value="5">5s</option>
+        <option value="15">15s</option>
+        <option value="60" selected>1m</option>
+        <option value="300">5m</option>
+        <option value="900">15m</option>
+      </select>
+
+      <div class="small">إعدادات البوت</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="playBtn">تشغيل</button>
+        <button id="stopBtn">إيقاف</button>
       </div>
 
-      <div class="card">
-        <label>الزوج/الأصل</label>
-        <select id="symbolSelect">
-          <option>BTC/USDT</option><option>ETH/USDT</option><option>EUR/USD</option><option>GOLD/USD</option><option>OTC/A</option>
-        </select>
-        <div style="margin-top:8px">
-          <label>أيقونة الفريمات</label>
-          <div class="tf-list" id="tfList"></div>
-        </div>
+      <div class="small">سرعة التيك (ms)</div>
+      <input id="tickSpeed" type="number" value="2000" />
+
+      <div class="small">عدد الشموع على الشاشة</div>
+      <input id="barsOnScreen" type="number" value="120" />
+
+      <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
+        <button id="exportCsv">تصدير CSV</button>
+        <button id="saveProfile">حفظ الإعدادات</button>
+        <button id="loadProfile">تحميل الإعدادات</button>
       </div>
 
-      <div class="card">
-        <label>أداء البوت</label>
-        <div class="row">
-          <button id="startBtn" class="btn btn-primary">تشغيل البوت</button>
-          <button id="stopBtn" class="btn btn-red">إيقاف</button>
-        </div>
-        <div style="margin-top:8px" class="row">
-          <button id="addSymbolBtn" class="btn">إضافة رمز</button>
-          <button id="openEditorBtn" class="btn">محرّر المؤشرات (JS)</button>
-        </div>
-      </div>
+      <div style="flex:1"></div>
+      <div class="small">Logs</div>
+      <pre id="logs" style="height:120px;overflow:auto;background:#071022;padding:8px;border-radius:6px"></pre>
+    </div>
 
-      <div class="card">
-        <label>خيارات عامة</label>
-        <div class="row">
-          <div><label>سرعة التيك (ms)</label><input id="tickSpeed" type="text" value="200" /></div>
-          <div><label>عدد الشموع</label><input id="barsOnScreen" type="text" value="140" /></div>
-        </div>
-      </div>
-
-      <div class="card small">
-        <div>ملاحظة: شعار الموقع مُحدّث، يمكنك تغييره بوضع رابط جديد في وسم &lt;img id="logo"&gt;</div>
-      </div>
-    </aside>
-
-    <main class="main">
+    <div class="main">
       <div class="topbar">
-        <div class="badge" id="pairBadge">BTC/USDT</div>
-        <div class="badge" id="tfBadge">TF: 15s</div>
-        <div class="badge" id="priceBadge">السعر: —</div>
-        <div class="badge" id="statusBadge">متوقف</div>
-        <div style="margin-inline-start:auto" class="controls-inline">
-          <button id="zoomIn" class="btn">+</button>
-          <button id="zoomOut" class="btn">−</button>
-          <button id="resetView" class="btn">Reset</button>
-          <button id="autoFollow" class="btn">Auto-follow</button>
-        </div>
+        <div class="badge" id="pairBadge">TEST/USDT</div>
+        <div style="flex:1"></div>
+        <div class="small" id="statusBadge">status: disconnected</div>
       </div>
 
-      <div class="chart-wrap" id="chartWrap">
-        <canvas id="chart"></canvas>
-        <div class="legend" id="legend">شموع: 0 • SMA20: — • سيولة: —</div>
+      <div class="chart-wrap">
+        <div id="chart" style="width:100%;height:100%;min-height:420px"></div>
       </div>
 
-      <!-- محرر JS -->
-      <div class="bottom-editor" id="editorWrap" style="display:none">
-        <div style="display:flex;gap:8px;align-items:center">
-          <div class="small">محرّر JS: أكتب دالة تحلل المصفوفة ohlcv ثم ارجع مصفوفة إu0020شارات overlays</div>
-          <div style="margin-inline-start:auto;display:flex;gap:8px">
-            <button id="runCode" class="btn btn-primary">تشغيل</button>
-            <button id="closeEditor" class="btn">إخفاء</button>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div class="small">محرر المؤشرات (اكتب دالة run(ohlcv,helpers))</div>
+          <textarea id="editor" class="editor">// مثال:
+function run(ohlcv,helpers){
+  // simple SMA cross on close
+  const closes = ohlcv.map(b=>b.close);
+  const sma10 = helpers.sma(closes,10);
+  const sma30 = helpers.sma(closes,30);
+  const signals = [];
+  const last = ohlcv[ohlcv.length-1];
+  const idx = ohlcv.length-1;
+  if(sma10[idx] && sma30[idx]){
+    if(sma10[idx] > sma30[idx]){
+      signals.push({ time: last.time, position:'belowBar', color:'#22c55e', shape:'arrowUp', text:'BUY' });
+    }else if(sma10[idx] < sma30[idx]){
+      signals.push({ time: last.time, position:'aboveBar', color:'#ef4444', shape:'arrowDown', text:'SELL' });
+    }
+  }
+  return signals;
+}
+</textarea>
+          <div style="display:flex;gap:8px">
+            <button id="runBtn">تشغيل الكود (على آخر N)</button>
+            <button id="saveIndicator">حفظ المؤشر</button>
+            <button id="clearMarkers">إخفاء الإشارات</button>
+            <button id="exportPng">تصدير صورة</button>
           </div>
         </div>
-        <textarea id="codeArea">// مثال: return overlays = [{type:'signal',time:ohlcv[ohlcv.length-1].t,price:ohlcv[ohlcv.length-1].c,pos:'below',text:'BUY',color:'#00ff66'}];\n// المتغيرات المتاحة: ohlcv (array), api (helpers object)\n// يجب أن تقوم الدالة بإرجاع مصفوفة overlays</textarea>
-      </div>
-    </main>
-  </div>
 
-  <!-- مودال اضافة رموز -->
-  <div class="modal" id="symbolsModal">
-    <div class="box">
-      <h4>إضافة رمز</h4>
-      <input id="symbolSearch" placeholder="ابحث أو اكتب رمز (مثال: OTC/A)" />
-      <div class="symbols-list" id="symbolsList">
-        <!-- سيتم ملؤها ديناميكياً -->
+        <div style="width:340px;background:var(--panel);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px">
+          <div class="small">معاينات</div>
+          <div id="markerPreview" style="min-height:120px;background:#071022;padding:8px;border-radius:6px;overflow:auto"></div>
+          <div class="small">حفظ / تحميل إشارات (محلياً)</div>
+          <div style="display:flex;gap:8px"><button id="downloadSignals">تنزيل إشارات</button><button id="uploadSignals">رفع إشارات</button></div>
+        </div>
       </div>
-      <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-start">
-        <button id="closeSymbols" class="btn">إغلاق</button>
+
+      <div class="footer">
+        <div class="small">Quotex Pro — Starter</div>
+        <div style="flex:1"></div>
+        <div class="small">© 2025</div>
       </div>
     </div>
   </div>
 
 <script>
-/* ========= إعداد الواجهة ======== */
-const logoEl = document.getElementById('logo');
-// الشعار مضاف مسبقاً إلى الرابط الذي زودتني به
-// logoEl.src = 'https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high';
+// ----------------- Utilities & State -----------------
+const state = {
+  ohlcv: [],
+  lastBar: null,
+  ws: null,
+  playing: false,
+  worker: null,
+  symbol: 'TEST/USDT',
+  tf: 60,
+  barsOnScreen: 120,
+  tickSpeed: 2000,
+}
 
-const tfOptions = [
-  {label:'5s', v:5}, {label:'10s', v:10}, {label:'15s', v:15}, {label:'30s', v:30},
-  {label:'1m', v:60}, {label:'5m', v:300}, {label:'15m', v:900},{label:'30m', v:1800},
-  {label:'1h', v:3600}, {label:'4h', v:14400}, {label:'1d', v:86400}
-];
-const tfList = document.getElementById('tfList');
-let activeTF = 15;
-tfOptions.forEach(o=>{
-  const d = document.createElement('div'); d.className='tf-item'+(o.v===activeTF?' active':''); d.textContent=o.label;
-  d.addEventListener('click',()=>{ setTF(o.v); document.querySelectorAll('.tf-item').forEach(x=>x.classList.remove('active')); d.classList.add('active');});
-  tfList.appendChild(d);
+const logEl = document.getElementById('logs');
+function log(...args){ const s = args.join(' '); console.log(...args); logEl.textContent = (new Date()).toLocaleTimeString() + ' | ' + s + '\n' + logEl.textContent }
+
+// ----------------- Chart Init -----------------
+const chartContainer = document.getElementById('chart');
+const chart = LightweightCharts.createChart(chartContainer, {
+  layout: { background: { color: '#071025' }, textColor: '#d8e7ff' },
+  rightPriceScale: { visible: true },
+  timeScale: { timeVisible: true, secondsVisible: true }
+});
+const candleSeries = chart.addCandlestickSeries({
+  upColor: '#22c55e', downColor: '#ef4444', borderVisible: true, wickUpColor: '#22c55e', wickDownColor: '#ef4444'
 });
 
-/* ========= Canvas chart engine ========= */
-const canvas = document.getElementById('chart');
-const ctx = canvas.getContext('2d');
-const wrap = document.getElementById('chartWrap');
-let dpr = window.devicePixelRatio || 1;
-function resizeCanvas(){
-  const rect = wrap.getBoundingClientRect();
-  canvas.width = Math.round(rect.width * dpr);
-  canvas.height = Math.round(rect.height * dpr);
-  canvas.style.width = rect.width + 'px';
-  canvas.style.height = rect.height + 'px';
+// keep markers
+let currentMarkers = [];
+function applyMarkers(markers){
+  currentMarkers = markers.map(m=>({
+    time: m.time,
+    position: m.position || (m.pos==='below'?'belowBar':'aboveBar'),
+    color: m.color || (m.text && m.text.toLowerCase().includes('buy')? '#22c55e':'#ef4444'),
+    shape: m.shape || (m.position==='belowBar'?'arrowUp':'arrowDown'),
+    text: m.text || ''
+  }));
+  candleSeries.setMarkers(currentMarkers);
+  previewMarkers(currentMarkers);
 }
-window.addEventListener('resize',()=>{ dpr = window.devicePixelRatio||1; resizeCanvas(); draw(); });
-resizeCanvas();
+function previewMarkers(ms){ const el = document.getElementById('markerPreview'); el.textContent = JSON.stringify(ms.slice(-10), null, 2) }
 
-/* البيانات والبوت */
-let ohlcv = []; // {t,o,h,l,c,v}
-let currentBar = null;
-let symbol = 'BTC/USDT';
-let running = false;
-let tickIntervalMs = 200;
-let barsOnScreen = 140;
-let priceMin = 0, priceMax = 1; // نطاق العرض الحالي
-let followAuto = true;
-
-/* ضبط من الواجهة */
-document.getElementById('startBtn').addEventListener('click',startBot);
-document.getElementById('stopBtn').addEventListener('click',stopBot);
-document.getElementById('openEditorBtn').addEventListener('click',()=>{ document.getElementById('editorWrap').style.display='flex'; });
-document.getElementById('closeEditor').addEventListener('click',()=>{ document.getElementById('editorWrap').style.display='none'; });
-document.getElementById('runCode').addEventListener('click', runUserCode);
-document.getElementById('addSymbolBtn').addEventListener('click', ()=>{ document.getElementById('symbolsModal').style.display='flex'; populateSymbols(); });
-document.getElementById('closeSymbols').addEventListener('click', ()=>{ document.getElementById('symbolsModal').style.display='none'; });
-document.getElementById('barsOnScreen').addEventListener('change', e=>{ barsOnScreen = parseInt(e.target.value)||140; draw(); });
-document.getElementById('tickSpeed').addEventListener('change', e=>{ tickIntervalMs = parseInt(e.target.value)||200; if(running){ stopBot(); startBot(); } });
-document.getElementById('autoFollow').addEventListener('click', ()=>{ followAuto = !followAuto; document.getElementById('autoFollow').textContent = followAuto? 'Auto-follow' : 'Manual'; });
-
-const pairBadge = document.getElementById('pairBadge');
-const tfBadge = document.getElementById('tfBadge');
-const priceBadge = document.getElementById('priceBadge');
-const statusBadge = document.getElementById('statusBadge');
-const legend = document.getElementById('legend');
-
-function setTF(sec){
-  activeTF = sec;
-  tfBadge.textContent = 'TF: ' + (sec < 60 ? sec + 's' : (sec%3600===0 ? (sec/3600+'h') : (sec/60+'m')));
-  resetData(); // إعادة ضبط الشمعة الحالية
-}
-
-/* helper RNG */
-function RNG(seed){
-  let s = 0;
-  for(let i=0;i<(seed||'').length;i++) s = (s*31 + seed.charCodeAt(i))>>>0;
-  return ()=> (s = (s*1664525 + 1013904223)>>>0, s/2**32);
-}
-let rng = RNG('salaheedin');
-
-/* إنشاء شمعات أولية */
-function resetData(){
-  ohlcv = [];
-  currentBar = null;
-  priceMin = 0; priceMax = 1;
-  updateLegend();
-  draw();
-}
-
-/* بوت بسيط يولّد سعر مع ترند */
-let tickLoop = null;
-function startBot(){
-  if(running) return;
-  running = true; statusBadge.textContent='يعمل';
-  // init base price
-  let base = symbol.includes('BTC')?30000: symbol.includes('ETH')?2000: symbol.includes('GOLD')?2400: 1.0;
-  if(ohlcv.length===0){
-    // seed with some history
-    let t0 = Date.now() - activeTF*1000 * 200;
-    let p = base;
-    for(let i=0;i<80;i++){
-      const o = p;
-      p = p * (1 + (rng()-0.5)*0.01);
-      const c = p;
-      const h = Math.max(o,c) * (1 + Math.random()*0.002);
-      const l = Math.min(o,c) * (1 - Math.random()*0.002);
-      ohlcv.push({t: t0 + i*activeTF*1000, o, h, l, c, v: Math.random()*100});
-    }
-  }
-  if(!currentBar) {
-    currentBar = {t: Date.now(), o: ohlcv.length ? ohlcv[ohlcv.length-1].c : base, h:0,l:0,c:0,v:0};
-    currentBar.o = currentBar.o || base; currentBar.h = currentBar.o; currentBar.l = currentBar.o; currentBar.c = currentBar.o;
-  }
-  tickLoop = setInterval(()=>{ tick(); }, tickIntervalMs);
-}
-
-function stopBot(){
-  if(!running) return;
-  running = false; statusBadge.textContent='متوقف';
-  clearInterval(tickLoop);
-}
-
-/* tick: تحديث الشمعة الحالية تدريجياً */
-function tick(){
-  // حركة بطيئة تحاكي السوق
-  const dtFactor = tickIntervalMs/200;
-  const change = (rng()-0.5) * 0.002 * dtFactor;
-  currentBar.c = Math.max(0.00001, currentBar.c * (1 + change));
-  currentBar.h = Math.max(currentBar.h || currentBar.c, currentBar.c);
-  currentBar.l = (currentBar.l?Math.min(currentBar.l,currentBar.c):currentBar.c);
-  currentBar.v += Math.abs(change)*1000;
-
-  // إغلاق الشمعة عند انتهاء TF
-  const now = Date.now();
-  if(!currentBar.startTime) currentBar.startTime = now;
-  if(now - currentBar.startTime >= activeTF*1000){
-    currentBar.t = now;
-    ohlcv.push({...currentBar});
-    if(ohlcv.length > 5000) ohlcv.shift();
-    currentBar = {t: now, o: ohlcv[ohlcv.length-1].c, h:ohlcv[ohlcv.length-1].c, l:ohlcv[ohlcv.length-1].c, c:ohlcv[ohlcv.length-1].c, v:0};
-    // after close update overlays via user code (optional)
-    if(userOverlaysFn) try{ userOverlays = userOverlaysFn(ohlcv, helpers) || []; }catch(e){ console.error('user overlays error',e); }
-  }
-  // adjust visible price window smoothly (Auto Y-Shift)
-  adjustPriceWindow();
-  // update UI
-  priceBadge.textContent = 'السعر: ' + currentBar.c.toFixed(4);
-  updateLegend();
-  draw();
-}
-
-/* Auto Y-Shift logic: if price goes outside current [min,max] we shift window rather than rescale fully */
-let displayMin = 0, displayMax = 1;
-function adjustPriceWindow(){
-  const visible = getVisibleBars();
-  if(visible.length===0) return;
-  const arr = visible.concat(currentBar? [currentBar] : []);
-  const vmin = Math.min(...arr.map(b=>b.l));
-  const vmax = Math.max(...arr.map(b=>b.h));
-  if(displayMin===displayMax){ displayMin = vmin - 1; displayMax = vmax + 1; }
-  const margin = (displayMax - displayMin) * 0.12;
-  let targetMin = displayMin, targetMax = displayMax;
-  if(vmax > displayMax - margin) {
-    const shift = vmax - (displayMax - margin);
-    targetMin += shift; targetMax += shift;
-  }
-  if(vmin < displayMin + margin) {
-    const shift = (displayMin + margin) - vmin;
-    targetMin -= shift; targetMax -= shift;
-  }
-  const needExpandTop = vmax > targetMax;
-  const needExpandBottom = vmin < targetMin;
-  if(needExpandTop || needExpandBottom){
-    targetMin = Math.min(targetMin, vmin - margin);
-    targetMax = Math.max(targetMax, vmax + margin);
-  }
-  const alpha = 0.25;
-  displayMin = displayMin + (targetMin - displayMin) * alpha;
-  displayMax = displayMax + (targetMax - displayMax) * alpha;
-}
-
-/* get visible bars */
-function getVisibleBars(){
-  const total = ohlcv.length;
-  const start = Math.max(0, total - barsOnScreen);
-  return ohlcv.slice(start);
-}
-
-/* draw function */
-function draw(){
-  const w = canvas.width, h = canvas.height;
-  ctx.clearRect(0,0,w,h);
-  // background
-  ctx.fillStyle = '#060a11';
-  ctx.fillRect(0,0,w,h);
-  // grid horizontal
-  ctx.strokeStyle = '#0f2330'; ctx.lineWidth = 1 * dpr;
-  const gridLines = 6;
-  for(let i=0;i<=gridLines;i++){
-    const y = (i/(gridLines)) * h;
-    ctx.beginPath(); ctx.moveTo(60*dpr, y); ctx.lineTo(w - 20*dpr, y); ctx.stroke();
-  }
-  // axes price labels
-  ctx.fillStyle = '#9bb0c6'; ctx.font = (12 * dpr) + 'px sans-serif';
-  for(let i=0;i<=gridLines;i++){
-    const p = displayMax - (displayMax - displayMin)*(i/gridLines);
-    const y = (i/(gridLines)) * h;
-    ctx.fillText(p.toFixed(4), 6 * dpr, y+4*dpr);
-  }
-  // draw candles
-  const slice = getVisibleBars();
-  const n = slice.length;
-  const areaW = w - (60*dpr) - 20*dpr;
-  const step = areaW / Math.max(1, barsOnScreen);
-  const candleW = Math.max(1 * dpr, step * 0.7);
-  for(let i=0;i<barsOnScreen;i++){
-    const idx = Math.max(0, ohlcv.length - barsOnScreen + i);
-    const b = ohlcv[idx];
-    const x = 60*dpr + i * step;
-    if(!b) continue;
-    drawCandleAt(b, x, candleW, step);
-  }
-  // draw currentBar at the end if followAuto
-  if(currentBar){
-    const i = Math.min(barsOnScreen-1, Math.max(0, barsOnScreen-1));
-    const x = 60*dpr + i * step;
-    drawCandleAt(currentBar, x, candleW, step, true);
-  }
-  // draw user overlays (signals)
-  if(userOverlays && userOverlays.length){
-    userOverlays.forEach(s=>{
-      if(s.type==='signal'){
-        const idx = findBarIndexByTime(s.time);
-        if(idx===-1) return;
-        const rel = idx - Math.max(0, ohlcv.length - barsOnScreen);
-        if(rel<0 || rel>=barsOnScreen) return;
-        const x = 60*dpr + rel * step;
-        const py = priceToY(s.price !== undefined ? s.price : (ohlcv[idx].c));
-        drawSignal(x, py, s);
-      }
-    });
-  }
-}
-
-/* draw a candle */
-function drawCandleAt(b, x, wC, step, isCurrent=false){
-  const top = priceToY(b.h), bottom = priceToY(b.l);
-  const openY = priceToY(b.o), closeY = priceToY(b.c);
-  const up = b.c >= b.o;
-  ctx.strokeStyle = up ? '#11a86a' : '#d93b44';
-  ctx.fillStyle = up ? '#00d36f' : '#ff4d4f';
-  // wick
-  ctx.lineWidth = Math.max(1, 1 * dpr);
-  ctx.beginPath(); ctx.moveTo(x + wC/2, top); ctx.lineTo(x + wC/2, bottom); ctx.stroke();
-  // body
-  const bodyX = x + (-wC/2);
-  const bodyY = Math.min(openY, closeY);
-  const bodyH = Math.max(1, Math.abs(openY - closeY));
-  ctx.fillRect(bodyX, bodyY, wC, bodyH);
-}
-
-/* small offset to center rectangles at integer pixels */
-function stepOffset(wC){ return -wC/2; }
-
-function priceToY(price){
-  const h = canvas.height;
-  const t = (displayMax - price) / (displayMax - displayMin || 1);
-  return t * h;
-}
-
-/* find bar index by time (closest) */
-function findBarIndexByTime(time){
-  if(!time) return -1;
-  let best = -1, bestDiff = Infinity;
-  for(let i=0;i<ohlcv.length;i++){
-    const d = Math.abs((ohlcv[i].t || 0) - time);
-    if(d < bestDiff){ bestDiff = d; best = i; }
-  }
-  return best;
-}
-
-/* draw signal */
-function drawSignal(x,y,s){
-  const size = 12 * dpr;
-  ctx.fillStyle = s.color || (s.text && s.text.toUpperCase().includes('BUY') ? '#00d36f' : '#ff4d4f');
-  ctx.strokeStyle = '#07111a';
-  ctx.lineWidth = 1 * dpr;
-  ctx.beginPath();
-  if(s.pos === 'below'){
-    ctx.arc(x, y + 14*dpr, size*0.6, 0, Math.PI*2);
-    ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#07111a'; ctx.font = (9*dpr) + 'px sans-serif'; ctx.textAlign='center'; ctx.fillText(s.text || 'BUY', x, y + 18*dpr);
-  } else {
-    ctx.beginPath();
-    ctx.moveTo(x - size*0.7, y - 10*dpr);
-    ctx.lineTo(x, y - (20*dpr));
-    ctx.lineTo(x + size*0.7, y - 10*dpr);
-    ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#07111a'; ctx.font = (9*dpr) + 'px sans-serif'; ctx.textAlign='center'; ctx.fillText(s.text || 'SELL', x, y - 22*dpr);
-  }
-}
-
-/* helpers available to user code */
+// ----------------- Helpers for user indicators -----------------
 const helpers = {
-  findBarIndexByTime,
-  priceToY,
-  // simple SMA
-  sma: (arr, period) => {
-    const res = [];
-    for(let i=0;i<arr.length;i++){
-      if(i+1<period) res.push(null);
-      else{
-        let s=0; for(let k=i+1-period;k<=i;k++) s+=arr[k].c;
-        res.push(s/period);
-      }
-    }
-    return res;
-  }
+  sma: (arr,period)=>{
+    const out = new Array(arr.length).fill(null);
+    let sum=0; for(let i=0;i<arr.length;i++){
+      sum += arr[i]; if(i>=period) sum -= arr[i-period];
+      if(i>=period-1) out[i] = sum/period;
+    } return out;
+  },
+  ema: (arr,period)=>{
+    const out = new Array(arr.length).fill(null);
+    const k = 2/(period+1); let prev=null; for(let i=0;i<arr.length;i++){ if(prev===null){ prev=arr[i]; out[i]=arr[i]; } else { prev = arr[i]*k + prev*(1-k); out[i]=prev } } return out;
+  },
+  rsi: (arr, period)=>{
+    const out = new Array(arr.length).fill(null);
+    let gains=0, losses=0; for(let i=1;i<arr.length;i++){
+      const change = arr[i]-arr[i-1]; if(i<=period){ if(change>0) gains+=change; else losses+=Math.abs(change); if(i===period){ const rs = gains/losses; out[i]=100 - (100/(1+rs)); }} else { const change = arr[i]-arr[i-1]; gains = (gains*(period-1) + Math.max(0,change))/period; losses = (losses*(period-1) + Math.max(0,-change))/period; const rs = losses===0? 100 : gains/losses; out[i] = 100 - (100/(1+rs)); }} return out;
+  },
+  findBarIndexByTime: (time)=> state.ohlcv.findIndex(b=>b.time===time)
 };
 
-/* user overlays (from editor) */
-let userOverlays = [];
-let userOverlaysFn = null;
+// ----------------- Web Worker Sandbox (via Blob) -----------------
+function createWorkerFromCode(userCode){
+  // worker script: receives {cmd:'run', ohlcv, helpers} and must postMessage {type:'signals', signals}
+  const workerSrc = `
+    self.onmessage = function(e){
+      const data = e.data;
+      if(data.cmd==='run'){
+        try{
+          const ohlcv = data.ohlcv;
+          // recreate helpers but only numeric functions
+          const helpers = {
+            sma: ${helpers.sma.toString()},
+            ema: ${helpers.ema.toString()},
+            rsi: ${helpers.rsi.toString()},
+            findBarIndexByTime: ${helpers.findBarIndexByTime.toString()}
+          };
+          // user code
+          ${userCode}
+          if(typeof run !== 'function') throw new Error('run function not found');
+          // execute with timeout guard
+          let finished=false; const timeout = setTimeout(()=>{ if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
+          const res = run(ohlcv,helpers);
+          finished=true; clearTimeout(timeout);
+          postMessage({type:'signals', signals: res});
+        }catch(err){ postMessage({type:'error', message: err.message}); }
+      }
+    }
+  `;
+  const blob = new Blob([workerSrc], { type: 'application/javascript' });
+  const url = URL.createObjectURL(blob);
+  return new Worker(url);
+}
 
-/* run user JS code safely (simple sandbox) */
-function runUserCode(){
-  const code = document.getElementById('codeArea').value;
+// ----------------- WS client with fallback simulator -----------------
+const wsUrl = 'ws://localhost:8081';
+let reconnectTimer = null;
+function connectWS(){
   try{
-    const fn = new Function('ohlcv','helpers','api', '"use strict";\n' + code);
-    const out = fn(ohlcv, helpers, {});
-    if(Array.isArray(out)) userOverlays = out;
-    else userOverlays = [];
-    userOverlaysFn = function(ohlcvArg, helpersArg){
-      try{ const result = fn(ohlcvArg, helpersArg, {}); return Array.isArray(result)? result : []; } catch(e){ console.error('user code runtime error',e); return []; }
-    };
-    document.getElementById('editorWrap').style.display='none';
-    draw();
-  }catch(e){
-    alert('خطأ في الكود: ' + (e && e.message ? e.message : e));
-    console.error(e);
-  }
+    const ws = new WebSocket(wsUrl);
+    state.ws = ws;
+    ws.onopen = ()=>{ document.getElementById('statusBadge').textContent='status: connected'; log('WS connected'); }
+    ws.onmessage = (ev)=>{ try{ const msg = JSON.parse(ev.data); if(msg.type==='history'){ setHistory(msg.data); } else if(msg.type==='update'){ onIncomingBar(msg.data); } }catch(e){ log('ws parse err', e.message) } }
+    ws.onclose = ()=>{ document.getElementById('statusBadge').textContent='status: disconnected'; log('WS closed — fallback to simulator'); scheduleReconnect(); }
+    ws.onerror = (e)=>{ log('WS error', e.message); ws.close(); }
+  }catch(e){ log('ws start failed', e.message); scheduleReconnect(); }
+}
+function scheduleReconnect(){ if(reconnectTimer) return; reconnectTimer = setTimeout(()=>{ reconnectTimer=null; connectWS(); }, 3000); }
+
+// fallback internal simulator
+let simInterval = null;
+function startSimulator(){ stopSimulator(); state.ohlcv = []; const now = Math.floor(Date.now()/1000) - state.barsOnScreen*state.tf; let last={time:now,open:100,high:100,low:100,close:100,volume:0}; const hist=[]; for(let i=0;i<state.barsOnScreen;i++){ last = genNextBar(last, state.tf); hist.push(last); } setHistory(hist); simInterval = setInterval(()=>{ const next = genNextBar(state.ohlcv[state.ohlcv.length-1], state.tf); onIncomingBar(next); }, state.tickSpeed); }
+function stopSimulator(){ if(simInterval) clearInterval(simInterval); simInterval=null; }
+function genNextBar(prev, tf){ const open = prev.close; const change = (Math.random()-0.5) * 0.02 * open; const close = +(open + change).toFixed(6); const high = +(Math.max(open, close) + Math.random()*0.002*open).toFixed(6); const low = +(Math.min(open, close) - Math.random()*0.002*open).toFixed(6); const time = prev.time + tf; return { time, open, high, low, close, volume: Math.floor(Math.random()*1000) } }
+
+// ----------------- Data flow -----------------
+function setHistory(hist){ state.ohlcv = hist.slice(); candleSeries.setData(hist.map(b=>({time:b.time,open:b.open,high:b.high,low:b.low,close:b.close}))); state.lastBar = hist[hist.length-1]; }
+function onIncomingBar(bar){ // decide update vs append
+  const last = state.ohlcv[state.ohlcv.length-1];
+  if(!last || bar.time > last.time){ state.ohlcv.push(bar); state.lastBar = bar; if(state.ohlcv.length > 5000) state.ohlcv.shift(); candleSeries.update(bar); }
+  else if(bar.time === last.time){ state.ohlcv[state.ohlcv.length-1] = bar; candleSeries.update(bar); state.lastBar = bar; }
+  // after update, run worker on last N (simulate run on close as required)
+  if(state.playing){ runUserCodeOnLatest(); }
 }
 
-/* ========== Pan & Zoom ========== */
-let isPanning=false, panStartX=0, panStartIndexOffset=0;
-let indexOffset = 0; // currently unused but kept for future precise pan
+// ----------------- Run user code -----------------
+function runUserCodeOnLatest(){ try{
+  const code = document.getElementById('editor').value;
+  if(state.worker){ state.worker.terminate(); state.worker=null; }
+  state.worker = createWorkerFromCode(code);
+  state.worker.onmessage = (e)=>{
+    if(e.data.type==='signals'){ applyMarkers(e.data.signals || []); }
+    else if(e.data.type==='error'){ log('Worker error', e.data.message); }
+  };
+  state.worker.postMessage({ cmd:'run', ohlcv: state.ohlcv.slice(-Math.max(300, state.barsOnScreen)) });
+}catch(err){ log('run err', err.message) }}
 
-wrap.addEventListener('wheel',(e)=>{
-  e.preventDefault();
-  if(e.ctrlKey){
-    // vertical zoom? ignore
-  } else {
-    const delta = e.deltaY > 0 ? 1.12 : 0.88;
-    barsOnScreen = Math.min(800, Math.max(20, Math.round(barsOnScreen * delta)));
-    document.getElementById('barsOnScreen').value = barsOnScreen;
-    draw();
-  }
-},{passive:false});
+// ----------------- UI wiring -----------------
+document.getElementById('playBtn').onclick = ()=>{
+  if(state.playing) return; state.playing=true; document.getElementById('playBtn').textContent='قيد التشغيل'; log('start');
+  // try to connect WS; if not connected, start simulator
+  connectWS(); setTimeout(()=>{ if(!state.ws || state.ws.readyState!==1){ startSimulator(); } }, 500);
+};
+document.getElementById('stopBtn').onclick = ()=>{ state.playing=false; document.getElementById('playBtn').textContent='تشغيل'; stopSimulator(); if(state.ws){ state.ws.close(); state.ws=null } log('stopped'); };
 
-wrap.addEventListener('mousedown',(e)=>{
-  isPanning=true; panStartX = e.clientX; panStartIndexOffset = indexOffset;
-  wrap.style.cursor='grabbing';
-});
-window.addEventListener('mouseup',()=>{ isPanning=false; wrap.style.cursor='default'; });
-window.addEventListener('mousemove',(e)=>{
-  if(!isPanning) return;
-  const dx = e.clientX - panStartX;
-  const moveBars = Math.round(-dx / 20);
-  indexOffset = Math.max(0, panStartIndexOffset + moveBars);
-  draw();
-});
+document.getElementById('tfSelect').onchange = (e)=>{ state.tf = Number(e.target.value); log('tf', state.tf); };
+document.getElementById('symbolSelect').onchange = (e)=>{ state.symbol = e.target.value; document.getElementById('pairBadge').textContent = state.symbol };
+document.getElementById('tickSpeed').onchange = (e)=>{ state.tickSpeed = Number(e.target.value); if(simInterval){ stopSimulator(); startSimulator(); } };
+document.getElementById('barsOnScreen').onchange = (e)=>{ state.barsOnScreen = Number(e.target.value); };
 
-/* zoom buttons */
-document.getElementById('zoomIn').addEventListener('click', ()=>{ barsOnScreen = Math.max(20, Math.round(barsOnScreen*0.8)); document.getElementById('barsOnScreen').value = barsOnScreen; draw();});
-document.getElementById('zoomOut').addEventListener('click', ()=>{ barsOnScreen = Math.min(800, Math.round(barsOnScreen*1.2)); document.getElementById('barsOnScreen').value = barsOnScreen; draw();});
-document.getElementById('resetView').addEventListener('click', ()=>{ barsOnScreen = 140; document.getElementById('barsOnScreen').value = barsOnScreen; displayMin = Math.min(...(ohlcv.map(b=>b.l).length? ohlcv.map(b=>b.l):[0])) - 1; displayMax = Math.max(...(ohlcv.map(b=>b.h).length? ohlcv.map(b=>b.h):[1])) + 1; draw(); });
+document.getElementById('runBtn').onclick = ()=>{ runUserCodeOnLatest(); };
+document.getElementById('clearMarkers').onclick = ()=>{ applyMarkers([]); };
 
-/* symbols modal populate */
-const sampleSymbols = ['BTC/USDT','ETH/USDT','XRP/USDT','BCH/USDT','LTC/USDT','EUR/USD','USD/JPY','GOLD/USD','OTC/A','OTC/B','ABC/OTC'];
-function populateSymbols(){
-  const list = document.getElementById('symbolsList'); list.innerHTML = '';
-  sampleSymbols.forEach(s=>{
-    const el = document.createElement('div'); el.style.padding='6px'; el.style.borderBottom='1px solid #07202a';
-    el.style.cursor='pointer'; el.textContent = s;
-    el.addEventListener('click', ()=>{ symbol = s; pairBadge.textContent = s; document.getElementById('symbolsModal').style.display='none'; resetData(); });
-    list.appendChild(el);
-  });
-  const input = document.getElementById('symbolSearch');
-  input.value = '';
-  input.onkeydown = (e)=>{ if(e.key==='Enter'){ const val = input.value.trim(); if(val){ symbol = val; pairBadge.textContent = val; document.getElementById('symbolsModal').style.display='none'; resetData(); } } };
-}
+// save/load settings locally
+document.getElementById('saveProfile').onclick = ()=>{ const payload = { symbol:state.symbol, tf:state.tf, tickSpeed: state.tickSpeed, barsOnScreen: state.barsOnScreen, indicator: document.getElementById('editor').value }; localStorage.setItem('quotex_pro_profile', JSON.stringify(payload)); log('profile saved'); };
+document.getElementById('loadProfile').onclick = ()=>{ const p = localStorage.getItem('quotex_pro_profile'); if(!p) return log('no profile'); const cfg = JSON.parse(p); document.getElementById('symbolSelect').value = cfg.symbol; document.getElementById('tfSelect').value = cfg.tf; document.getElementById('tickSpeed').value = cfg.tickSpeed; document.getElementById('barsOnScreen').value = cfg.barsOnScreen; document.getElementById('editor').value = cfg.indicator; log('profile loaded'); };
 
-/* legend update */
-function updateLegend(){
-  const smaArr = helpers.sma(ohlcv,20);
-  const sma20 = smaArr.length? smaArr[smaArr.length-1] : null;
-  legend.textContent = 'شموع: ' + (ohlcv.length) + ' • SMA20: ' + (sma20? sma20.toFixed(4): '—') + ' • سيولة: — • Bars: ' + barsOnScreen;
-}
+// export CSV
+document.getElementById('exportCsv').onclick = ()=>{
+  const csv = ['time,open,high,low,close,volume', ...state.ohlcv.map(b=>`${b.time},${b.open},${b.high},${b.low},${b.close},${b.volume}`)].join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ohlcv.csv'; a.click(); URL.revokeObjectURL(url);
+};
 
-/* init */
-resetData();
-draw();
+// export PNG
+document.getElementById('exportPng').onclick = async ()=>{
+  const img = await chart.takeScreenshot(); const a=document.createElement('a'); a.href=img; a.download='chart.png'; a.click(); };
 
-/* export (optional) */
+// download signals
+document.getElementById('downloadSignals').onclick = ()=>{ const data = JSON.stringify(currentMarkers); const blob = new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='signals.json'; a.click(); };
+
+// initial small history
+(function init(){ const now = Math.floor(Date.now()/1000); let last={time:now - 60*120, open:100,high:100,low:100,close:100,volume:0}; const hist=[]; for(let i=0;i<120;i++){ last = genNextBar(last, 60); hist.push(last); } setHistory(hist); })();
+
+// make chart responsive
+window.addEventListener('resize', ()=> chart.applyOptions({}));
+
+log('Quotex Pro Starter loaded');
 </script>
+
+<!--
+================ ws-server.js (backend simulator) ================
+Node.js WebSocket server (ws). Save as ws-server.js
+Run: npm install ws express
+node ws-server.js
+
+This server sends a 'history' message once, then periodically 'update' messages.
+--> 
+
+<details>
+<summary style="cursor:pointer;margin-top:12px;color:var(--muted)">ws-server.js (click to expand)</summary>
+
+```js
+// ws-server.js
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8081 });
+console.log('WS server listening on :8081');
+
+function genNextBar(prev, tfSeconds){
+  const open = prev.close;
+  const change = (Math.random()-0.5) * 0.02 * open;
+  const close = +(open + change).toFixed(6);
+  const high = +(Math.max(open, close) + Math.random()*0.002*open).toFixed(6);
+  const low = +(Math.min(open, close) - Math.random()*0.002*open).toFixed(6);
+  const time = prev.time + tfSeconds;
+  return { time, open, high, low, close, volume: Math.floor(Math.random()*1000) };
+}
+
+wss.on('connection', ws => {
+  console.log('client connected');
+  let last = { time: Math.floor(Date.now()/1000) - 3600, open: 100, high:100, low:100, close:100, volume:0 };
+  const hist = [];
+  for(let i=0;i<120;i++){ last = genNextBar(last, 60); hist.push(last); }
+  ws.send(JSON.stringify({ type:'history', data: hist }));
+
+  const interval = setInterval(()=>{
+    last = genNextBar(last, 60);
+    if(ws.readyState===WebSocket.OPEN){ ws.send(JSON.stringify({ type:'update', data: last })); }
+  }, 2000);
+
+  ws.on('close', ()=>{ clearInterval(interval); console.log('client disconnected'); });
+});
+
+```
+</details>
+
+
+<!--
+README.md (short)
+-->
+
+<details>
+<summary style="cursor:pointer;color:var(--muted)">README.md (click to expand)</summary>
+
+```
+# Quotex Pro - Starter
+
+## Included
+- index.html (single-file frontend)
+- ws-server.js (Node.js simulator)
+
+## Run locally
+1. Backend (optional):
+   - Install Node & npm
+   - npm init -y
+   - npm i ws
+   - node ws-server.js
+
+2. Frontend:
+   - Open index.html in a browser (or serve with `npx http-server .`)
+   - Click "تشغيل" to start. If ws-server is running, frontend will connect; otherwise it uses internal simulator.
+
+## Notes
+- User indicator code runs inside a Web Worker (sandboxed). Execution timeout is 500ms.
+- OHLCV format uses unix seconds.
+- Save/load settings use localStorage for now. Extend backend API (Express + DB) to persist.
+
+## To do (next)
+- Add Express REST endpoints for indicators, profiles (with JWT auth)
+- Use real-market WebSocket feeds
+- Implement server-side sandbox for heavier user-code
+- Dockerize backend + nginx reverse proxy
+```
+</details>
+
 </body>
 </html>
