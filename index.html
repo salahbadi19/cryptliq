@@ -3,36 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Quotex Pro — Starter</title>
+  <title>Quotex Pro</title>
   <link rel="icon" href="https://i.imgur.com/5nHaOsf_d.jpeg" />
   <style>
-    /* Tailwind-like minimal styles */
-    :root{
-      --bg:#0b1020;
-      --panel:#0f1724;
-      --muted:#94a3b8;
-      --accent:#22c55e;
-      --danger:#ef4444;
-      --glass:rgba(255,255,255,0.03);
+    :root {
+      --bg: #0b1020;
+      --panel: #0f1724;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --danger: #ef4444;
+      --glass: rgba(255,255,255,0.03);
       --header-height: 60px;
       --footer-height: 60px;
     }
-    html,body{
-      height:100%;
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:#e6eef8;
-      font-family:Inter, system-ui, sans-serif;
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: #e6eef8;
+      font-family: 'Inter', system-ui, sans-serif;
       overflow: hidden;
     }
-    .app{
-      display:flex;
+    .app {
+      display: flex;
       flex-direction: column;
-      height:100vh;
+      height: 100vh;
     }
 
-    /* Header */
+    /* === الشريط العلوي (الشعار + الاسم + الزوج) === */
     .header {
       height: var(--header-height);
       background: var(--panel);
@@ -55,9 +54,10 @@
       margin-right: auto;
       font-size: 1.1rem;
       color: #60d394;
+      font-weight: 500;
     }
 
-    /* Chart */
+    /* === منطقة الشارت === */
     .chart-wrap {
       flex: 1;
       background: linear-gradient(180deg, #071025 0%, #081428 100%);
@@ -66,7 +66,7 @@
       margin: 0 8px;
     }
 
-    /* Footer Icons */
+    /* === الأيقونات السفلية === */
     .footer-icons {
       height: var(--footer-height);
       background: var(--panel);
@@ -92,7 +92,7 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* Timeframe Popup */
+    /* === قائمة الفريمات المنبثقة === */
     .tf-popup {
       position: fixed;
       bottom: 80px;
@@ -120,11 +120,16 @@
       cursor: pointer;
       font-size: 14px;
     }
+    .tf-popup button[selected] {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      font-weight: 600;
+    }
     .tf-popup button:hover {
       background: rgba(255,255,255,0.05);
     }
 
-    /* Desktop View: Sidebar */
+    /* === لوحة الكمبيوتر (تختفي على الجوال) === */
     .sidebar {
       width: 300px;
       background: var(--panel);
@@ -172,38 +177,35 @@
       background: rgba(255,255,255,0.03);
     }
 
-    /* Mobile: Hide sidebar on small screens */
+    /* === التبديل بين الجوال والكمبيوتر === */
     @media (max-width: 900px) {
-      .sidebar { display: none; }
-      .app { flex-direction: column; }
-      .header, .footer-icons { display: flex; }
-      .chart-wrap { margin: 8px; }
+      .sidebar, .main { display: none !important; }
+      .app { display: flex; }
     }
-
-    /* Desktop: Hide mobile header/footer */
     @media (min-width: 901px) {
       .header, .footer-icons, .tf-popup { display: none !important; }
-      .main { flex-direction: column; }
+      .sidebar, .main { display: flex; }
     }
   </style>
+  <!-- مكتبة الرسم البياني -->
   <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
-  <!-- Mobile Layout -->
+  <!-- ========== واجهة الجوال ========== -->
   <div class="app">
-    <!-- Header (Mobile) -->
+    <!-- الشريط العلوي -->
     <div class="header">
       <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" />
       <h3>Quotex Pro</h3>
       <div class="pair" id="mobilePair">TEST/USDT</div>
     </div>
 
-    <!-- Chart -->
+    <!-- منطقة الشارت -->
     <div class="chart-wrap">
-      <div id="chart" style="width:100%;height:100%;min-height:420px"></div>
+      <div id="chart" style="width:100%;height:100%"></div>
     </div>
 
-    <!-- Footer Icons (Mobile) -->
+    <!-- الأيقونات السفلية -->
     <div class="footer-icons">
       <div class="icon-btn" id="tfBtn">🕒</div>
       <div class="icon-btn" id="playBtn">▶️</div>
@@ -211,18 +213,18 @@
       <div class="icon-btn" id="editBtn">✏️</div>
     </div>
 
-    <!-- Timeframe Popup -->
+    <!-- قائمة الفريمات -->
     <div class="tf-popup" id="tfPopup">
       <button data-tf="5">5 ثواني</button>
       <button data-tf="15">15 ثانية</button>
-      <button data-tf="60">1 دقيقة</button>
+      <button data-tf="60" selected>1 دقيقة</button>
       <button data-tf="300">5 دقائق</button>
       <button data-tf="900">15 دقيقة</button>
     </div>
   </div>
 
-  <!-- Desktop Layout -->
-  <div class="sidebar" id="sidebar" style="display: none">
+  <!-- ========== واجهة الكمبيوتر ========== -->
+  <div class="sidebar" id="sidebar">
     <h3 style="margin:0;font-size:1.3rem;">Quotex Pro</h3>
     <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" style="width:40px;border-radius:6px;margin-top:6px">
 
@@ -248,9 +250,6 @@
       <button id="desktopStop">إيقاف</button>
     </div>
 
-    <div class="small">سرعة التيك (ms)</div>
-    <input id="tickSpeed" type="number" value="2000" />
-
     <div class="small">عدد الشموع على الشاشة</div>
     <input id="barsOnScreen" type="number" value="120" />
 
@@ -265,31 +264,32 @@
     <pre id="logs" style="height:120px;overflow:auto;background:#071022;padding:8px;border-radius:6px"></pre>
   </div>
 
-  <div class="main" style="display: none">
+  <div class="main">
     <div class="topbar">
       <div class="badge" id="pairBadge">TEST/USDT</div>
       <div style="flex:1"></div>
-      <div class="small" id="statusBadge">status: disconnected</div>
+      <div class="small" id="statusBadge">جاهز — يعمل تلقائيًا</div>
     </div>
 
     <div class="chart-wrap">
-      <div id="chart-desktop" style="width:100%;height:100%;min-height:420px;display:none"></div>
+      <div id="chart-desktop" style="width:100%;height:100%;display:none"></div>
     </div>
 
     <div style="display:flex;gap:10px">
       <div style="flex:1;display:flex;flex-direction:column;gap:6px">
         <div class="small">محرر المؤشرات</div>
-        <textarea id="editor" class="editor">// مثال:
-function run(ohlcv,helpers){
-  const closes = ohlcv.map(b=>b.close);
-  const sma10 = helpers.sma(closes,10);
-  const sma30 = helpers.sma(closes,30);
+        <textarea id="editor" class="editor">
+// مثال: تقاطع SMA
+function run(ohlcv, helpers){
+  const closes = ohlcv.map(b => b.close);
+  const sma10 = helpers.sma(closes, 10);
+  const sma30 = helpers.sma(closes, 30);
   const signals = [];
-  const last = ohlcv[ohlcv.length-1];
-  if(sma10[sma10.length-1] > sma30[sma30.length-1]){
-    signals.push({ time: last.time, position:'belowBar', color:'#22c55e', shape:'arrowUp', text:'BUY' });
-  } else if(sma10[sma10.length-1] < sma30[sma30.length-1]){
-    signals.push({ time: last.time, position:'aboveBar', color:'#ef4444', shape:'arrowDown', text:'SELL' });
+  const last = ohlcv[ohlcv.length - 1];
+  if (sma10[sma10.length-1] > sma30[sma30.length-1]) {
+    signals.push({ time: last.time, position: 'belowBar', color: '#22c55e', shape: 'arrowUp', text: 'BUY' });
+  } else if (sma10[sma10.length-1] < sma30[sma30.length-1]) {
+    signals.push({ time: last.time, position: 'aboveBar', color: '#ef4444', shape: 'arrowDown', text: 'SELL' });
   }
   return signals;
 }
@@ -319,13 +319,13 @@ function run(ohlcv,helpers){
     </div>
   </div>
 
+  <!-- ========== السكربت الرئيسي ========== -->
   <script>
-    // ----------------- State & Shared Elements -----------------
+    // --- الحالة ---
     const state = {
       ohlcv: [],
       lastBar: null,
-      ws: null,
-      playing: false,
+      playing: true,
       worker: null,
       symbol: 'TEST/USDT',
       tf: 60,
@@ -340,7 +340,7 @@ function run(ohlcv,helpers){
       logEl.textContent = (new Date()).toLocaleTimeString() + ' | ' + s + '\n' + logEl.textContent;
     }
 
-    // ----------------- Chart Init (Mobile & Desktop) -----------------
+    // --- الشارت ---
     const chart = LightweightCharts.createChart(document.getElementById('chart'), {
       layout: { background: { color: '#071025' }, textColor: '#d8e7ff' },
       rightPriceScale: { visible: true },
@@ -350,7 +350,7 @@ function run(ohlcv,helpers){
       upColor: '#22c55e', downColor: '#ef4444', borderVisible: true, wickUpColor: '#22c55e', wickDownColor: '#ef4444'
     });
 
-    // ----------------- Helpers & Worker -----------------
+    // --- وظائف مساعدة ---
     const helpers = {
       sma: (arr, period) => {
         const out = new Array(arr.length).fill(null);
@@ -396,6 +396,7 @@ function run(ohlcv,helpers){
       findBarIndexByTime: (time) => state.ohlcv.findIndex(b => b.time === time)
     };
 
+    // --- تشغيل الكود في Worker ---
     function createWorkerFromCode(userCode) {
       const workerSrc = `
         self.onmessage = function(e){
@@ -410,13 +411,14 @@ function run(ohlcv,helpers){
                 findBarIndexByTime: ${helpers.findBarIndexByTime.toString()}
               };
               ${userCode}
-              if(typeof run !== 'function') throw new Error('run function not found');
-              let finished=false;
-              const timeout = setTimeout(()=>{ if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
-              const res = run(ohlcv,helpers);
-              finished=true; clearTimeout(timeout);
+              if(typeof run !== 'function') throw new Error('الدالة run() غير موجودة');
+              let finished = false;
+              const timeout = setTimeout(() => { if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
+              const res = run(ohlcv, helpers);
+              finished = true;
+              clearTimeout(timeout);
               postMessage({type:'signals', signals: res});
-            }catch(err){ postMessage({type:'error', message: err.message}); }
+            } catch(err) { postMessage({type:'error', message: err.message}); }
           }
         }
       `;
@@ -425,6 +427,7 @@ function run(ohlcv,helpers){
       return new Worker(url);
     }
 
+    // --- تطبيق الإشارات ---
     function applyMarkers(markers) {
       const mapped = markers.map(m => ({
         time: m.time,
@@ -437,10 +440,9 @@ function run(ohlcv,helpers){
       document.getElementById('markerPreview').textContent = JSON.stringify(mapped.slice(-10), null, 2);
     }
 
-    // ----------------- Simulator & WS -----------------
-    const wsUrl = 'ws://localhost:8081';
+    // --- محاكاة الشموع ---
     let simInterval = null;
-    function startSimulator() {
+    function startAutoSimulation() {
       stopSimulator();
       state.ohlcv = [];
       const now = Math.floor(Date.now() / 1000) - state.barsOnScreen * state.tf;
@@ -451,6 +453,7 @@ function run(ohlcv,helpers){
         hist.push(last);
       }
       setHistory(hist);
+
       simInterval = setInterval(() => {
         const next = genNextBar(state.ohlcv[state.ohlcv.length - 1], state.tf);
         onIncomingBar(next);
@@ -480,125 +483,58 @@ function run(ohlcv,helpers){
         state.ohlcv[state.ohlcv.length - 1] = bar;
         candleSeries.update(bar);
       }
-      if (state.playing) runUserCodeOnLatest();
+      runUserCodeOnLatest(); // تشغيل المؤشر تلقائيًا
     }
 
+    // --- تشغيل الكود ---
     function runUserCodeOnLatest() {
       const code = document.getElementById('editor').value;
       if (state.worker) state.worker.terminate();
       state.worker = createWorkerFromCode(code);
       state.worker.onmessage = (e) => {
         if (e.data.type === 'signals') applyMarkers(e.data.signals || []);
-        else if (e.data.type === 'error') log('Worker error', e.data.message);
+        else if (e.data.type === 'error') log('خطأ', e.data.message);
       };
-      state.worker.postMessage({ cmd: 'run', ohlcv: state.ohlcv.slice(-Math.max(300, state.barsOnScreen)) });
+      state.worker.postMessage({ cmd: 'run', ohlcv: state.ohlcv.slice(-300) });
     }
 
-    // ----------------- UI Controls -----------------
-    // Mobile buttons
+    // --- واجهة المستخدم ---
     document.getElementById('tfBtn').onclick = () => {
-      const popup = document.getElementById('tfPopup');
-      popup.classList.toggle('active');
+      document.getElementById('tfPopup').classList.toggle('active');
     };
-    document.getElementById('playBtn').onclick = () => {
-      document.getElementById('playBtn').textContent = '▶️';
-      document.getElementById('stopBtn').textContent = '⏹️';
-      state.playing = true;
-      startSimulator();
-      log('تشغيل');
-    };
-    document.getElementById('stopBtn').onclick = () => {
-      state.playing = false;
-      stopSimulator();
-      log('إيقاف');
-    };
-    document.getElementById('editBtn').onclick = () => {
-      document.getElementById('editor').focus();
-    };
-
-    // Timeframe selection
     document.querySelectorAll('#tfPopup button').forEach(btn => {
       btn.onclick = () => {
         const tf = parseInt(btn.getAttribute('data-tf'));
         state.tf = tf;
+        document.querySelectorAll('#tfPopup button').forEach(b => b.removeAttribute('selected'));
+        btn.setAttribute('selected', '');
         document.getElementById('tfPopup').classList.remove('active');
-        startSimulator(); // إعادة التهيئة
-        log('تم تغيير الإطار الزمني إلى', tf, 'ثانية');
+        startAutoSimulation();
+        log('تم تغيير الإطار الزمني إلى ' + tf + 's');
       };
     });
 
-    // Symbol change
+    document.getElementById('editBtn').onclick = () => {
+      document.getElementById('editor').focus();
+    };
+
     document.getElementById('symbolSelect').onchange = (e) => {
       state.symbol = e.target.value;
       document.getElementById('pairBadge').textContent = e.target.value;
       document.getElementById('mobilePair').textContent = e.target.value;
     };
 
-    // Desktop buttons (sync with mobile)
-    document.getElementById('desktopPlay').onclick = () => document.getElementById('playBtn').click();
-    document.getElementById('desktopStop').onclick = () => document.getElementById('stopBtn').click();
-
-    // Run, clear, export
     document.getElementById('runBtn').onclick = runUserCodeOnLatest;
     document.getElementById('clearMarkers').onclick = () => applyMarkers([]);
 
-    // Save/Load
-    document.getElementById('saveProfile').onclick = () => {
-      localStorage.setItem('quotex_pro_profile', JSON.stringify({
-        symbol: state.symbol, tf: state.tf, tickSpeed: state.tickSpeed, barsOnScreen: state.barsOnScreen, indicator: document.getElementById('editor').value
-      }));
-      log('تم حفظ الإعدادات');
-    };
-    document.getElementById('loadProfile').onclick = () => {
-      const p = localStorage.getItem('quotex_pro_profile');
-      if (!p) return log('لا توجد إعدادات محفوظة');
-      const cfg = JSON.parse(p);
-      document.getElementById('symbolSelect').value = cfg.symbol;
-      document.getElementById('tfSelect').value = cfg.tf;
-      document.getElementById('tickSpeed').value = cfg.tickSpeed;
-      document.getElementById('barsOnScreen').value = cfg.barsOnScreen;
-      document.getElementById('editor').value = cfg.indicator;
-      state.symbol = cfg.symbol;
-      state.tf = cfg.tf;
-      document.getElementById('mobilePair').textContent = cfg.symbol;
-      log('تم تحميل الإعدادات');
-    };
+    // --- التشغيل التلقائي ---
+    window.addEventListener('load', () => {
+      startAutoSimulation();
+      log('Quotex Pro — تشغيل تلقائي للشموع');
+    });
 
-    // Export
-    document.getElementById('exportCsv').onclick = () => {
-      const csv = ['time,open,high,low,close,volume', ...state.ohlcv.map(b => `${b.time},${b.open},${b.high},${b.low},${b.close},${b.volume}`)].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ohlcv.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    document.getElementById('exportPng').onclick = async () => {
-      const img = await chart.takeScreenshot();
-      const a = document.createElement('a');
-      a.href = img;
-      a.download = 'chart.png';
-      a.click();
-    };
-
-    // Initial data
-    (function init() {
-      const now = Math.floor(Date.now() / 1000);
-      let last = { time: now - 60 * 120, open: 100, high: 100, low: 100, close: 100, volume: 0 };
-      const hist = [];
-      for (let i = 0; i < 120; i++) {
-        last = genNextBar(last, 60);
-        hist.push(last);
-      }
-      setHistory(hist);
-    })();
-
-    // Responsive
+    // --- استجابة التغيير في حجم الشاشة ---
     window.addEventListener('resize', () => chart.applyOptions({}));
-    log('Quotex Pro محمل');
   </script>
 </body>
 </html>
