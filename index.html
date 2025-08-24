@@ -107,63 +107,6 @@
             color: white;
         }
 
-        .indicators-section {
-            margin-bottom: 20px;
-        }
-
-        .indicators-header {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
-        .indicators-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .indicator-item {
-            padding: 10px 12px;
-            background-color: #334155;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-
-        .indicator-item:hover {
-            background-color: #475569;
-        }
-
-        .indicator-item.active {
-            background-color: #10b981;
-            color: white;
-        }
-
-        .indicator-toggle {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .indicator-item.active .indicator-toggle {
-            background-color: white;
-            color: #10b981;
-            opacity: 1;
-        }
-
         /* Main Content */
         .main-content {
             flex: 1;
@@ -218,8 +161,9 @@
             margin-top: 4px;
             display: none;
             z-index: 100;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
+            min-width: 120px;
         }
 
         .timeframe-option {
@@ -361,6 +305,305 @@
             cursor: pointer;
         }
 
+        /* Drawing Tools Panel */
+        .drawing-tools {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background-color: rgba(30, 41, 59, 0.9);
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            min-width: 280px;
+        }
+
+        .tools-category {
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #475569;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .tool-item {
+            padding: 6px 8px;
+            background-color: #334155;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-item:hover {
+            background-color: #475569;
+        }
+
+        .tool-item.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        /* Indicators Modal */
+        .indicators-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal-content {
+            background-color: #1e293b;
+            border-radius: 12px;
+            width: 800px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #334155;
+            background-color: #1e293b;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #3b82f6;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: #334155;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 16px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+        }
+
+        .indicators-categories {
+            display: flex;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 16px;
+        }
+
+        .category-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .category-tab:hover {
+            background-color: #334155;
+        }
+
+        .category-tab.active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .indicator-item {
+            padding: 12px;
+            background-color: #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .indicator-item:hover {
+            background-color: #475569;
+        }
+
+        .indicator-item.active {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .indicator-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .indicator-desc {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* Indicator Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            display: none;
+        }
+
+        .settings-content {
+            background-color: #1e293b;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid #334155;
+            background-color: #1e293b;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #3b82f6;
+        }
+
+        .settings-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.active {
+            border-color: white;
+        }
+
+        .color-custom {
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+        }
+
+        .settings-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
         /* Pine Editor */
         .pine-editor {
             position: fixed;
@@ -470,100 +713,6 @@
             background-color: #475569;
         }
 
-        .indicator-template.active {
-            background-color: #10b981;
-            color: white;
-        }
-
-        .code-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .code-header {
-            padding: 8px 16px;
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tab {
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .tab.active {
-            border-bottom: 2px solid #3b82f6;
-            color: #3b82f6;
-            font-weight: 500;
-        }
-
-        .logs-container {
-            height: 180px;
-            background-color: #0f172a;
-            border-top: 1px solid #334155;
-            padding: 12px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
-
-        .logs-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #cbd5e1;
-        }
-
-        .log-entry {
-            margin-bottom: 4px;
-            line-height: 1.4;
-        }
-
-        .log-info {
-            color: #94a3b8;
-        }
-
-        .log-error {
-            color: #ef4444;
-        }
-
-        .log-success {
-            color: #10b981;
-        }
-
-        .cm-s-monokai span.cm-variable {
-            color: #fd9800;
-        }
-
-        .cm-s-monokai span.cm-property {
-            color: #a6e22e;
-        }
-
-        .cm-s-monokai span.cm-operator {
-            color: #f92672;
-        }
-
-        .cm-s-monokai span.cm-keyword {
-            color: #f92672;
-        }
-
-        .cm-s-monokai span.cm-string {
-            color: #a6e22e;
-        }
-
-        .cm-s-monokai span.cm-number {
-            color: #fd9800;
-        }
-
-        .cm-s-monokai span.cm-comment {
-            color: #75715e;
-        }
-
         .CodeMirror {
             height: 100%;
             font-size: 14px;
@@ -639,94 +788,6 @@
                 <div class="symbol-item" data-symbol="NVDA">NVDA</div>
             </div>
         </div>
-        
-        <div class="indicators-section">
-            <div class="indicators-header">
-                <span>Indicators</span>
-            </div>
-            <div class="indicators-list" id="indicatorsList">
-                <div class="indicator-item" data-indicator="sma">
-                    <span>SMA - Simple Moving Average</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="ema">
-                    <span>EMA - Exponential Moving Average</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="rsi">
-                    <span>RSI - Relative Strength Index</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="macd">
-                    <span>MACD - Moving Average Convergence Divergence</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="bollinger">
-                    <span>Bollinger Bands</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="fibonacci">
-                    <span>Fibonacci Retracement</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="volume">
-                    <span>Volume</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="stochastic">
-                    <span>Stochastic Oscillator</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="adx">
-                    <span>ADX - Average Directional Index</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="atr">
-                    <span>ATR - Average True Range</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="cci">
-                    <span>CCI - Commodity Channel Index</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="obv">
-                    <span>OBV - On Balance Volume</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="ichimoku">
-                    <span>Ichimoku Cloud</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="parabolic_sar">
-                    <span>Parabolic SAR</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="williams_r">
-                    <span>Williams %R</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="vwap">
-                    <span>VWAP - Volume Weighted Average Price</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="pivot_points">
-                    <span>Pivot Points</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="heikin_ashi">
-                    <span>Heikin-Ashi</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="supertrend">
-                    <span>Supertrend</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-                <div class="indicator-item" data-indicator="keltner_channels">
-                    <span>Keltner Channels</span>
-                    <div class="indicator-toggle">+</div>
-                </div>
-            </div>
-        </div>
     </div>
     
     <!-- Main Content -->
@@ -740,10 +801,10 @@
                         <span>▼</span>
                     </div>
                     <div class="timeframe-list" id="timeframeList">
-                        <div class="timeframe-option active" data-tf="5s">5s</div>
+                        <div class="timeframe-option" data-tf="5s">5s</div>
                         <div class="timeframe-option" data-tf="15s">15s</div>
                         <div class="timeframe-option" data-tf="30s">30s</div>
-                        <div class="timeframe-option" data-tf="1m">1m</div>
+                        <div class="timeframe-option active" data-tf="1m">1m</div>
                         <div class="timeframe-option" data-tf="2m">2m</div>
                         <div class="timeframe-option" data-tf="5m">5m</div>
                         <div class="timeframe-option" data-tf="15m">15m</div>
@@ -752,18 +813,13 @@
                         <div class="timeframe-option" data-tf="2h">2h</div>
                         <div class="timeframe-option" data-tf="4h">4h</div>
                         <div class="timeframe-option" data-tf="1d">1d</div>
-                        <div class="timeframe-option" data-tf="1w">1w</div>
-                        <div class="timeframe-option" data-tf="1M">1M</div>
                     </div>
                 </div>
             </div>
             
             <div class="tools-container">
-                <div class="tool-btn active" id="selectTool">↖</div>
-                <div class="tool-btn" id="drawLine">─</div>
-                <div class="tool-btn" id="drawTrend">╱</div>
-                <div class="tool-btn" id="drawFibonacci">Φ</div>
-                <div class="tool-btn" id="drawText">T</div>
+                <div class="tool-btn" id="drawingToolsBtn">✎</div>
+                <div class="tool-btn" id="indicatorsBtn">📊</div>
                 <div class="tool-btn" id="pineEditorBtn">Pine</div>
             </div>
         </div>
@@ -777,7 +833,6 @@
                 <div class="chart-legend">
                     <div class="legend-item">Candles: <span id="visibleBars">100</span></div>
                     <div class="legend-item legend-indicator">Indicators: <span id="activeIndicatorsCount">0</span></div>
-                    <div class="legend-item legend-fibonacci">Fibonacci: <span id="fibonacciLevels">0</span></div>
                 </div>
                 
                 <div class="active-indicators" id="activeIndicators"></div>
@@ -785,6 +840,264 @@
         </div>
     </div>
     
+    <!-- Drawing Tools Panel -->
+    <div class="drawing-tools" id="drawingTools">
+        <div class="tools-category">
+            <div class="category-title">Lines & Trends</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="trend-line">Trend Line</div>
+                <div class="tool-item" data-tool="extended-line">Extended Line</div>
+                <div class="tool-item" data-tool="ray">Ray</div>
+                <div class="tool-item" data-tool="horizontal">Horizontal</div>
+                <div class="tool-item" data-tool="vertical">Vertical</div>
+                <div class="tool-item" data-tool="cross">Cross Line</div>
+                <div class="tool-item" data-tool="channel">Parallel Channel</div>
+                <div class="tool-item" data-tool="regression">Regression</div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title">Fibonacci / Gann</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="fib-retracement">Fib Retracement</div>
+                <div class="tool-item" data-tool="fib-extension">Fib Extension</div>
+                <div class="tool-item" data-tool="fib-time">Fib Time Zone</div>
+                <div class="tool-item" data-tool="fib-channel">Fib Channel</div>
+                <div class="tool-item" data-tool="fib-fan">Fib Fan</div>
+                <div class="tool-item" data-tool="fib-arcs">Fib Arcs</div>
+                <div class="tool-item" data-tool="gann-box">Gann Box</div>
+                <div class="tool-item" data-tool="gann-fan">Gann Fan</div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title">Geometric Shapes</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="rectangle">Rectangle</div>
+                <div class="tool-item" data-tool="circle">Circle</div>
+                <div class="tool-item" data-tool="ellipse">Ellipse</div>
+                <div class="tool-item" data-tool="triangle">Triangle</div>
+                <div class="tool-item" data-tool="polyline">Polyline</div>
+                <div class="tool-item" data-tool="arc">Arc</div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title">Annotations</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="text">Text</div>
+                <div class="tool-item" data-tool="note">Note</div>
+                <div class="tool-item" data-tool="callout">Callout</div>
+                <div class="tool-item" data-tool="arrow">Arrow</div>
+                <div class="tool-item" data-tool="flag">Flag</div>
+                <div class="tool-item" data-tool="signpost">Signpost</div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title">Patterns</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="xabcd">XABCD</div>
+                <div class="tool-item" data-tool="cypher">Cypher</div>
+                <div class="tool-item" data-tool="abcd">ABCD</div>
+                <div class="tool-item" data-tool="triangle">Triangle</div>
+                <div class="tool-item" data-tool="head-shoulders">Head & Shoulders</div>
+                <div class="tool-item" data-tool="elliott">Elliott Wave</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Indicators Modal -->
+    <div class="indicators-modal" id="indicatorsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Indicators</div>
+                <button class="modal-close" id="closeIndicatorsModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="indicators-categories" id="indicatorsCategories">
+                    <div class="category-tab active" data-category="trend">Trend</div>
+                    <div class="category-tab" data-category="momentum">Momentum</div>
+                    <div class="category-tab" data-category="volume">Volume</div>
+                    <div class="category-tab" data-category="volatility">Volatility</div>
+                </div>
+                
+                <div class="indicators-grid" id="indicatorsGrid">
+                    <!-- Trend Indicators -->
+                    <div class="indicator-item" data-indicator="ma" data-category="trend">
+                        <div class="indicator-name">Moving Average (MA)</div>
+                        <div class="indicator-desc">Simple moving average</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="ema" data-category="trend">
+                        <div class="indicator-name">Exponential MA (EMA)</div>
+                        <div class="indicator-desc">Weighted moving average</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="wma" data-category="trend">
+                        <div class="indicator-name">Weighted MA (WMA)</div>
+                        <div class="indicator-desc">Linear weighted average</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="hma" data-category="trend">
+                        <div class="indicator-name">Hull MA (HMA)</div>
+                        <div class="indicator-desc">Smoothed moving average</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="ichimoku" data-category="trend">
+                        <div class="indicator-name">Ichimoku Cloud</div>
+                        <div class="indicator-desc">Complete trend system</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="parabolic-sar" data-category="trend">
+                        <div class="indicator-name">Parabolic SAR</div>
+                        <div class="indicator-desc">Trend reversal points</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="linear-regression" data-category="trend">
+                        <div class="indicator-name">Linear Regression</div>
+                        <div class="indicator-desc">Statistical trend line</div>
+                    </div>
+                    
+                    <!-- Momentum Indicators -->
+                    <div class="indicator-item" data-indicator="rsi" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Relative Strength Index (RSI)</div>
+                        <div class="indicator-desc">Momentum oscillator</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="macd" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">MACD</div>
+                        <div class="indicator-desc">Trend & momentum combo</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="stochastic" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Stochastic Oscillator</div>
+                        <div class="indicator-desc">Overbought/oversold levels</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="stochastic-rsi" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Stochastic RSI</div>
+                        <div class="indicator-desc">RSI of RSI</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="cci" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Commodity Channel Index (CCI)</div>
+                        <div class="indicator-desc">Cyclical trend indicator</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="adx" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">ADX</div>
+                        <div class="indicator-desc">Trend strength</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="momentum" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Momentum</div>
+                        <div class="indicator-desc">Price change rate</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="williams-r" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Williams %R</div>
+                        <div class="indicator-desc">Momentum indicator</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="ultimate-oscillator" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">Ultimate Oscillator</div>
+                        <div class="indicator-desc">Multi-timeframe momentum</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="roc" data-category="momentum" style="display: none;">
+                        <div class="indicator-name">ROC</div>
+                        <div class="indicator-desc">Rate of change</div>
+                    </div>
+                    
+                    <!-- Volume Indicators -->
+                    <div class="indicator-item" data-indicator="volume" data-category="volume" style="display: none;">
+                        <div class="indicator-name">Volume</div>
+                        <div class="indicator-desc">Trading volume</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="obv" data-category="volume" style="display: none;">
+                        <div class="indicator-name">On-Balance Volume (OBV)</div>
+                        <div class="indicator-desc">Volume flow indicator</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="ad-line" data-category="volume" style="display: none;">
+                        <div class="indicator-name">Accumulation/Distribution</div>
+                        <div class="indicator-desc">Volume & price flow</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="cmf" data-category="volume" style="display: none;">
+                        <div class="indicator-name">Chaikin Money Flow (CMF)</div>
+                        <div class="indicator-desc">Volume-weighted indicator</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="mfi" data-category="volume" style="display: none;">
+                        <div class="indicator-name">Money Flow Index (MFI)</div>
+                        <div class="indicator-desc">Volume-weighted RSI</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="vwap" data-category="volume" style="display: none;">
+                        <div class="indicator-name">VWAP</div>
+                        <div class="indicator-desc">Volume weighted price</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="force-index" data-category="volume" style="display: none;">
+                        <div class="indicator-name">Force Index</div>
+                        <div class="indicator-desc">Price & volume strength</div>
+                    </div>
+                    
+                    <!-- Volatility Indicators -->
+                    <div class="indicator-item" data-indicator="bollinger-bands" data-category="volatility" style="display: none;">
+                        <div class="indicator-name">Bollinger Bands</div>
+                        <div class="indicator-desc">Volatility bands</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="atr" data-category="volatility" style="display: none;">
+                        <div class="indicator-name">ATR</div>
+                        <div class="indicator-desc">Average True Range</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="keltner-channels" data-category="volatility" style="display: none;">
+                        <div class="indicator-name">Keltner Channels</div>
+                        <div class="indicator-desc">Volatility-based channels</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="donchian-channels" data-category="volatility" style="display: none;">
+                        <div class="indicator-name">Donchian Channels</div>
+                        <div class="indicator-desc">Price range channels</div>
+                    </div>
+                    <div class="indicator-item" data-indicator="standard-deviation" data-category="volatility" style="display: none;">
+                        <div class="indicator-name">Standard Deviation</div>
+                        <div class="indicator-desc">Statistical volatility</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Indicator Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <div class="settings-title" id="settingsTitle">Moving Average Settings</div>
+                <button class="modal-close" id="closeSettingsModal">×</button>
+            </div>
+            <div class="settings-body">
+                <div class="form-group">
+                    <label for="length">Length</label>
+                    <input type="number" id="length" class="form-control" value="14" min="1" max="200">
+                </div>
+                <div class="form-group">
+                    <label for="source">Source</label>
+                    <select id="source" class="form-control">
+                        <option value="close">Close</option>
+                        <option value="open">Open</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                        <option value="hl2">HL/2</option>
+                        <option value="hlc3">HLC/3</option>
+                        <option value="ohlc4">OHLC/4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker">
+                        <div class="color-option active" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
+                        <div class="color-option" style="background-color: #10b981;" data-color="#10b981"></div>
+                        <div class="color-option" style="background-color: #ef4444;" data-color="#ef4444"></div>
+                        <div class="color-option" style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                        <div class="color-option" style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
+                        <div class="color-option color-custom" data-color="custom"></div>
+                    </div>
+                </div>
+                <div class="form-group" id="customColorGroup" style="display: none;">
+                    <label for="customColor">Custom Color</label>
+                    <input type="color" id="customColor" class="form-control" value="#3b82f6">
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button id="cancelSettings" class="btn btn-secondary">Cancel</button>
+                <button id="applySettings" class="btn btn-primary">Apply</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Pine Editor -->
     <div class="pine-editor" id="pineEditor">
         <div class="editor-header">
@@ -815,71 +1128,11 @@
                         <strong>Bollinger Bands</strong>
                         <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Volatility bands with moving average</div>
                     </div>
-                    <div class="indicator-template" data-template="fibonacci">
-                        <strong>Fibonacci Retracement</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Dynamic Fibonacci levels based on swing points</div>
-                    </div>
-                    <div class="indicator-template" data-template="volume_profile">
-                        <strong>Volume Profile</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Volume distribution by price level</div>
-                    </div>
-                    <div class="indicator-template" data-template="supertrend">
-                        <strong>Supertrend</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Trend following indicator with buy/sell signals</div>
-                    </div>
-                    <div class="indicator-template" data-template="ichimoku">
-                        <strong>Ichimoku Cloud</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Complete trend identification system</div>
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <div class="sidebar-title">My Scripts</div>
-                    <div class="indicator-template">
-                        <strong>My SMA Strategy</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 2 hours ago</div>
-                    </div>
-                    <div class="indicator-template">
-                        <strong>Fibonacci Auto Levels</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 1 day ago</div>
-                    </div>
-                    <div class="indicator-template">
-                        <strong>RSI Divergence Scanner</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 3 days ago</div>
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <div class="sidebar-title">Documentation</div>
-                    <div class="indicator-template">
-                        <strong>Pine Script v5 Guide</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Complete language reference</div>
-                    </div>
-                    <div class="indicator-template">
-                        <strong>Indicator Examples</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Code samples and templates</div>
-                    </div>
-                    <div class="indicator-template">
-                        <strong>Backtesting Guide</strong>
-                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Strategy testing and optimization</div>
-                    </div>
                 </div>
             </div>
             
             <div class="code-container">
-                <div class="code-header">
-                    <div class="tab active">script.pine</div>
-                </div>
-                
-                <div id="codeEditor" style="flex: 1;"></div>
-                
-                <div class="logs-container">
-                    <div class="logs-title">Execution Log</div>
-                    <div id="pineLogs" class="logs-content">
-                        <div class="log-entry log-success">Pine Script environment loaded successfully</div>
-                        <div class="log-entry log-info">Ready to compile and run your script</div>
-                    </div>
-                </div>
+                <div id="codeEditor" style="height: 100%;"></div>
             </div>
         </div>
     </div>
@@ -913,17 +1166,10 @@
             visibleRange: { start: 0, end: 100 },
             yAxisRange: { min: 0, max: 1 },
             currentPrice: 0,
-            selectedTool: 'select',
+            selectedTool: null,
             drawing: null,
-            indicators: {
-                sma: false, ema: false, rsi: false, macd: false, bollinger: false,
-                fibonacci: false, volume: false, stochastic: false, adx: false, atr: false,
-                cci: false, obv: false, ichimoku: false, parabolic_sar: false, williams_r: false,
-                vwap: false, pivot_points: false, heikin_ashi: false, supertrend: false, keltner_channels: false
-            },
+            indicators: {},
             activeIndicators: [],
-            fibonacciLevels: [],
-            pineRunning: false,
             apiKey: 'secured_api_key_12345',
             simulationInterval: null,
             zoomLevel: 1,
@@ -936,90 +1182,81 @@
             timeframeDisplay: document.getElementById('timeframeDisplay'),
             timeframeList: document.getElementById('timeframeList'),
             timeframeOptions: document.querySelectorAll('.timeframe-option'),
-            selectTool: document.getElementById('selectTool'),
-            drawLine: document.getElementById('drawLine'),
-            drawTrend: document.getElementById('drawTrend'),
-            drawFibonacci: document.getElementById('drawFibonacci'),
-            drawText: document.getElementById('drawText'),
+            drawingToolsBtn: document.getElementById('drawingToolsBtn'),
+            indicatorsBtn: document.getElementById('indicatorsBtn'),
             pineEditorBtn: document.getElementById('pineEditorBtn'),
             visibleBars: document.getElementById('visibleBars'),
             activeIndicatorsCount: document.getElementById('activeIndicatorsCount'),
-            fibonacciLevels: document.getElementById('fibonacciLevels'),
             activeIndicators: document.getElementById('activeIndicators'),
+            drawingTools: document.getElementById('drawingTools'),
+            indicatorsModal: document.getElementById('indicatorsModal'),
+            indicatorsCategories: document.getElementById('indicatorsCategories'),
+            indicatorsGrid: document.getElementById('indicatorsGrid'),
+            closeIndicatorsModal: document.getElementById('closeIndicatorsModal'),
+            settingsModal: document.getElementById('settingsModal'),
+            settingsTitle: document.getElementById('settingsTitle'),
+            length: document.getElementById('length'),
+            source: document.getElementById('source'),
+            colorOptions: document.querySelectorAll('.color-option'),
+            customColorGroup: document.getElementById('customColorGroup'),
+            customColor: document.getElementById('customColor'),
+            closeSettingsModal: document.getElementById('closeSettingsModal'),
+            cancelSettings: document.getElementById('cancelSettings'),
+            applySettings: document.getElementById('applySettings'),
             pineEditor: document.getElementById('pineEditor'),
             codeEditor: document.getElementById('codeEditor'),
-            pineLogs: document.getElementById('pineLogs'),
             runPine: document.getElementById('runPine'),
             savePine: document.getElementById('savePine'),
             closePine: document.getElementById('closePine'),
             addSymbol: document.getElementById('addSymbol'),
             symbolList: document.getElementById('symbolList'),
-            currentTF: document.getElementById('currentTF'),
-            indicatorTemplates: document.querySelectorAll('.indicator-template'),
-            indicatorsList: document.getElementById('indicatorsList')
+            currentTF: document.getElementById('currentTF')
         };
 
         // Initialize CodeMirror
         let codeMirror;
         function initCodeMirror() {
             codeMirror = CodeMirror(elements.codeEditor, {
-                value: `// Pine Script - Fibonacci Dynamic Levels
+                value: `// Pine Script - Moving Average Crossover
 // @version=5
-indicator("Fibonacci Dynamic", overlay=true)
+indicator("MA Crossover", overlay=true)
 
-// User settings
-fib_levels = array.from(0.236, 0.382, 0.5, 0.618, 0.786)
-show_labels = input.bool(true, "Show Labels")
-lookback = input.int(50, "Lookback Period")
+// Input parameters
+ma_fast_length = input.int(9, "Fast MA Length")
+ma_slow_length = input.int(21, "Slow MA Length")
+ma_type = input.string("EMA", "MA Type", options=["SMA", "EMA", "WMA"])
 
-// Find swing points
-var float swing_high = na
-var float swing_low = na
+// Calculate moving averages
+ma_fast = request.security(syminfo.tickerid, timeframe.period, 
+    ma_type == "SMA" ? ta.sma(close, ma_fast_length) : 
+    ma_type == "EMA" ? ta.ema(close, ma_fast_length) : 
+    ta.wma(close, ma_fast_length))
 
-// Detect swing high
-if (high > high[1] and high > high[2] and high > high[3])
-    swing_high := high
+ma_slow = request.security(syminfo.tickerid, timeframe.period, 
+    ma_type == "SMA" ? ta.sma(close, ma_slow_length) : 
+    ma_type == "EMA" ? ta.ema(close, ma_slow_length) : 
+    ta.wma(close, ma_slow_length))
 
-// Detect swing low
-if (low < low[1] and low < low[2] and low < low[3])
-    swing_low := low
+// Plot moving averages
+plot(ma_fast, "Fast MA", color=color.blue)
+plot(ma_slow, "Slow MA", color=color.red)
 
-// Store recent swing points
-var float[] swing_highs = array.new_float()
-var float[] swing_lows = array.new_float()
+// Generate signals
+buy_signal = ta.crossover(ma_fast, ma_slow)
+sell_signal = ta.crossunder(ma_fast, ma_slow)
 
-if (!na(swing_high))
-    array.unshift(swing_highs, swing_high)
-    if (array.size(swing_highs) > lookback)
-        array.pop(swing_highs)
+// Plot signals
+plotshape(buy_signal, title="Buy Signal", location=location.belowbar, 
+         color=color.green, style=shape.triangleup, size=size.small)
+plotshape(sell_signal, title="Sell Signal", location=location.abovebar, 
+         color=color.red, style=shape.triangledown, size=size.small)
 
-if (!na(swing_low))
-    array.unshift(swing_lows, swing_low)
-    if (array.size(swing_lows) > lookback)
-        array.pop(swing_lows)
+// Strategy execution
+if (buy_signal)
+    strategy.entry("Buy", strategy.long)
 
-// Calculate Fibonacci levels from most recent swing
-if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
-{
-    float recent_high = array.get(swing_highs, 0)
-    float recent_low = array.get(swing_lows, 0)
-    
-    float fib_range = recent_high - recent_low
-    float base_level = recent_low
-    
-    // Draw Fibonacci levels
-    for i = 0 to array.size(fib_levels) - 1
-    {
-        float level_value = base_level + fib_range * array.get(fib_levels, i)
-        line.new(bar_index - lookback, level_value, bar_index, level_value, 
-                color=color.blue, width=1, extend=extend.right)
-        
-        if (show_labels)
-            label.new(bar_index, level_value, str.tostring(array.get(fib_levels, i)), 
-                     color=color.new(color.blue, 80), textcolor=color.white, 
-                     style=label.style_label_down, yloc=yloc.price)
-    }
-}`,
+if (sell_signal)
+    strategy.entry("Sell", strategy.short)`,
                 mode: "javascript",
                 theme: "monokai",
                 lineNumbers: true,
@@ -1044,7 +1281,7 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             const map = { 
                 '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000,
                 '15m': 900000, '30m': 1800000, '1h': 3600000, '2h': 7200000, '4h': 14400000,
-                '1d': 86400000, '1w': 604800000, '1M': 2592000000
+                '1d': 86400000
             };
             return map[tf] || 60000;
         }
@@ -1072,62 +1309,67 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             return candlesData;
         }
 
-        function calculateIndicator(data, type, length = 20) {
-            if (data.length < length) return [];
+        function calculateIndicator(data, type, params = {}) {
+            if (data.length < params.length) return [];
+            
+            const source = params.source === 'close' ? data.map(c => c.close) :
+                          params.source === 'open' ? data.map(c => c.open) :
+                          params.source === 'high' ? data.map(c => c.high) :
+                          params.source === 'low' ? data.map(c => c.low) :
+                          params.source === 'hl2' ? data.map(c => (c.high + c.low) / 2) :
+                          params.source === 'hlc3' ? data.map(c => (c.high + c.low + c.close) / 3) :
+                          data.map(c => (c.open + c.high + c.low + c.close) / 4);
             
             switch (type) {
-                case 'sma':
-                    return data.map((_, index) => {
-                        if (index < length - 1) return null;
-                        const sum = data.slice(index - length + 1, index + 1).reduce((acc, candle) => acc + candle.close, 0);
-                        return sum / length;
+                case 'ma':
+                    return source.map((_, index) => {
+                        if (index < params.length - 1) return null;
+                        const sum = source.slice(index - params.length + 1, index + 1).reduce((acc, val) => acc + val, 0);
+                        return sum / params.length;
                     });
                 
                 case 'ema':
-                    const multiplier = 2 / (length + 1);
-                    return data.map((_, index) => {
-                        if (index < length - 1) return null;
-                        if (index === length - 1) return data.slice(0, length).reduce((acc, c) => acc + c.close, 0) / length;
+                    const multiplier = 2 / (params.length + 1);
+                    return source.map((_, index) => {
+                        if (index < params.length - 1) return null;
+                        if (index === params.length - 1) return source.slice(0, params.length).reduce((acc, val) => acc + val, 0) / params.length;
                         
-                        const prevEMA = calculateIndicator(data.slice(0, index), 'ema', length)[length - 2];
-                        return (data[index].close - prevEMA) * multiplier + prevEMA;
+                        const prevEMA = calculateIndicator(data.slice(0, index), 'ema', params)[params.length - 2];
+                        return (source[index] - prevEMA) * multiplier + prevEMA;
                     });
                 
                 case 'rsi':
-                    return data.map((_, index) => {
-                        if (index < length) return null;
+                    return source.map((_, index) => {
+                        if (index < params.length) return null;
                         const gains = [];
                         const losses = [];
                         
-                        for (let i = index - length + 1; i <= index; i++) {
-                            const change = data[i].close - data[i-1].close;
+                        for (let i = index - params.length + 1; i <= index; i++) {
+                            const change = source[i] - source[i-1];
                             gains.push(Math.max(change, 0));
                             losses.push(Math.max(-change, 0));
                         }
                         
-                        const avgGain = gains.reduce((a, b) => a + b, 0) / length;
-                        const avgLoss = losses.reduce((a, b) => a + b, 0) / length;
+                        const avgGain = gains.reduce((a, b) => a + b, 0) / params.length;
+                        const avgLoss = losses.reduce((a, b) => a + b, 0) / params.length;
                         
                         if (avgLoss === 0) return 100;
                         const rs = avgGain / avgLoss;
                         return 100 - (100 / (1 + rs));
                     });
                 
+                case 'macd':
+                    const fastEMA = calculateIndicator(data, 'ema', { ...params, length: 12 });
+                    const slowEMA = calculateIndicator(data, 'ema', { ...params, length: 26 });
+                    const macdLine = fastEMA.map((val, i) => val !== null && slowEMA[i] !== null ? val - slowEMA[i] : null);
+                    const signalLine = calculateIndicator(data.map((_, i) => ({ close: macdLine[i] })), 'ema', { ...params, length: 9 });
+                    const histogram = macdLine.map((val, i) => val !== null && signalLine[i] !== null ? val - signalLine[i] : null);
+                    
+                    return { macdLine, signalLine, histogram };
+                
                 default:
                     return [];
             }
-        }
-
-        function calculateFibonacciLevels(data) {
-            if (data.length < 50) return [];
-            
-            const recent = data.slice(-50);
-            const high = Math.max(...recent.map(c => c.high));
-            const low = Math.min(...recent.map(c => c.low));
-            const range = high - low;
-            
-            const levels = [0.236, 0.382, 0.5, 0.618, 0.786];
-            return levels.map(level => low + range * level);
         }
 
         // Chart Rendering
@@ -1230,116 +1472,103 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
                 ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
             });
             
-            // Indicators
-            if (state.indicators.sma) {
-                const sma = calculateIndicator(state.candles, 'sma', 20);
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                
-                let firstPoint = true;
-                sma.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                    if (!value) return;
-                    const x = timeToX(index) + actualWidth / 2;
-                    const y = priceToY(value);
-                    
-                    if (firstPoint) {
-                        ctx.moveTo(x, y);
-                        firstPoint = false;
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                
-                ctx.stroke();
-            }
-            
-            if (state.indicators.ema) {
-                const ema = calculateIndicator(state.candles, 'ema', 12);
-                ctx.strokeStyle = '#8b5cf6';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                
-                let firstPoint = true;
-                ema.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                    if (!value) return;
-                    const x = timeToX(index) + actualWidth / 2;
-                    const y = priceToY(value);
-                    
-                    if (firstPoint) {
-                        ctx.moveTo(x, y);
-                        firstPoint = false;
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-            
-            // Fibonacci Levels
-            if (state.indicators.fibonacci && state.candles.length >= 50) {
-                const fibLevels = calculateFibonacciLevels(state.candles);
-                ctx.strokeStyle = '#f59e0b';
-                ctx.lineWidth = 1.5;
-                
-                fibLevels.forEach((level, index) => {
-                    if (level < state.yAxisRange.min || level > state.yAxisRange.max) return;
-                    
-                    const y = priceToY(level);
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(width, y);
-                    ctx.stroke();
-                    
-                    // Level label
-                    ctx.fillStyle = '#f59e0b';
-                    ctx.font = '11px Arial';
-                    ctx.textAlign = 'left';
-                    const levels = ['23.6%', '38.2%', '50%', '61.8%', '78.6%'];
-                    ctx.fillText(levels[index], 8, y - 4);
-                });
-            }
-            
-            // Volume
-            if (state.indicators.volume) {
-                const volumeHeight = height * 0.2;
-                const volumeY = height - volumeHeight;
-                
-                // Volume background
-                ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
-                ctx.fillRect(0, volumeY, width, volumeHeight);
-                
-                // Volume bars
-                visibleCandles.forEach((candle, index) => {
-                    const x = timeToX(index);
-                    const maxVolume = Math.max(...state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1).map(c => c.volume));
-                    const volumeHeight = (candle.volume / maxVolume) * volumeHeight * 0.9;
-                    const y = volumeY + (volumeHeight * 0.9) - volumeHeight;
-                    const isUp = candle.close >= candle.open;
-                    const color = isUp ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
-                    
-                    ctx.fillStyle = color;
-                    ctx.fillRect(x, y, actualWidth, volumeHeight);
-                });
-                
-                // Volume axis labels
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '10px Arial';
-                ctx.textAlign = 'right';
-                for (let i = 0; i < 4; i++) {
-                    const y = volumeY + (i / 3) * volumeHeight;
-                    const volume = maxVolume * (1 - i/3);
-                    ctx.fillText(Math.round(volume).toLocaleString(), width - 8, y + 4);
+            // Render all active indicators
+            Object.keys(state.indicators).forEach(key => {
+                const indicator = state.indicators[key];
+                if (indicator.enabled) {
+                    renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX);
                 }
-            }
+            });
             
             // Update legend
             elements.visibleBars.textContent = visibleCandles.length;
-            elements.activeIndicatorsCount.textContent = Object.values(state.indicators).filter(v => v).length;
-            elements.fibonacciLevels.textContent = state.indicators.fibonacci ? calculateFibonacciLevels(state.candles).length : '0';
+            elements.activeIndicatorsCount.textContent = Object.keys(state.indicators).filter(key => state.indicators[key].enabled).length;
+        }
+
+        function renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX) {
+            const data = state.candles;
+            const params = indicator.params;
+            
+            switch (indicator.type) {
+                case 'ma':
+                case 'ema':
+                    const values = calculateIndicator(data, indicator.type, params);
+                    ctx.strokeStyle = params.color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    let firstPoint = true;
+                    values.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                        if (!value) return;
+                        const x = timeToX(index) + actualWidth / 2;
+                        const y = priceToY(value);
+                        
+                        if (firstPoint) {
+                            ctx.moveTo(x, y);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    
+                    ctx.stroke();
+                    break;
+                
+                case 'rsi':
+                    // RSI is rendered in a separate panel
+                    break;
+                
+                case 'macd':
+                    const macdData = calculateIndicator(data, 'macd', params);
+                    const zeroLine = height * 0.8;
+                    
+                    // MACD line
+                    ctx.strokeStyle = params.color;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    let firstPoint1 = true;
+                    macdData.macdLine.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                        if (!value) return;
+                        const x = timeToX(index) + actualWidth / 2;
+                        const y = zeroLine - value * 100; // Scale factor
+                        if (firstPoint1) {
+                            ctx.moveTo(x, y);
+                            firstPoint1 = false;
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    ctx.stroke();
+                    
+                    // Signal line
+                    ctx.strokeStyle = '#ff6b6b';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    let firstPoint2 = true;
+                    macdData.signalLine.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                        if (!value) return;
+                        const x = timeToX(index) + actualWidth / 2;
+                        const y = zeroLine - value * 100;
+                        if (firstPoint2) {
+                            ctx.moveTo(x, y);
+                            firstPoint2 = false;
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    ctx.stroke();
+                    
+                    // Histogram
+                    macdData.histogram.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                        if (!value) return;
+                        const x = timeToX(index);
+                        const y = zeroLine - value * 100;
+                        const height = Math.abs(value) * 100;
+                        ctx.fillStyle = value > 0 ? '#4ade80' : '#ef4444';
+                        ctx.fillRect(x, y, actualWidth, height);
+                    });
+                    break;
+            }
         }
 
         // Drawing Functions
@@ -1365,17 +1594,6 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             if (!state.drawing) return;
             
             // Save the drawing
-            if (state.drawing.type === 'fibonacci') {
-                const startPrice = yToPrice(state.drawing.startY);
-                const endPrice = yToPrice(state.drawing.endY);
-                const high = Math.max(startPrice, endPrice);
-                const low = Math.min(startPrice, endPrice);
-                const range = high - low;
-                
-                const levels = [0.236, 0.382, 0.5, 0.618, 0.786];
-                state.fibonacciLevels = levels.map(level => low + range * level);
-            }
-            
             state.drawing = null;
             renderChart();
         }
@@ -1399,7 +1617,6 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
                 line.setAttribute('y2', state.drawing.endY);
                 line.setAttribute('stroke', '#3b82f6');
                 line.setAttribute('stroke-width', '2');
-                line.setAttribute('stroke-dasharray', state.drawing.type === 'trend' ? '5,5' : 'none');
                 
                 svg.appendChild(line);
                 overlay.appendChild(svg);
@@ -1457,7 +1674,7 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             
-            if (state.selectedTool === 'select') {
+            if (!state.selectedTool) {
                 isDragging = true;
                 startX = x;
                 startStart = state.visibleRange.start;
@@ -1542,63 +1759,153 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             }
         });
 
-        // Tool selection
-        const toolButtons = [
-            { element: elements.selectTool, tool: 'select' },
-            { element: elements.drawLine, tool: 'line' },
-            { element: elements.drawTrend, tool: 'trend' },
-            { element: elements.drawFibonacci, tool: 'fibonacci' },
-            { element: elements.drawText, tool: 'text' }
-        ];
-
-        toolButtons.forEach(({ element, tool }) => {
-            element.addEventListener('click', () => {
-                toolButtons.forEach(({ element: el }) => el.classList.remove('active'));
-                element.classList.add('active');
-                state.selectedTool = tool;
-                chartCanvas.style.cursor = tool === 'select' ? 'grab' : 'crosshair';
-            });
+        // Drawing Tools
+        elements.drawingToolsBtn.addEventListener('click', () => {
+            elements.drawingTools.style.display = elements.drawingTools.style.display === 'none' ? 'block' : 'none';
         });
 
-        // Indicator selection
-        elements.indicatorsList.querySelectorAll('.indicator-item').forEach(item => {
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.tool-btn') && !e.target.closest('.drawing-tools')) {
+                elements.drawingTools.style.display = 'none';
+            }
+        });
+
+        elements.drawingTools.querySelectorAll('.tool-item').forEach(item => {
             item.addEventListener('click', () => {
-                const indicator = item.dataset.indicator;
-                state.indicators[indicator] = !state.indicators[indicator];
-                item.classList.toggle('active');
+                const tool = item.dataset.tool;
+                state.selectedTool = tool;
                 
-                // Update active indicators display
-                updateActiveIndicators();
-                renderChart();
+                // Highlight selected tool
+                elements.drawingTools.querySelectorAll('.tool-item').forEach(t => t.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update button appearance
+                elements.drawingToolsBtn.innerHTML = '✎';
+                chartCanvas.style.cursor = 'crosshair';
             });
         });
 
-        function updateActiveIndicators() {
-            elements.activeIndicators.innerHTML = '';
-            Object.keys(state.indicators).forEach(key => {
-                if (state.indicators[key]) {
-                    const div = document.createElement('div');
-                    div.className = 'active-indicator';
-                    div.innerHTML = `
-                        <span>${key.replace('_', ' ').toUpperCase()}</span>
-                        <div class="indicator-close" data-indicator="${key}">×</div>
-                    `;
-                    elements.activeIndicators.appendChild(div);
-                }
-            });
-            
-            // Add event listeners to close buttons
-            document.querySelectorAll('.indicator-close').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const indicator = e.target.dataset.indicator;
-                    state.indicators[indicator] = false;
-                    document.querySelector(`.indicator-item[data-indicator="${indicator}"]`).classList.remove('active');
-                    updateActiveIndicators();
-                    renderChart();
+        // Indicators Modal
+        elements.indicatorsBtn.addEventListener('click', () => {
+            elements.indicatorsModal.style.display = 'flex';
+        });
+
+        elements.closeIndicatorsModal.addEventListener('click', () => {
+            elements.indicatorsModal.style.display = 'none';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target === elements.indicatorsModal) {
+                elements.indicatorsModal.style.display = 'none';
+            }
+        });
+
+        // Indicator Categories
+        elements.indicatorsCategories.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const category = tab.dataset.category;
+                elements.indicatorsGrid.querySelectorAll('.indicator-item').forEach(item => {
+                    if (item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 });
             });
-        }
+        });
+
+        // Indicator Selection
+        elements.indicatorsGrid.querySelectorAll('.indicator-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const indicator = item.dataset.indicator;
+                const name = item.querySelector('.indicator-name').textContent;
+                
+                // Set up settings modal
+                elements.settingsTitle.textContent = `${name} Settings`;
+                elements.length.value = 14;
+                elements.source.value = 'close';
+                
+                // Reset color selection
+                elements.colorOptions.forEach(option => {
+                    option.classList.remove('active');
+                });
+                elements.colorOptions[0].classList.add('active');
+                elements.customColorGroup.style.display = 'none';
+                
+                // Show settings modal
+                elements.settingsModal.style.display = 'flex';
+                elements.indicatorsModal.style.display = 'none';
+            });
+        });
+
+        // Settings Modal
+        elements.closeSettingsModal.addEventListener('click', () => {
+            elements.settingsModal.style.display = 'none';
+        });
+
+        elements.cancelSettings.addEventListener('click', () => {
+            elements.settingsModal.style.display = 'none';
+        });
+
+        elements.colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                elements.colorOptions.forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                
+                if (option.dataset.color === 'custom') {
+                    elements.customColorGroup.style.display = 'block';
+                } else {
+                    elements.customColorGroup.style.display = 'none';
+                }
+            });
+        });
+
+        elements.customColor.addEventListener('input', () => {
+            // When custom color is selected, make it active
+            elements.colorOptions.forEach(option => {
+                if (option.dataset.color === 'custom') {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        });
+
+        elements.applySettings.addEventListener('click', () => {
+            const indicatorType = elements.settingsTitle.textContent.split(' ')[0].toLowerCase();
+            const indicatorKey = elements.settingsTitle.textContent.includes('Moving Average') ? 'ma' :
+                               elements.settingsTitle.textContent.includes('Exponential') ? 'ema' :
+                               elements.settingsTitle.textContent.includes('RSI') ? 'rsi' :
+                               elements.settingsTitle.textContent.includes('MACD') ? 'macd' : indicatorType;
+            
+            const color = elements.colorOptions[0].classList.contains('active') ? '#3b82f6' :
+                         elements.colorOptions[1].classList.contains('active') ? '#10b981' :
+                         elements.colorOptions[2].classList.contains('active') ? '#ef4444' :
+                         elements.colorOptions[3].classList.contains('active') ? '#f59e0b' :
+                         elements.colorOptions[4].classList.contains('active') ? '#8b5cf6' :
+                         elements.customColor.value;
+            
+            // Add indicator to state
+            state.indicators[indicatorKey] = {
+                type: indicatorKey,
+                enabled: true,
+                params: {
+                    length: parseInt(elements.length.value),
+                    source: elements.source.value,
+                    color: color
+                }
+            };
+            
+            // Update active indicators display
+            updateActiveIndicators();
+            renderChart();
+            
+            // Close modal
+            elements.settingsModal.style.display = 'none';
+        });
 
         // Pine Editor
         elements.pineEditorBtn.addEventListener('click', () => {
@@ -1609,387 +1916,26 @@ if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
             elements.pineEditor.style.display = 'none';
         });
 
-        elements.runPine.addEventListener('click', executePineScript);
-
-        // Template selection
-        elements.indicatorTemplates.forEach(template => {
-            template.addEventListener('click', () => {
-                const templateType = template.dataset.template;
-                loadTemplate(templateType);
-            });
-        });
-
-        function loadTemplate(type) {
-            const templates = {
-                sma: `// SMA Crossover Strategy
-// @version=5
-indicator("SMA Crossover", overlay=true)
-
-// Input parameters
-fast_length = input.int(9, "Fast SMA Length")
-slow_length = input.int(21, "Slow SMA Length")
-
-// Calculate SMAs
-fast_sma = ta.sma(close, fast_length)
-slow_sma = ta.sma(close, slow_length)
-
-// Plot SMAs
-plot(fast_sma, "Fast SMA", color=color.blue)
-plot(slow_sma, "Slow SMA", color=color.red)
-
-// Generate signals
-buy_signal = ta.crossover(fast_sma, slow_sma)
-sell_signal = ta.crossunder(fast_sma, slow_sma)
-
-// Plot signals
-plotshape(buy_signal, title="Buy Signal", location=location.belowbar, 
-         color=color.green, style=shape.triangleup, size=size.small)
-plotshape(sell_signal, title="Sell Signal", location=location.abovebar, 
-         color=color.red, style=shape.triangledown, size=size.small)
-
-// Strategy execution
-if (buy_signal)
-    strategy.entry("Buy", strategy.long)
-
-if (sell_signal)
-    strategy.entry("Sell", strategy.short)`,
-                
-                rsi: `// RSI Divergence Indicator
-// @version=5
-indicator("RSI Divergence", overlay=false)
-
-// Input parameters
-rsi_length = input.int(14, "RSI Length")
-overbought = input.int(70, "Overbought Level")
-oversold = input.int(30, "Oversold Level")
-
-// Calculate RSI
-rsi = ta.rsi(close, rsi_length)
-
-// Plot RSI
-plot(rsi, "RSI", color=color.white)
-hline(overbought, "Overbought", color=color.red)
-hline(oversold, "Oversold", color=color.green)
-hline(50, "Midline", color=color.gray, linestyle=hline.style_dashed)
-
-// Divergence detection
-var float price_high = na
-var float rsi_high = na
-var float price_low = na
-var float rsi_low = na
-
-// Bullish divergence
-bullish_div = low < low[1] and rsi > rsi[1] and rsi < oversold
-plotshape(bullish_div, title="Bullish Divergence", location=location.belowbar, 
-         color=color.green, style=shape.triangleup, size=size.small)
-
-// Bearish divergence
-bearish_div = high > high[1] and rsi < rsi[1] and rsi > overbought
-plotshape(bearish_div, title="Bearish Divergence", location=location.abovebar, 
-         color=color.red, style=shape.triangledown, size=size.small)`,
-
-                macd: `// MACD Histogram
-// @version=5
-indicator("MACD Histogram", overlay=false)
-
-// Input parameters
-fast_length = input.int(12, "Fast Length")
-slow_length = input.int(26, "Slow Length")
-signal_length = input.int(9, "Signal Length")
-
-// Calculate MACD
-[macd_line, signal_line, hist] = ta.macd(close, fast_length, slow_length, signal_length)
-
-// Plot MACD
-plot(macd_line, "MACD", color=color.blue)
-plot(signal_line, "Signal", color=color.red)
-plot(hist, "Histogram", color=(hist > 0) ? color.green : color.red, style=plot.style_histogram)
-
-// Zero line
-hline(0, "Zero", color=color.gray, linestyle=hline.style_dashed)
-
-// Crossover signals
-bullish_cross = ta.crossover(macd_line, signal_line)
-bearish_cross = ta.crossunder(macd_line, signal_line)
-
-plotshape(bullish_cross, title="Bullish Cross", location=location.bottom, 
-         color=color.green, style=shape.triangleup, size=size.small)
-plotshape(bearish_cross, title="Bearish Cross", location=location.top, 
-         color=color.red, style=shape.triangledown, size=size.small)`,
-
-                bollinger: `// Bollinger Bands
-// @version=5
-indicator("Bollinger Bands", overlay=true)
-
-// Input parameters
-length = input.int(20, "Length")
-mult = input.float(2.0, "Multiplier")
-
-// Calculate Bollinger Bands
-basis = ta.sma(close, length)
-dev = mult * ta.stdev(close, length)
-upper = basis + dev
-lower = basis - dev
-
-// Plot Bollinger Bands
-plot(basis, "Middle", color=color.blue)
-plot(upper, "Upper", color=color.gray)
-plot(lower, "Lower", color=color.gray)
-
-// Fill between bands
-fill(upper, lower, color.new(color.gray, 90))
-
-// Price touch signals
-price_touch_upper = high >= upper
-price_touch_lower = low <= lower
-
-plotshape(price_touch_upper, title="Upper Touch", location=location.abovebar, 
-         color=color.red, style=shape.triangledown, size=size.small)
-plotshape(price_touch_lower, title="Lower Touch", location=location.belowbar, 
-         color=color.green, style=shape.triangleup, size=size.small)`,
-
-                fibonacci: `// Dynamic Fibonacci Levels
-// @version=5
-indicator("Fibonacci Dynamic", overlay=true)
-
-// Input parameters
-fib_levels = array.from(0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.272, 1.618)
-show_labels = input.bool(true, "Show Labels")
-lookback = input.int(50, "Lookback Period")
-
-// Find swing points
-var float swing_high = na
-var float swing_low = na
-
-// Detect swing high
-if (high > high[1] and high > high[2] and high > high[3])
-    swing_high := high
-
-// Detect swing low
-if (low < low[1] and low < low[2] and low < low[3])
-    swing_low := low
-
-// Store recent swing points
-var float[] swing_highs = array.new_float()
-var float[] swing_lows = array.new_float()
-
-if (!na(swing_high))
-    array.unshift(swing_highs, swing_high)
-    if (array.size(swing_highs) > lookback)
-        array.pop(swing_highs)
-
-if (!na(swing_low))
-    array.unshift(swing_lows, swing_low)
-    if (array.size(swing_lows) > lookback)
-        array.pop(swing_lows)
-
-// Calculate Fibonacci levels from most recent swing
-if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
-{
-    float recent_high = array.get(swing_highs, 0)
-    float recent_low = array.get(swing_lows, 0)
-    
-    float fib_range = recent_high - recent_low
-    float base_level = recent_low
-    
-    // Draw Fibonacci levels
-    for i = 0 to array.size(fib_levels) - 1
-    {
-        float level_value = base_level + fib_range * array.get(fib_levels, i)
-        line.new(bar_index - lookback, level_value, bar_index, level_value, 
-                color=color.blue, width=1, extend=extend.right)
-        
-        if (show_labels)
-            label.new(bar_index, level_value, str.tostring(array.get(fib_levels, i)), 
-                     color=color.new(color.blue, 80), textcolor=color.white, 
-                     style=label.style_label_down, yloc=yloc.price)
-    }
-}`,
-
-                volume_profile: `// Volume Profile
-// @version=5
-indicator("Volume Profile", overlay=true)
-
-// Input parameters
-bins = input.int(20, "Number of Price Bins")
-lookback = input.int(100, "Lookback Period")
-
-// Calculate price range
-var float min_price = na
-var float max_price = na
-
-if (bar_index == 0)
-{
-    min_price := low
-    max_price := high
-}
-else
-{
-    min_price := math.min(min_price, low)
-    max_price := math.max(max_price, high)
-}
-
-// Create price bins
-var float[] volume_bins = array.new_float(bins)
-var float bin_size = (max_price - min_price) / bins
-
-// Accumulate volume in bins
-for i = 0 to lookback - 1
-{
-    if (i >= bar_index)
-        break
-    
-    float price = (high[i] + low[i]) / 2
-    int bin_index = math.floor((price - min_price) / bin_size)
-    bin_index := math.min(bin_index, bins - 1)
-    bin_index := math.max(bin_index, 0)
-    
-    array.set(volume_bins, bin_index, array.get(volume_bins, bin_index) + volume[i])
-}
-
-// Find max volume for scaling
-var float max_volume = na
-max_volume := array.max(volume_bins)
-
-// Plot volume profile
-for i = 0 to bins - 1
-{
-    float bin_volume = array.get(volume_bins, i)
-    float height = (bin_volume / max_volume) * 0.8
-    float price_level = min_price + (i + 0.5) * bin_size
-    
-    box.new(bar_index, price_level, bar_index + 5, price_level, 
-           bgcolor=color.new(color.green, 80), border_color=color.green)
-}`,
-
-                supertrend: `// Supertrend Indicator
-// @version=5
-indicator("Supertrend", overlay=true)
-
-// Input parameters
-factor = input.float(3.0, "Factor")
-period = input.int(10, "Period")
-
-// Calculate ATR
-atr = ta.atr(period)
-
-// Calculate basic upper and lower bands
-basic_upper = (high + low) / 2 + factor * atr
-basic_lower = (high + low) / 2 - factor * atr
-
-// Calculate final upper and lower bands
-var float final_upper = na
-var float final_lower = na
-
-final_upper := basic_upper
-final_lower := basic_lower
-
-if (final_upper[1] < final_lower[1])
-    final_upper := math.min(final_upper, final_lower[1])
-else
-    final_upper := final_upper
-
-if (final_upper[1] < final_lower[1])
-    final_lower := final_lower
-else
-    final_lower := math.max(final_lower, final_upper[1])
-
-// Calculate Supertrend
-var float supertrend = na
-supertrend := close > final_upper[1] ? final_lower : final_upper
-
-// Plot Supertrend
-plot(supertrend, "Supertrend", color=(supertrend < close) ? color.green : color.red, linewidth=2)
-
-// Buy/Sell signals
-buy_signal = ta.crossover(close, supertrend)
-sell_signal = ta.crossunder(close, supertrend)
-
-plotshape(buy_signal, title="Buy Signal", location=location.belowbar, 
-         color=color.green, style=shape.triangleup, size=size.small)
-plotshape(sell_signal, title="Sell Signal", location=location.abovebar, 
-         color=color.red, style=shape.triangledown, size=size.small)`,
-
-                ichimoku: `// Ichimoku Cloud
-// @version=5
-indicator("Ichimoku Cloud", overlay=true)
-
-// Input parameters
-conversion_periods = input.int(9, "Conversion Line Periods")
-base_periods = input.int(26, "Base Line Periods")
-lagging_span2_periods = input.int(52, "Lagging Span 2 Periods")
-
-// Conversion Line (Tenkan-sen)
-conversion_line = (ta.highest(high, conversion_periods) + ta.lowest(low, conversion_periods)) / 2
-
-// Base Line (Kijun-sen)
-base_line = (ta.highest(high, base_periods) + ta.lowest(low, base_periods)) / 2
-
-// Leading Span A (Senkou Span A)
-leading_span_a = (conversion_line + base_line) / 2
-
-// Leading Span B (Senkou Span B)
-leading_span_b = (ta.highest(high, lagging_span2_periods) + ta.lowest(low, lagging_span2_periods)) / 2
-
-// Plot lines
-plot(conversion_line, "Conversion Line", color=color.orange)
-plot(base_line, "Base Line", color=color.blue)
-plot(close, "Lagging Span", color=color.purple, offset=-26)
-
-// Plot cloud
-span_offset = 26
-plot(leading_span_a, "Leading Span A", color=color.green, offset=span_offset)
-plot(leading_span_b, "Leading Span B", color=color.red, offset=span_offset)
-fill(leading_span_a, leading_span_b, color=(leading_span_a > leading_span_b) ? color.green : color.red, transp=90)`
-
-            };
-
-            if (codeMirror && templates[type]) {
-                codeMirror.setValue(templates[type]);
-                addLog(`Template "${type}" loaded successfully`, 'success');
+        document.addEventListener('click', (e) => {
+            if (e.target === elements.pineEditor) {
+                elements.pineEditor.style.display = 'none';
             }
-        }
+        });
 
         function executePineScript() {
             try {
-                addLog('Compiling Pine Script...', 'info');
-                
                 const code = codeMirror.getValue();
                 if (!code.trim()) {
-                    addLog('Error: Script is empty', 'error');
+                    alert('Script is empty!');
                     return;
                 }
                 
-                // Simulate compilation
-                setTimeout(() => {
-                    addLog('Pine Script compiled successfully', 'success');
-                    
-                    // Extract indicator name from code
-                    const nameMatch = code.match(/indicator\("([^"]+)"/);
-                    const indicatorName = nameMatch ? nameMatch[1] : 'Custom Indicator';
-                    
-                    addLog(`Indicator "${indicatorName}" applied to chart`, 'success');
-                    
-                    // Enable fibonacci as example
-                    if (code.includes('fibonacci') || code.includes('Fibonacci')) {
-                        state.indicators.fibonacci = true;
-                        document.querySelector('.indicator-item[data-indicator="fibonacci"]').classList.add('active');
-                    }
-                    
-                    updateActiveIndicators();
-                    renderChart();
-                }, 800);
+                // In a real implementation, this would compile and execute Pine Script
+                // For now, we'll just show a success message
+                alert('Pine Script executed successfully!');
             } catch (error) {
-                addLog(`Compilation Error: ${error.message}`, 'error');
+                alert('Error executing script: ' + error.message);
             }
-        }
-
-        function addLog(message, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `log-entry log-${type}`;
-            div.textContent = message;
-            elements.pineLogs.appendChild(div);
-            elements.pineLogs.scrollTop = elements.pineLogs.scrollHeight;
         }
 
         // Initialize Functions
@@ -2009,6 +1955,33 @@ fill(leading_span_a, leading_span_b, color=(leading_span_a > leading_span_b) ? c
             if (min < lowerBand || max > upperBand) {
                 state.yAxisRange = { min, max };
             }
+        }
+
+        function updateActiveIndicators() {
+            elements.activeIndicators.innerHTML = '';
+            Object.keys(state.indicators).forEach(key => {
+                if (state.indicators[key].enabled) {
+                    const div = document.createElement('div');
+                    div.className = 'active-indicator';
+                    const name = key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    div.innerHTML = `
+                        <span>${name}</span>
+                        <div class="indicator-close" data-indicator="${key}">×</div>
+                    `;
+                    elements.activeIndicators.appendChild(div);
+                }
+            });
+            
+            // Add event listeners to close buttons
+            document.querySelectorAll('.indicator-close').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const indicator = e.target.dataset.indicator;
+                    state.indicators[indicator].enabled = false;
+                    updateActiveIndicators();
+                    renderChart();
+                });
+            });
         }
 
         function resetChart() {
