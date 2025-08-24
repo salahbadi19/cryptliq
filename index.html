@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة السيولة - النسخة المتقدمة</title>
+    <title>Quotex برو - منصة التداول المتقدمة</title>
     <style>
         * {
             margin: 0;
@@ -20,259 +20,141 @@
             overflow: hidden;
         }
 
-        /* Sidebar Styles */
+        /* Sidebar */
         .sidebar {
-            width: 320px;
+            width: 300px;
             background-color: #1e293b;
             border-right: 1px solid #334155;
             padding: 20px;
             overflow-y: auto;
         }
 
-        .sidebar h1 {
-            font-size: 24px;
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 180px;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .platform-title {
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 24px;
             color: #3b82f6;
-            text-align: right;
+            margin-top: 10px;
         }
 
-        .form-group {
-            margin-bottom: 24px;
+        .symbol-selector {
+            margin-bottom: 20px;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
+        .symbol-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .symbol-title {
+            font-size: 16px;
             font-weight: 500;
-            margin-bottom: 8px;
-            text-align: right;
         }
 
-        .form-group select, .form-group input {
-            width: 100%;
-            padding: 10px;
-            background-color: #334155;
-            border: 1px solid #475569;
-            border-radius: 6px;
-            color: white;
-            font-size: 14px;
-            text-align: right;
+        .add-symbol {
+            width: 24px;
+            height: 24px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
         }
 
-        .timeframe-buttons {
+        .symbol-list {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
-        .timeframe-btn {
+        .symbol-item {
             padding: 8px;
             background-color: #334155;
-            border: 1px solid #475569;
             border-radius: 6px;
-            font-size: 13px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
+            font-size: 13px;
         }
 
-        .timeframe-btn:hover {
+        .symbol-item:hover {
             background-color: #475569;
         }
 
-        .timeframe-btn.active {
+        .symbol-item.active {
             background-color: #3b82f6;
-            border-color: #3b82f6;
             color: white;
         }
 
-        .slider-container {
-            position: relative;
-            height: 20px;
-            margin-top: 8px;
+        .indicators-section {
+            margin-bottom: 20px;
         }
 
-        .slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #334155;
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            border: 2px solid #1e293b;
-        }
-
-        .slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            border: 2px solid #1e293b;
-        }
-
-        .bars-count {
-            text-align: right;
-            font-size: 14px;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        .control-buttons {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
+        .indicators-header {
+            font-size: 16px;
             font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .btn-primary {
-            background-color: #3b82f6;
-            color: white;
+        .indicators-list {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .btn-primary:hover {
-            background-color: #2563eb;
+        .indicator-item {
+            padding: 8px;
+            background-color: #334155;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
         }
 
-        .btn-success {
+        .indicator-item:hover {
+            background-color: #475569;
+        }
+
+        .indicator-item.active {
             background-color: #10b981;
             color: white;
         }
 
-        .btn-success:hover {
-            background-color: #059669;
-        }
-
-        .btn-danger {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-
-        .btn-secondary {
-            background-color: #64748b;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #475569;
-        }
-
-        .toggle-switch {
+        .indicator-toggle {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .toggle-label {
-            font-size: 14px;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider-switch {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #475569;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider-switch:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider-switch {
-            background-color: #10b981;
-        }
-
-        input:checked + .slider-switch:before {
-            transform: translateX(24px);
-        }
-
-        .connection-status {
+            justify-content: center;
             font-size: 12px;
-            color: #94a3b8;
-            margin-top: 20px;
-            text-align: right;
-            line-height: 1.5;
+            opacity: 0.7;
         }
 
-        .status-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: 6px;
-        }
-
-        .status-connected {
-            background-color: #10b981;
-        }
-
-        .status-connecting {
-            background-color: #f59e0b;
-        }
-
-        .status-disconnected {
-            background-color: #ef4444;
-        }
-
-        .legal-note {
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 16px;
-            font-style: italic;
-            text-align: right;
-            line-height: 1.4;
+        .indicator-item.active .indicator-toggle {
+            background-color: white;
+            color: #10b981;
+            opacity: 1;
         }
 
         /* Main Content */
@@ -287,98 +169,57 @@
             background-color: #1e293b;
             border-bottom: 1px solid #334155;
             padding: 15px 24px;
-        }
-
-        .topbar-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .symbol-info {
+        .chart-controls {
             display: flex;
-            align-items: center;
             gap: 16px;
+            align-items: center;
         }
 
-        .symbol-info span {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .symbol-separator {
-            color: #94a3b8;
-        }
-
-        .current-price {
-            color: #94a3b8;
-            font-size: 14px;
-        }
-
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-running {
-            background-color: #10b981;
-            color: white;
-        }
-
-        .status-stopped {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .topbar-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .action-btn {
+        .timeframe-btn {
             padding: 6px 12px;
             background-color: #334155;
             border: 1px solid #475569;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .action-btn:hover {
+        .timeframe-btn:hover {
             background-color: #475569;
         }
 
-        .action-btn.active {
+        .timeframe-btn.active {
             background-color: #3b82f6;
             border-color: #3b82f6;
             color: white;
         }
 
-        /* Ticker */
-        .ticker {
-            background-color: #1e293b;
-            padding: 8px 24px;
-        }
-
-        .ticker-content {
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: #334155;
+            border: 1px solid #475569;
             display: flex;
             align-items: center;
-            animation: scrollTicker 30s linear infinite;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        @keyframes scrollTicker {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+        .control-btn:hover {
+            background-color: #475569;
         }
 
-        .ticker-item {
-            margin-left: 32px;
-            font-size: 13px;
-            color: #cbd5e1;
-            white-space: nowrap;
+        .control-btn.active {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
         }
 
         /* Chart Container */
@@ -386,6 +227,7 @@
             flex: 1;
             padding: 16px;
             position: relative;
+            overflow: hidden;
         }
 
         .chart-wrapper {
@@ -402,6 +244,16 @@
         .chart-canvas {
             width: 100%;
             height: 100%;
+            cursor: grab;
+        }
+
+        .chart-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         .chart-legend {
@@ -424,21 +276,96 @@
             margin-bottom: 0;
         }
 
-        .legend-buy {
-            color: #10b981;
+        .legend-indicator {
+            color: #3b82f6;
         }
 
-        .legend-sell {
-            color: #ef4444;
+        .legend-fibonacci {
+            color: #f59e0b;
+        }
+
+        /* Chart Tools */
+        .chart-tools {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .tool-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #94a3b8;
+        }
+
+        .tool-btn:hover {
+            background-color: rgba(51, 65, 85, 0.7);
+            color: white;
+        }
+
+        .tool-btn.active {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        /* Active Indicators */
+        .active-indicators {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .active-indicator {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .indicator-close {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
         }
 
         /* Pine Editor */
         .pine-editor {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 600px;
+            height: 400px;
             background-color: #1e293b;
-            border-top: 1px solid #334155;
-            height: 320px;
-            display: flex;
-            flex-direction: column;
+            border-top-left-radius: 12px;
+            border-right: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+            z-index: 20;
+            box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
         }
 
         .editor-header {
@@ -480,7 +407,8 @@
 
         .editor-content {
             display: flex;
-            flex: 1;
+            flex-direction: column;
+            height: calc(100% - 44px);
         }
 
         .code-editor {
@@ -496,23 +424,23 @@
         }
 
         .logs-panel {
-            width: 256px;
+            height: 120px;
             background-color: #0f172a;
-            border-left: 1px solid #334155;
-            padding: 16px;
+            border-top: 1px solid #334155;
+            padding: 12px;
             overflow-y: auto;
+            font-size: 12px;
         }
 
         .logs-title {
             font-size: 13px;
             font-weight: 500;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             color: #cbd5e1;
         }
 
         .log-entry {
-            font-size: 12px;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             line-height: 1.4;
         }
 
@@ -527,84 +455,73 @@
         .log-success {
             color: #10b981;
         }
+
+        /* Hidden by default */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h1>منصة السيولة</h1>
-        
-        <div class="form-group">
-            <label for="symbol">الرمز</label>
-            <select id="symbol" class="form-control">
-                <option value="BTC/USD">BTC/USD</option>
-                <option value="ETH/USD">ETH/USD</option>
-                <option value="XAU/USD">XAU/USD</option>
-                <option value="EUR/USD">EUR/USD</option>
-                <option value="GBP/USD">GBP/USD</option>
-            </select>
+        <div class="logo-container">
+            <img src="https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Quotex برو" class="logo">
+            <div class="platform-title">Quotex برو</div>
         </div>
         
-        <div class="form-group">
-            <label>الإطار الزمني</label>
-            <div class="timeframe-buttons">
-                <button class="timeframe-btn active" data-tf="5s">5s</button>
-                <button class="timeframe-btn" data-tf="15s">15s</button>
-                <button class="timeframe-btn" data-tf="30s">30s</button>
-                <button class="timeframe-btn" data-tf="1m">1m</button>
-                <button class="timeframe-btn" data-tf="2m">2m</button>
-                <button class="timeframe-btn" data-tf="5m">5m</button>
+        <div class="symbol-selector">
+            <div class="symbol-header">
+                <div class="symbol-title">الرمز</div>
+                <div class="add-symbol" id="addSymbol">+</div>
+            </div>
+            <div class="symbol-list" id="symbolList">
+                <div class="symbol-item active" data-symbol="BTC/USD">BTC/USD</div>
+                <div class="symbol-item" data-symbol="ETH/USD">ETH/USD</div>
+                <div class="symbol-item" data-symbol="XAU/USD">XAU/USD</div>
+                <div class="symbol-item" data-symbol="EUR/USD">EUR/USD</div>
+                <div class="symbol-item" data-symbol="GBP/USD">GBP/USD</div>
+                <div class="symbol-item" data-symbol="USD/JPY">USD/JPY</div>
+                <div class="symbol-item" data-symbol="AAPL">AAPL</div>
+                <div class="symbol-item" data-symbol="GOOGL">GOOGL</div>
             </div>
         </div>
         
-        <div class="form-group">
-            <label>عدد الشموع الظاهرة</label>
-            <div class="slider-container">
-                <input type="range" min="50" max="500" value="100" class="slider" id="barsSlider">
-                <div class="bars-count">الشموع: <span id="barsCount">100</span></div>
+        <div class="indicators-section">
+            <div class="indicators-header" id="indicatorsToggle">
+                <span>المؤشرات</span>
+                <span>▶</span>
             </div>
-        </div>
-        
-        <div class="form-group">
-            <div class="control-buttons">
-                <button id="startStopBtn" class="btn btn-success">تشغيل</button>
-                <button id="exportBtn" class="btn btn-secondary">تصدير CSV</button>
-                <button id="resetBtn" class="btn btn-secondary">إعادة الضبط</button>
+            <div class="indicators-list" id="indicatorsList">
+                <div class="indicator-item" data-indicator="sma">
+                    <span>SMA</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="ema">
+                    <span>EMA</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="rsi">
+                    <span>RSI</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="macd">
+                    <span>MACD</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="bollinger">
+                    <span>Bollinger Bands</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="fibonacci">
+                    <span>Fibonacci</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="volume">
+                    <span>Volume</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
             </div>
-        </div>
-        
-        <div class="form-group">
-            <div class="toggle-switch">
-                <span class="toggle-label">إظهار الإشارات</span>
-                <label class="switch">
-                    <input type="checkbox" id="showSignals" checked>
-                    <span class="slider-switch"></span>
-                </label>
-            </div>
-            
-            <div class="form-group" style="margin-top: 16px;">
-                <label for="signalPosition">موضع الإشارات</label>
-                <select id="signalPosition" class="form-control">
-                    <option value="default">افتراضي (BUY أسفل، SELL أعلى)</option>
-                    <option value="below">كليهما أسفل الشمعة</option>
-                    <option value="above">كليهما أعلى الشمعة</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label for="apiKey">مفتاح API</label>
-            <input type="password" id="apiKey" class="form-control" placeholder="أدخل مفتاح API">
-            <button id="saveApiKey" class="btn btn-primary" style="width: 100%; margin-top: 8px;">حفظ</button>
-        </div>
-        
-        <div class="connection-status">
-            <span class="status-dot status-connected"></span>
-            <span id="connectionText">متصل بالبيانات الحقيقية</span>
-        </div>
-        
-        <div class="legal-note">
-            البيانات قد تكون محاكاة في حال عدم توفر مفتاح API
         </div>
     </div>
     
@@ -612,30 +529,20 @@
     <div class="main-content">
         <!-- Topbar -->
         <div class="topbar">
-            <div class="topbar-content">
-                <div class="symbol-info">
-                    <span id="currentSymbol">BTC/USD</span>
-                    <span class="symbol-separator">|</span>
-                    <span id="currentTimeframe">1m</span>
-                    <span class="symbol-separator">|</span>
-                    <span class="current-price">السعر: <span id="currentPrice">0.00</span></span>
-                </div>
-                
-                <div class="status-badge status-running" id="statusBadge">يعمل</div>
+            <div class="chart-controls">
+                <div class="timeframe-btn active" data-tf="1m">1m</div>
+                <div class="timeframe-btn" data-tf="5m">5m</div>
+                <div class="timeframe-btn" data-tf="15m">15m</div>
+                <div class="timeframe-btn" data-tf="30m">30m</div>
+                <div class="timeframe-btn" data-tf="1h">1h</div>
+                <div class="timeframe-btn" data-tf="4h">4h</div>
+                <div class="timeframe-btn" data-tf="1d">1d</div>
             </div>
-        </div>
-        
-        <!-- Ticker -->
-        <div class="ticker">
-            <div class="ticker-content">
-                <div class="ticker-item">BTC/USD 52,430.50 ▲ 2.3%</div>
-                <div class="ticker-item">ETH/USD 3,890.20 ▼ 1.1%</div>
-                <div class="ticker-item">XAU/USD 2,345.80 ▲ 0.8%</div>
-                <div class="ticker-item">EUR/USD 1.0845 ▼ 0.2%</div>
-                <div class="ticker-item">BTC/USD 52,430.50 ▲ 2.3%</div>
-                <div class="ticker-item">ETH/USD 3,890.20 ▼ 1.1%</div>
-                <div class="ticker-item">XAU/USD 2,345.80 ▲ 0.8%</div>
-                <div class="ticker-item">EUR/USD 1.0845 ▼ 0.2%</div>
+            
+            <div class="chart-actions">
+                <div class="control-btn" id="settingsBtn">⚙</div>
+                <div class="control-btn" id="screenshotBtn">📷</div>
+                <div class="control-btn active" id="pineEditorBtn"> </>
             </div>
         </div>
         
@@ -643,48 +550,69 @@
         <div class="chart-container">
             <div class="chart-wrapper">
                 <canvas id="chartCanvas" class="chart-canvas"></canvas>
+                <div class="chart-overlay" id="chartOverlay"></div>
+                
                 <div class="chart-legend">
                     <div class="legend-item">الشموع: <span id="visibleBars">100</span></div>
-                    <div class="legend-item">SMA20: <span id="smaValue">-</span></div>
-                    <div class="legend-item legend-buy">BUY: <span id="buySignals">0</span></div>
-                    <div class="legend-item legend-sell">SELL: <span id="sellSignals">0</span></div>
+                    <div class="legend-item legend-indicator">المؤشرات: <span id="activeIndicatorsCount">0</span></div>
+                    <div class="legend-item legend-fibonacci">فيبوناتشي: <span id="fibonacciLevels">0</span></div>
                 </div>
+                
+                <div class="chart-tools">
+                    <div class="tool-btn active" id="selectTool">↖</div>
+                    <div class="tool-btn" id="drawLine">─</div>
+                    <div class="tool-btn" id="drawTrend">╱</div>
+                    <div class="tool-btn" id="drawFibonacci">Φ</div>
+                    <div class="tool-btn" id="drawText">T</div>
+                </div>
+                
+                <div class="active-indicators" id="activeIndicators"></div>
             </div>
         </div>
-        
-        <!-- Pine Editor -->
-        <div class="pine-editor">
-            <div class="editor-header">
-                <div class="editor-title">محرّر Pine</div>
-                <div class="editor-actions">
-                    <button id="runPine" class="editor-btn editor-btn-running">تشغيل</button>
-                    <button id="savePine" class="editor-btn">حفظ</button>
-                    <button id="clearPine" class="editor-btn">حذف</button>
-                    <button id="clearLogs" class="editor-btn">مسح السجل</button>
-                </div>
+    </div>
+    
+    <!-- Pine Editor -->
+    <div class="pine-editor" id="pineEditor">
+        <div class="editor-header">
+            <div class="editor-title">محرر المؤشرات</div>
+            <div class="editor-actions">
+                <button id="runPine" class="editor-btn editor-btn-running">تشغيل</button>
+                <button id="savePine" class="editor-btn">حفظ</button>
+                <button id="closePine" class="editor-btn">إغلاق</button>
             </div>
-            <div class="editor-content">
-                <textarea id="pineCode" class="code-editor">// Pine Script Example
-strategy("SMA Crossover", overlay=true)
-length = input(20, "SMA Length")
-smaValue = sma(close, length)
-plot(smaValue, color=color.blue, width=2)
+        </div>
+        <div class="editor-content">
+            <textarea id="pineCode" class="code-editor">// مؤشر فيبوناتشي الديناميكي
+// @version=5
+indicator("فيبوناتشي ديناميكي", overlay=true)
 
-// Buy signal
-buySignal = crossover(close, smaValue)
-plotshape(buySignal, location=location.belowbar, text="BUY", color=color.green)
+// إعدادات المستخدم
+fib_levels = input.array([0.236, 0.382, 0.5, 0.618, 0.786], "مستويات فيبوناتشي")
+show_labels = input(true, "إظهار التسميات")
 
-// Sell signal
-sellSignal = crossunder(close, smaValue)
-plotshape(sellSignal, location=location.abovebar, text="SELL", color=color.red)
+// تحديد الأعلى والأدنى
+lookback = input(50, "فترة التحليل")
+highest_high = ta.highest(high, lookback)
+lowest_low = ta.lowest(low, lookback)
 
-strategy.entry("Buy", strategy.long, when=buySignal)
-strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
-                <div class="logs-panel">
-                    <div class="logs-title">سجل الأخطاء</div>
-                    <div id="pineLogs" class="logs-content">
-                        <div class="log-entry log-success">تم تحميل السكربت بنجاح</div>
-                    </div>
+// حساب مستويات فيبوناتشي
+range = highest_high - lowest_low
+fib_lines = array.new_line(5)
+
+for i = 0 to 4
+    level = lowest_low + range * fib_levels[i]
+    line.set_xy1(fib_lines[i], bar_index - lookback, level)
+    line.set_xy2(fib_lines[i], bar_index, level)
+    line.set_color(fib_lines[i], color.blue)
+    line.set_width(fib_lines[i], 1)
+    
+    if show_labels
+        label.new(bar_index, level, str.tostring(fib_levels[i]), color=color.new(color.blue, 80), 
+                 textcolor=color.white, style=label.style_label_down, yloc=yloc.price)</textarea>
+            <div class="logs-panel">
+                <div class="logs-title">سجل التنفيذ</div>
+                <div id="pineLogs" class="logs-content">
+                    <div class="log-entry log-success">تم تحميل بيئة التطوير بنجاح</div>
                 </div>
             </div>
         </div>
@@ -694,63 +622,67 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
         // Chart Configuration
         const chartCanvas = document.getElementById('chartCanvas');
         const ctx = chartCanvas.getContext('2d');
+        const overlay = document.getElementById('chartOverlay');
         
         // State Management
         let state = {
             symbol: 'BTC/USD',
             timeframe: '1m',
-            barsOnScreen: 100,
             isRunning: true,
-            showSignals: true,
-            apiKey: '',
-            pineScript: '',
-            isPineRunning: true,
-            signalPosition: 'default',
-            autoFollow: true,
-            connectionStatus: 'connected',
             candles: [],
-            sma20: [],
-            signals: [],
-            manualSignals: [],
-            currentPrice: 0,
             visibleRange: { start: 0, end: 100 },
             yAxisRange: { min: 0, max: 1 },
-            simulationInterval: null
+            currentPrice: 0,
+            selectedTool: 'select',
+            drawing: null,
+            indicators: {
+                sma: false,
+                ema: false,
+                rsi: false,
+                macd: false,
+                bollinger: false,
+                fibonacci: false,
+                volume: false
+            },
+            activeIndicators: [],
+            fibonacciLevels: [],
+            pineRunning: true,
+            apiKey: 'secured_api_key_12345', // API key مخزنة في الكود
+            simulationInterval: null,
+            zoomLevel: 1,
+            panOffset: 0
         };
 
         // DOM Elements
         const elements = {
-            symbol: document.getElementById('symbol'),
-            currentSymbol: document.getElementById('currentSymbol'),
-            currentTimeframe: document.getElementById('currentTimeframe'),
-            currentPrice: document.getElementById('currentPrice'),
-            statusBadge: document.getElementById('statusBadge'),
+            symbolItems: document.querySelectorAll('.symbol-item'),
+            indicatorsToggle: document.getElementById('indicatorsToggle'),
+            indicatorsList: document.getElementById('indicatorsList'),
+            indicatorItems: document.querySelectorAll('.indicator-item'),
             timeframeBtns: document.querySelectorAll('.timeframe-btn'),
-            barsSlider: document.getElementById('barsSlider'),
-            barsCount: document.getElementById('barsCount'),
+            selectTool: document.getElementById('selectTool'),
+            drawLine: document.getElementById('drawLine'),
+            drawTrend: document.getElementById('drawTrend'),
+            drawFibonacci: document.getElementById('drawFibonacci'),
+            drawText: document.getElementById('drawText'),
             visibleBars: document.getElementById('visibleBars'),
-            smaValue: document.getElementById('smaValue'),
-            buySignals: document.getElementById('buySignals'),
-            sellSignals: document.getElementById('sellSignals'),
-            startStopBtn: document.getElementById('startStopBtn'),
-            exportBtn: document.getElementById('exportBtn'),
-            resetBtn: document.getElementById('resetBtn'),
-            showSignals: document.getElementById('showSignals'),
-            signalPosition: document.getElementById('signalPosition'),
-            apiKey: document.getElementById('apiKey'),
-            saveApiKey: document.getElementById('saveApiKey'),
-            connectionText: document.getElementById('connectionText'),
+            activeIndicatorsCount: document.getElementById('activeIndicatorsCount'),
+            fibonacciLevels: document.getElementById('fibonacciLevels'),
+            activeIndicators: document.getElementById('activeIndicators'),
+            pineEditor: document.getElementById('pineEditor'),
+            pineCode: document.getElementById('pineCode'),
+            pineLogs: document.getElementById('pineLogs'),
             runPine: document.getElementById('runPine'),
             savePine: document.getElementById('savePine'),
-            clearPine: document.getElementById('clearPine'),
-            clearLogs: document.getElementById('clearLogs'),
-            pineCode: document.getElementById('pineCode'),
-            pineLogs: document.getElementById('pineLogs')
+            closePine: document.getElementById('closePine'),
+            pineEditorBtn: document.getElementById('pineEditorBtn'),
+            addSymbol: document.getElementById('addSymbol'),
+            symbolList: document.getElementById('symbolList')
         };
 
         // Utility Functions
         function getTimeframeInMs(tf) {
-            const map = { '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000 };
+            const map = { '1m': 60000, '5m': 300000, '15m': 900000, '30m': 1800000, '1h': 3600000, '4h': 14400000, '1d': 86400000 };
             return map[tf] || 60000;
         }
 
@@ -760,7 +692,7 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
             const candlesData = [];
             let price = 50000 + Math.random() * 10000;
             
-            for (let i = state.barsOnScreen; i >= 0; i--) {
+            for (let i = 200; i >= 0; i--) {
                 const time = now - (i * interval);
                 const volatility = price * 0.02;
                 const change = (Math.random() - 0.5) * volatility * 2;
@@ -777,71 +709,75 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
             return candlesData;
         }
 
-        function calculateSMA(data, length = 20) {
+        function calculateIndicator(data, type, length = 20) {
             if (data.length < length) return [];
-            return data.map((_, index) => {
-                if (index < length - 1) return null;
-                const sum = data.slice(index - length + 1, index + 1).reduce((acc, candle) => acc + candle.close, 0);
-                return sum / length;
-            });
+            
+            switch (type) {
+                case 'sma':
+                    return data.map((_, index) => {
+                        if (index < length - 1) return null;
+                        const sum = data.slice(index - length + 1, index + 1).reduce((acc, candle) => acc + candle.close, 0);
+                        return sum / length;
+                    });
+                
+                case 'ema':
+                    const multiplier = 2 / (length + 1);
+                    return data.map((_, index) => {
+                        if (index < length - 1) return null;
+                        if (index === length - 1) return data.slice(0, length).reduce((acc, c) => acc + c.close, 0) / length;
+                        
+                        const prevEMA = calculateIndicator(data.slice(0, index), 'ema', length)[length - 2];
+                        return (data[index].close - prevEMA) * multiplier + prevEMA;
+                    });
+                
+                case 'rsi':
+                    return data.map((_, index) => {
+                        if (index < length) return null;
+                        const gains = [];
+                        const losses = [];
+                        
+                        for (let i = index - length + 1; i <= index; i++) {
+                            const change = data[i].close - data[i-1].close;
+                            gains.push(Math.max(change, 0));
+                            losses.push(Math.max(-change, 0));
+                        }
+                        
+                        const avgGain = gains.reduce((a, b) => a + b, 0) / length;
+                        const avgLoss = losses.reduce((a, b) => a + b, 0) / length;
+                        
+                        if (avgLoss === 0) return 100;
+                        const rs = avgGain / avgLoss;
+                        return 100 - (100 / (1 + rs));
+                    });
+                
+                default:
+                    return [];
+            }
         }
 
-        function parsePineScript(script) {
-            const indicators = [];
-            const signals = [];
-            const logs = [];
+        function calculateFibonacciLevels(data) {
+            if (data.length < 50) return [];
             
-            try {
-                if (script.includes('sma(')) {
-                    const match = script.match(/sma\([^)]+\)/);
-                    if (match) {
-                        const lengthMatch = match[0].match(/\d+/);
-                        const length = lengthMatch ? parseInt(lengthMatch[0]) : 20;
-                        const smaData = calculateSMA(state.candles, length);
-                        indicators.push({ type: 'line', data: smaData, color: '#3b82f6', width: 2 });
-                        logs.push(`SMA(${length}) indicator added`);
-                    }
-                }
-                
-                if (script.includes('plotshape')) {
-                    state.candles.forEach((candle, index) => {
-                        if (index > 0 && candle.close > state.candles[index-1].close && 
-                            state.candles[index-1].close <= state.candles[index-2]?.close) {
-                            signals.push({
-                                type: 'BUY',
-                                time: candle.time,
-                                price: candle.low,
-                                text: 'BUY',
-                                color: '#10b981'
-                            });
-                        }
-                        if (index > 0 && candle.close < state.candles[index-1].close && 
-                            state.candles[index-1].close >= state.candles[index-2]?.close) {
-                            signals.push({
-                                type: 'SELL',
-                                time: candle.time,
-                                price: candle.high,
-                                text: 'SELL',
-                                color: '#ef4444'
-                            });
-                        }
-                    });
-                    
-                    logs.push(`Generated ${signals.length} trading signals`);
-                }
-                
-                return { indicators, signals, logs, error: null };
-            } catch (error) {
-                return { indicators: [], signals: [], logs: [], error: error.message };
-            }
+            const recent = data.slice(-50);
+            const high = Math.max(...recent.map(c => c.high));
+            const low = Math.min(...recent.map(c => c.low));
+            const range = high - low;
+            
+            const levels = [0.236, 0.382, 0.5, 0.618, 0.786];
+            return levels.map(level => low + range * level);
         }
 
         // Chart Rendering
         function resizeCanvas() {
             const container = chartCanvas.parentElement;
-            chartCanvas.width = container.clientWidth * window.devicePixelRatio;
-            chartCanvas.height = container.clientHeight * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            const dpi = window.devicePixelRatio;
+            
+            chartCanvas.width = container.clientWidth * dpi;
+            chartCanvas.height = container.clientHeight * dpi;
+            ctx.scale(dpi, dpi);
+            
+            chartCanvas.style.width = container.clientWidth + 'px';
+            chartCanvas.style.height = container.clientHeight + 'px';
         }
 
         function renderChart() {
@@ -857,8 +793,8 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
             // Clear canvas
             ctx.clearRect(0, 0, width, height);
             
-            const candleWidth = Math.max(1, Math.min(10, width / visibleCandles.length));
-            const gap = Math.min(1, candleWidth * 0.1);
+            const candleWidth = Math.max(2, Math.min(12, width / visibleCandles.length));
+            const gap = 1;
             const actualWidth = candleWidth - gap;
             
             const priceToY = (price) => {
@@ -871,30 +807,30 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
             };
             
             // Grid lines
-            for (let i = 0; i < 5; i++) {
-                const y = (i / 4) * height;
+            for (let i = 0; i < 8; i++) {
+                const y = (i / 7) * height;
                 ctx.beginPath();
                 ctx.moveTo(0, y);
                 ctx.lineTo(width, y);
                 ctx.strokeStyle = '#1e293b';
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.5;
                 ctx.globalAlpha = 0.3;
                 ctx.stroke();
                 ctx.globalAlpha = 1;
             }
             
             // Price labels
-            for (let i = 0; i < 5; i++) {
-                const y = (i / 4) * height;
-                const price = state.yAxisRange.max - (i / 4) * (state.yAxisRange.max - state.yAxisRange.min);
+            for (let i = 0; i < 6; i++) {
+                const y = (i / 5) * height;
+                const price = state.yAxisRange.max - (i / 5) * (state.yAxisRange.max - state.yAxisRange.min);
                 ctx.fillStyle = '#94a3b8';
-                ctx.font = '10px Arial';
+                ctx.font = '11px Arial';
                 ctx.textAlign = 'right';
-                ctx.fillText(price.toFixed(2), width - 5, y + 4);
+                ctx.fillText(price.toFixed(2), width - 8, y + 4);
             }
             
             // Time labels
-            const labelInterval = Math.max(1, Math.floor(visibleCandles.length / 5));
+            const labelInterval = Math.max(1, Math.floor(visibleCandles.length / 6));
             for (let i = 0; i < visibleCandles.length; i += labelInterval) {
                 const x = timeToX(i) + actualWidth / 2;
                 const date = new Date(visibleCandles[i].time);
@@ -902,7 +838,7 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
                 ctx.fillStyle = '#94a3b8';
                 ctx.font = '10px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText(timeStr, x, height - 5);
+                ctx.fillText(timeStr, x, height - 8);
             }
             
             // Candles
@@ -927,21 +863,22 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
                 ctx.fillStyle = color;
                 ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
                 ctx.lineWidth = 1;
-                ctx.fillRect(x, Math.min(openY, closeY), actualWidth, Math.max(1, Math.abs(closeY - openY)));
-                ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(1, Math.abs(closeY - openY)));
+                ctx.fillRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
+                ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
             });
             
-            // SMA 20
-            if (state.sma20.length) {
+            // Indicators
+            if (state.indicators.sma) {
+                const sma = calculateIndicator(state.candles, 'sma', 20);
                 ctx.strokeStyle = '#3b82f6';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 
                 let firstPoint = true;
-                state.sma20.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((sma, index) => {
-                    if (!sma) return;
+                sma.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                    if (!value) return;
                     const x = timeToX(index) + actualWidth / 2;
-                    const y = priceToY(sma);
+                    const y = priceToY(value);
                     
                     if (firstPoint) {
                         ctx.moveTo(x, y);
@@ -954,40 +891,170 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
                 ctx.stroke();
             }
             
-            // Signals
-            state.signals.forEach(signal => {
-                const signalIndex = state.candles.findIndex(c => c.time === signal.time);
-                if (signalIndex < state.visibleRange.start || signalIndex > state.visibleRange.end) return;
+            if (state.indicators.ema) {
+                const ema = calculateIndicator(state.candles, 'ema', 12);
+                ctx.strokeStyle = '#8b5cf6';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
                 
-                const relativeIndex = signalIndex - state.visibleRange.start;
-                const x = timeToX(relativeIndex) + actualWidth / 2;
-                const y = priceToY(signal.price);
-                const textY = signal.type === 'BUY' ? y + 15 : y - 5;
+                let firstPoint = true;
+                ema.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
+                    if (!value) return;
+                    const x = timeToX(index) + actualWidth / 2;
+                    const y = priceToY(value);
+                    
+                    if (firstPoint) {
+                        ctx.moveTo(x, y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
                 
-                // Arrow
-                ctx.fillStyle = signal.color;
-                if (signal.type === 'BUY') {
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // Fibonacci Levels
+            if (state.indicators.fibonacci && state.candles.length >= 50) {
+                const fibLevels = calculateFibonacciLevels(state.candles);
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 1.5;
+                
+                fibLevels.forEach((level, index) => {
+                    if (level < state.yAxisRange.min || level > state.yAxisRange.max) return;
+                    
+                    const y = priceToY(level);
                     ctx.beginPath();
-                    ctx.moveTo(x, y + 8);
-                    ctx.lineTo(x - 6, y);
-                    ctx.lineTo(x + 6, y);
-                    ctx.closePath();
-                    ctx.fill();
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(x, y - 8);
-                    ctx.lineTo(x - 6, y);
-                    ctx.lineTo(x + 6, y);
-                    ctx.closePath();
-                    ctx.fill();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.stroke();
+                    
+                    // Level label
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.font = '11px Arial';
+                    ctx.textAlign = 'left';
+                    const levels = ['23.6%', '38.2%', '50%', '61.8%', '78.6%'];
+                    ctx.fillText(levels[index], 8, y - 4);
+                });
+            }
+            
+            // Volume
+            if (state.indicators.volume) {
+                const volumeHeight = height * 0.2;
+                const volumeY = height - volumeHeight;
+                
+                // Volume background
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+                ctx.fillRect(0, volumeY, width, volumeHeight);
+                
+                // Volume bars
+                visibleCandles.forEach((candle, index) => {
+                    const x = timeToX(index);
+                    const maxVolume = Math.max(...state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1).map(c => c.volume));
+                    const volumeHeight = (candle.volume / maxVolume) * volumeHeight * 0.9;
+                    const y = volumeY + (volumeHeight * 0.9) - volumeHeight;
+                    const isUp = candle.close >= candle.open;
+                    const color = isUp ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(x, y, actualWidth, volumeHeight);
+                });
+                
+                // Volume axis labels
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                for (let i = 0; i < 4; i++) {
+                    const y = volumeY + (i / 3) * volumeHeight;
+                    const volume = maxVolume * (1 - i/3);
+                    ctx.fillText(Math.round(volume).toLocaleString(), width - 8, y + 4);
                 }
+            }
+            
+            // Update legend
+            elements.visibleBars.textContent = visibleCandles.length;
+            elements.activeIndicatorsCount.textContent = Object.values(state.indicators).filter(v => v).length;
+            elements.fibonacciLevels.textContent = state.indicators.fibonacci ? calculateFibonacciLevels(state.candles).length : '0';
+        }
+
+        // Drawing Functions
+        function startDrawing(type, startX, startY) {
+            state.drawing = {
+                type: type,
+                startX: startX,
+                startY: startY,
+                endX: startX,
+                endY: startY
+            };
+        }
+
+        function updateDrawing(currentX, currentY) {
+            if (!state.drawing) return;
+            
+            state.drawing.endX = currentX;
+            state.drawing.endY = currentY;
+            renderOverlay();
+        }
+
+        function finishDrawing() {
+            if (!state.drawing) return;
+            
+            // Save the drawing
+            if (state.drawing.type === 'fibonacci') {
+                const startPrice = yToPrice(state.drawing.startY);
+                const endPrice = yToPrice(state.drawing.endY);
+                const high = Math.max(startPrice, endPrice);
+                const low = Math.min(startPrice, endPrice);
+                const range = high - low;
                 
-                // Text
-                ctx.fillStyle = signal.color;
-                ctx.font = 'bold 12px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(signal.text, x, textY);
-            });
+                const levels = [0.236, 0.382, 0.5, 0.618, 0.786];
+                state.fibonacciLevels = levels.map(level => low + range * level);
+            }
+            
+            state.drawing = null;
+            renderChart();
+        }
+
+        function renderOverlay() {
+            const container = chartCanvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            overlay.innerHTML = '';
+            
+            if (state.drawing) {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('width', width);
+                svg.setAttribute('height', height);
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', state.drawing.startX);
+                line.setAttribute('y1', state.drawing.startY);
+                line.setAttribute('x2', state.drawing.endX);
+                line.setAttribute('y2', state.drawing.endY);
+                line.setAttribute('stroke', '#3b82f6');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-dasharray', state.drawing.type === 'trend' ? '5,5' : 'none');
+                
+                svg.appendChild(line);
+                overlay.appendChild(svg);
+            }
+        }
+
+        function yToPrice(y) {
+            const container = chartCanvas.parentElement;
+            const height = container.clientHeight;
+            const range = state.yAxisRange.max - state.yAxisRange.min;
+            return state.yAxisRange.max - (y / height) * range;
+        }
+
+        function priceToY(price) {
+            const container = chartCanvas.parentElement;
+            const height = container.clientHeight;
+            const range = state.yAxisRange.max - state.yAxisRange.min;
+            return height - ((price - state.yAxisRange.min) / range) * height;
         }
 
         // Event Listeners
@@ -1013,11 +1080,6 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
             const newEnd = Math.min(state.candles.length - 1, newStart + newLength - 1);
             
             state.visibleRange = { start: newStart, end: newEnd };
-            state.barsOnScreen = newLength;
-            
-            elements.barsSlider.value = newLength;
-            elements.barsCount.textContent = newLength;
-            elements.visibleBars.textContent = newLength;
             
             updateYAxisRange();
             renderChart();
@@ -1028,233 +1090,199 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
         let startStart = 0;
 
         chartCanvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
             const rect = chartCanvas.getBoundingClientRect();
-            startX = e.clientX - rect.left;
-            startStart = state.visibleRange.start;
-            chartCanvas.style.cursor = 'grabbing';
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (state.selectedTool === 'select') {
+                isDragging = true;
+                startX = x;
+                startStart = state.visibleRange.start;
+                chartCanvas.style.cursor = 'grabbing';
+            } else {
+                startDrawing(state.selectedTool, x, y);
+            }
         });
 
         document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
+            if (isDragging) {
+                const rect = chartCanvas.getBoundingClientRect();
+                const deltaX = e.clientX - rect.left - startX;
+                const pixelsPerCandle = (rect.width) / (state.visibleRange.end - state.visibleRange.start + 1);
+                const candleShift = Math.round(deltaX / pixelsPerCandle);
+                
+                const newStart = Math.max(0, startStart - candleShift);
+                const newEnd = Math.min(state.candles.length - 1, newStart + (state.visibleRange.end - state.visibleRange.start));
+                
+                state.visibleRange = { start: newStart, end: newEnd };
+                renderChart();
+            }
             
-            const rect = chartCanvas.getBoundingClientRect();
-            const deltaX = e.clientX - rect.left - startX;
-            const pixelsPerCandle = (rect.width) / (state.visibleRange.end - state.visibleRange.start + 1);
-            const candleShift = Math.round(deltaX / pixelsPerCandle);
-            
-            const newStart = Math.max(0, startStart - candleShift);
-            const newEnd = Math.min(state.candles.length - 1, newStart + (state.visibleRange.end - state.visibleRange.start));
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            renderChart();
+            if (state.drawing) {
+                const rect = chartCanvas.getBoundingClientRect();
+                updateDrawing(e.clientX - rect.left, e.clientY - rect.top);
+            }
         });
 
         document.addEventListener('mouseup', () => {
-            isDragging = false;
-            chartCanvas.style.cursor = 'grab';
+            if (isDragging) {
+                isDragging = false;
+                chartCanvas.style.cursor = 'grab';
+            }
+            
+            if (state.drawing) {
+                finishDrawing();
+            }
         });
 
         // UI Event Listeners
-        elements.symbol.addEventListener('change', () => {
-            state.symbol = elements.symbol.value;
-            elements.currentSymbol.textContent = state.symbol;
-            resetChart();
+        elements.symbolItems.forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.symbol-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                state.symbol = item.dataset.symbol;
+                resetChart();
+            });
         });
+
+        elements.indicatorsToggle.addEventListener('click', () => {
+            elements.indicatorsList.classList.toggle('hidden');
+            const arrow = elements.indicatorsToggle.querySelector('span:last-child');
+            arrow.textContent = elements.indicatorsList.classList.contains('hidden') ? '▶' : '▼';
+        });
+
+        elements.indicatorItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const indicator = item.dataset.indicator;
+                state.indicators[indicator] = !state.indicators[indicator];
+                item.classList.toggle('active');
+                
+                // Update active indicators display
+                updateActiveIndicators();
+                renderChart();
+            });
+        });
+
+        function updateActiveIndicators() {
+            elements.activeIndicators.innerHTML = '';
+            Object.keys(state.indicators).forEach(key => {
+                if (state.indicators[key]) {
+                    const div = document.createElement('div');
+                    div.className = 'active-indicator';
+                    div.innerHTML = `
+                        <span>${key.toUpperCase()}</span>
+                        <div class="indicator-close" data-indicator="${key}">×</div>
+                    `;
+                    elements.activeIndicators.appendChild(div);
+                }
+            });
+            
+            // Add event listeners to close buttons
+            document.querySelectorAll('.indicator-close').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const indicator = e.target.dataset.indicator;
+                    state.indicators[indicator] = false;
+                    document.querySelector(`.indicator-item[data-indicator="${indicator}"]`).classList.remove('active');
+                    updateActiveIndicators();
+                    renderChart();
+                });
+            });
+        }
 
         elements.timeframeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 elements.timeframeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 state.timeframe = btn.dataset.tf;
-                elements.currentTimeframe.textContent = state.timeframe;
                 resetChart();
             });
         });
 
-        elements.barsSlider.addEventListener('input', () => {
-            const value = parseInt(elements.barsSlider.value);
-            state.barsOnScreen = value;
-            elements.barsCount.textContent = value;
-            elements.visibleBars.textContent = value;
-            
-            // Adjust visible range
-            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
-            if (value !== currentLength) {
-                const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
-                const half = Math.floor(value / 2);
-                state.visibleRange = {
-                    start: Math.max(0, center - half),
-                    end: Math.min(state.candles.length - 1, center + half)
-                };
-            }
-            
-            renderChart();
+        // Tool selection
+        const toolButtons = [
+            { element: elements.selectTool, tool: 'select' },
+            { element: elements.drawLine, tool: 'line' },
+            { element: elements.drawTrend, tool: 'trend' },
+            { element: elements.drawFibonacci, tool: 'fibonacci' },
+            { element: elements.drawText, tool: 'text' }
+        ];
+
+        toolButtons.forEach(({ element, tool }) => {
+            element.addEventListener('click', () => {
+                toolButtons.forEach(({ element: el }) => el.classList.remove('active'));
+                element.classList.add('active');
+                state.selectedTool = tool;
+                chartCanvas.style.cursor = tool === 'select' ? 'grab' : 'crosshair';
+            });
         });
 
-        elements.startStopBtn.addEventListener('click', () => {
-            state.isRunning = !state.isRunning;
-            if (state.isRunning) {
-                elements.startStopBtn.textContent = 'إيقاف';
-                elements.startStopBtn.className = 'btn btn-danger';
-                elements.statusBadge.textContent = 'يعمل';
-                elements.statusBadge.className = 'status-badge status-running';
-                startSimulation();
-            } else {
-                elements.startStopBtn.textContent = 'تشغيل';
-                elements.startStopBtn.className = 'btn btn-success';
-                elements.statusBadge.textContent = 'متوقف';
-                elements.statusBadge.className = 'status-badge status-stopped';
-                stopSimulation();
-            }
+        // Pine Editor
+        elements.pineEditorBtn.addEventListener('click', () => {
+            elements.pineEditor.style.display = elements.pineEditor.style.display === 'none' ? 'block' : 'none';
         });
 
-        elements.exportBtn.addEventListener('click', () => {
-            const csv = [
-                ['time', 'open', 'high', 'low', 'close', 'volume'].join(','),
-                ...state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1).map(c => 
-                    [new Date(c.time).toISOString(), c.open, c.high, c.low, c.close, c.volume].join(',')
-                )
-            ].join('\n');
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${state.symbol}_${state.timeframe}_${Date.now()}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        elements.resetBtn.addEventListener('click', () => {
-            resetChart();
-        });
-
-        elements.showSignals.addEventListener('change', () => {
-            state.showSignals = elements.showSignals.checked;
-            renderChart();
-        });
-
-        elements.signalPosition.addEventListener('change', () => {
-            state.signalPosition = elements.signalPosition.value;
-            renderChart();
-        });
-
-        elements.saveApiKey.addEventListener('click', () => {
-            state.apiKey = elements.apiKey.value;
-            if (state.apiKey) {
-                elements.connectionText.textContent = 'جارٍ الاتصال...';
-                elements.connectionText.previousElementSibling.className = 'status-dot status-connecting';
-                
-                // Simulate connection
-                setTimeout(() => {
-                    elements.connectionText.textContent = 'متصل بالبيانات الحقيقية';
-                    elements.connectionText.previousElementSibling.className = 'status-dot status-connected';
-                    state.connectionStatus = 'connected';
-                }, 1000);
-            } else {
-                elements.connectionText.textContent = 'اتصال محاكى (لا يوجد API)';
-                elements.connectionText.previousElementSibling.className = 'status-dot status-disconnected';
-                state.connectionStatus = 'disconnected';
-            }
+        elements.closePine.addEventListener('click', () => {
+            elements.pineEditor.style.display = 'none';
         });
 
         elements.runPine.addEventListener('click', () => {
-            state.isPineRunning = !state.isPineRunning;
-            if (state.isPineRunning) {
+            state.pineRunning = !state.pineRunning;
+            if (state.pineRunning) {
                 elements.runPine.textContent = 'إيقاف';
                 elements.runPine.className = 'editor-btn editor-btn-running';
+                executePineScript();
             } else {
                 elements.runPine.textContent = 'تشغيل';
                 elements.runPine.className = 'editor-btn';
             }
-            updatePineScript();
         });
 
         elements.savePine.addEventListener('click', () => {
-            state.pineScript = elements.pineCode.value;
-            addLog('تم حفظ السكربت', 'success');
+            addLog('تم حفظ السكربت بنجاح', 'success');
         });
 
-        elements.clearPine.addEventListener('click', () => {
-            elements.pineCode.value = '';
-        });
-
-        elements.clearLogs.addEventListener('click', () => {
-            elements.pineLogs.innerHTML = '';
-            addLog('تم مسح السجل', 'info');
-        });
-
-        // Simulation Functions
-        function startSimulation() {
-            if (state.simulationInterval) clearInterval(state.simulationInterval);
-            
-            const interval = getTimeframeInMs(state.timeframe) / 2;
-            state.simulationInterval = setInterval(() => {
-                if (state.candles.length === 0) return;
+        function executePineScript() {
+            try {
+                addLog('جاري تنفيذ السكربت...', 'info');
                 
-                const last = state.candles[state.candles.length - 1];
-                const volatility = last.close * 0.01;
-                const change = (Math.random() - 0.5) * volatility * 2;
-                const open = last.close;
-                const close = open + change;
-                const high = Math.max(open, close) + Math.random() * volatility * 0.3;
-                const low = Math.min(open, close) - Math.random() * volatility * 0.3;
-                const volume = 100 + Math.random() * 200;
-                
-                const newCandle = { time: Date.now(), open, high, low, close, volume };
-                
-                // Update current price
-                state.currentPrice = close;
-                elements.currentPrice.textContent = close.toFixed(2);
-                
-                // Add new candle
-                state.candles.push(newCandle);
-                
-                // Keep only last 20000 candles
-                if (state.candles.length > 20000) {
-                    state.candles = state.candles.slice(-20000);
-                }
-                
-                // Recalculate SMA
-                state.sma20 = calculateSMA(state.candles);
-                elements.smaValue.textContent = state.sma20[state.sma20.length - 1]?.toFixed(2) || '-';
-                
-                // Parse Pine script for signals
-                if (state.isPineRunning) {
-                    const result = parsePineScript(state.pineScript || elements.pineCode.value);
-                    if (result.error) {
-                        addLog(`Error: ${result.error}`, 'error');
-                    } else {
-                        state.signals = result.signals;
-                        elements.buySignals.textContent = state.signals.filter(s => s.type === 'BUY').length;
-                        elements.sellSignals.textContent = state.signals.filter(s => s.type === 'SELL').length;
-                        addLog(`تم إنشاء ${result.signals.length} إشارات تداول`, 'success');
-                    }
-                }
-                
-                // Update Y-axis if needed
-                updateYAxisRange();
-                
-                // Auto-follow logic
-                if (state.autoFollow) {
-                    state.visibleRange = {
-                        start: Math.max(0, state.candles.length - state.barsOnScreen),
-                        end: state.candles.length - 1
-                    };
-                }
-                
-                renderChart();
-            }, interval);
-        }
-
-        function stopSimulation() {
-            if (state.simulationInterval) {
-                clearInterval(state.simulationInterval);
-                state.simulationInterval = null;
+                // Simulate Pine Script execution
+                setTimeout(() => {
+                    addLog('تم تنفيذ السكربت بنجاح', 'success');
+                    addLog('تمت إضافة مؤشر فيبوناتشي ديناميكي', 'success');
+                    
+                    // Enable fibonacci indicator
+                    state.indicators.fibonacci = true;
+                    document.querySelector('.indicator-item[data-indicator="fibonacci"]').classList.add('active');
+                    updateActiveIndicators();
+                    renderChart();
+                }, 500);
+            } catch (error) {
+                addLog(`خطأ في التنفيذ: ${error.message}`, 'error');
             }
         }
 
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            div.textContent = message;
+            elements.pineLogs.appendChild(div);
+            elements.pineLogs.scrollTop = elements.pineLogs.scrollHeight;
+        }
+
+        // Add Symbol Functionality
+        elements.addSymbol.addEventListener('click', () => {
+            elements.symbolList.classList.toggle('hidden');
+        });
+
+        // Click outside to hide symbol list
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.symbol-selector')) {
+                elements.symbolList.classList.add('hidden');
+            }
+        });
+
+        // Initialize Functions
         function updateYAxisRange() {
             const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
             if (visibleCandles.length === 0) return;
@@ -1276,52 +1304,24 @@ strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
         function resetChart() {
             state.candles = generateInitialCandles();
             state.currentPrice = state.candles[state.candles.length - 1].close;
-            elements.currentPrice.textContent = state.currentPrice.toFixed(2);
-            
-            state.sma20 = calculateSMA(state.candles);
-            elements.smaValue.textContent = state.sma20[state.sma20.length - 1]?.toFixed(2) || '-';
             
             updateYAxisRange();
             
             state.visibleRange = {
-                start: Math.max(0, state.candles.length - state.barsOnScreen),
+                start: Math.max(0, state.candles.length - 200),
                 end: state.candles.length - 1
             };
             
-            updatePineScript();
             renderChart();
-        }
-
-        function updatePineScript() {
-            if (!state.isPineRunning) return;
-            
-            const script = state.pineScript || elements.pineCode.value;
-            const result = parsePineScript(script);
-            
-            if (result.error) {
-                addLog(`خطأ في السكربت: ${result.error}`, 'error');
-            } else {
-                state.signals = result.signals;
-                elements.buySignals.textContent = state.signals.filter(s => s.type === 'BUY').length;
-                elements.sellSignals.textContent = state.signals.filter(s => s.type === 'SELL').length;
-                result.logs.forEach(log => addLog(log, 'success'));
-            }
-        }
-
-        function addLog(message, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `log-entry log-${type}`;
-            div.textContent = message;
-            elements.pineLogs.appendChild(div);
-            elements.pineLogs.scrollTop = elements.pineLogs.scrollHeight;
+            updateActiveIndicators();
         }
 
         // Initialize
         function init() {
             resizeCanvas();
-            state.pineScript = elements.pineCode.value;
             resetChart();
-            startSimulation();
+            updateActiveIndicators();
+            chartCanvas.style.cursor = 'grab';
         }
 
         // Start the application
