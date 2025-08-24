@@ -8,16 +8,29 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-bg: #0c111c;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-color: #f1f5f9;
+            --hover-color: #475569;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         body {
-            background-color: #0c111c;
-            color: white;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
             height: 100vh;
             display: flex;
             overflow: hidden;
@@ -26,10 +39,11 @@
         /* Sidebar */
         .sidebar {
             width: 300px;
-            background-color: #1e293b;
-            border-right: 1px solid #334155;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
             padding: 16px;
             overflow-y: auto;
+            transition: all 0.3s ease;
         }
 
         .logo-container {
@@ -43,12 +57,18 @@
             width: 32px;
             height: 32px;
             border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .platform-title {
             font-size: 18px;
-            font-weight: bold;
-            color: #3b82f6;
+            font-weight: 600;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
         }
 
         .symbol-selector {
@@ -70,7 +90,7 @@
         .add-symbol {
             width: 24px;
             height: 24px;
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -78,6 +98,13 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: bold;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-symbol:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
         }
 
         .symbol-list {
@@ -86,6 +113,12 @@
             gap: 8px;
             margin-top: 8px;
             display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .symbol-item {
@@ -94,17 +127,41 @@
             border-radius: 6px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 13px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .symbol-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+        }
+
+        .symbol-item:hover::before {
+            animation: shimmer 1s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
         }
 
         .symbol-item:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .symbol-item.active {
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
+            font-weight: 500;
         }
 
         .symbol-chips {
@@ -116,13 +173,40 @@
 
         .symbol-chip {
             padding: 6px 12px;
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             border-radius: 16px;
             font-size: 13px;
             display: flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .symbol-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .symbol-chip:hover::before {
+            animation: chipShimmer 1s infinite;
+        }
+
+        @keyframes chipShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .symbol-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .chip-close {
@@ -130,12 +214,20 @@
             height: 16px;
             border-radius: 50%;
             background-color: white;
-            color: #3b82f6;
+            color: var(--primary-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.8;
+        }
+
+        .chip-close:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: #e5e7eb;
         }
 
         /* Main Content */
@@ -147,8 +239,8 @@
 
         /* Topbar */
         .topbar {
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
+            background-color: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border-color);
             padding: 12px 24px;
             display: flex;
             justify-content: space-between;
@@ -169,25 +261,32 @@
         .timeframe-display {
             padding: 6px 12px;
             background-color: #334155;
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 13px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 4px;
+            transition: all 0.2s ease;
         }
 
         .timeframe-display:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+        }
+
+        .timeframe-display.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
         .timeframe-list {
             position: absolute;
             top: 100%;
             left: 0;
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             margin-top: 4px;
             display: none;
@@ -195,13 +294,21 @@
             max-height: 300px;
             overflow-y: auto;
             min-width: 120px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .timeframe-option {
             padding: 8px 12px;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
         .timeframe-option:hover {
@@ -209,8 +316,24 @@
         }
 
         .timeframe-option.active {
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
+            font-weight: 500;
+        }
+
+        .timeframe-option::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--primary-color);
+            opacity: 0;
+        }
+
+        .timeframe-option.active::after {
+            opacity: 1;
         }
 
         .tools-container {
@@ -223,23 +346,52 @@
             height: 32px;
             border-radius: 6px;
             background-color: #334155;
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .tool-btn:hover::before {
+            opacity: 1;
+            transform: scale(1);
+            transition: transform 0.3s ease;
         }
 
         .tool-btn:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .tool-btn.active {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
             color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
 
         /* Chart Container */
@@ -253,18 +405,28 @@
         .chart-wrapper {
             width: 100%;
             height: 100%;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             background-color: #0f172a;
             overflow: hidden;
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .chart-wrapper:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .chart-canvas {
             width: 100%;
             height: 100%;
             cursor: grab;
+            transition: cursor 0.1s ease;
+        }
+
+        .chart-canvas:active {
+            cursor: grabbing;
         }
 
         .chart-overlay {
@@ -285,11 +447,16 @@
             border-radius: 6px;
             font-size: 12px;
             z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .legend-item {
             color: #cbd5e1;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .legend-item:last-child {
@@ -297,11 +464,11 @@
         }
 
         .legend-indicator {
-            color: #3b82f6;
+            color: var(--primary-color);
         }
 
         .legend-fibonacci {
-            color: #f59e0b;
+            color: var(--warning-color);
         }
 
         .active-indicators {
@@ -322,18 +489,32 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .indicator-close {
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background-color: #ef4444;
+            background-color: var(--danger-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 10px;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .indicator-close:hover {
+            background-color: #dc2626;
+            transform: scale(1.1);
         }
 
         .navigation-controls {
@@ -350,22 +531,25 @@
             height: 32px;
             border-radius: 6px;
             background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 16px;
+            backdrop-filter: blur(10px);
         }
 
         .nav-btn:hover {
             background-color: rgba(51, 65, 85, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .nav-btn.active {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
             color: white;
         }
 
@@ -383,71 +567,137 @@
             height: 32px;
             border-radius: 6px;
             background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 16px;
+            backdrop-filter: blur(10px);
         }
 
         .zoom-btn:hover {
             background-color: rgba(51, 65, 85, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Drawing Tools Panel */
-        .drawing-panel {
+        /* Drawing Tools Dropdown */
+        .drawing-tools-dropdown {
             position: absolute;
-            bottom: 16px;
+            bottom: 72px;
             left: 16px;
-            background-color: rgba(30, 41, 59, 0.9);
+            background-color: rgba(30, 41, 59, 0.95);
             border-radius: 8px;
             padding: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             z-index: 10;
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            max-width: 600px;
+            display: none;
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.3s ease;
         }
 
-        .drawing-tool {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background-color: #334155;
-            border: 1px solid #475569;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tools-category {
+            margin-bottom: 16px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 6px;
+        }
+
+        .category-icon {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .tool-item {
+            padding: 8px;
+            background-color: #334155;
+            border-radius: 6px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
         }
 
-        .drawing-tool:hover {
-            background-color: #475569;
+        .tool-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
         }
 
-        .drawing-tool.active {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+        .tool-item:hover::before {
+            animation: toolShimmer 1.5s infinite;
+        }
+
+        @keyframes toolShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .tool-item:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tool-item.active {
+            background-color: var(--primary-color);
             color: white;
+            border-color: white;
+            font-weight: 500;
+        }
+
+        .tool-item i {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 4px;
         }
 
         /* Drawing Settings Panel */
         .drawing-settings {
             position: absolute;
-            bottom: 16px;
+            bottom: 72px;
             left: 16px;
-            background-color: rgba(30, 41, 59, 0.9);
+            background-color: rgba(30, 41, 59, 0.95);
             border-radius: 8px;
             padding: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             z-index: 11;
             display: none;
-            min-width: 300px;
+            min-width: 320px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.3s ease;
         }
 
         .settings-header {
@@ -455,12 +705,21 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .settings-title {
             font-size: 16px;
             font-weight: 500;
-            color: #3b82f6;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-icon {
+            font-size: 18px;
         }
 
         .settings-close {
@@ -475,12 +734,13 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .settings-close:hover {
             background-color: #334155;
             color: white;
+            transform: rotate(90deg);
         }
 
         .form-group {
@@ -492,38 +752,74 @@
             font-size: 14px;
             margin-bottom: 8px;
             color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group label i {
+            font-size: 12px;
+            opacity: 0.7;
         }
 
         .form-control {
             width: 100%;
             padding: 8px 12px;
             background-color: #334155;
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             color: white;
             font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
         .color-picker {
             display: flex;
             gap: 8px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         .color-option {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .color-option::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .color-option.active::after {
+            opacity: 1;
         }
 
         .color-option.active {
-            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px white;
         }
 
         .color-custom {
             background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+            border-radius: 8px;
         }
 
         .line-style {
@@ -535,21 +831,34 @@
         .style-option {
             padding: 6px 8px;
             background-color: #334155;
-            border: 1px solid #475569;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             font-size: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .style-option:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
         }
 
         .style-option.active {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
             color: white;
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .range-value {
+            min-width: 40px;
+            text-align: right;
+            font-size: 12px;
+            color: #94a3b8;
         }
 
         .settings-footer {
@@ -558,7 +867,7 @@
             gap: 12px;
             margin-top: 16px;
             padding-top: 16px;
-            border-top: 1px solid #475569;
+            border-top: 1px solid var(--border-color);
         }
 
         .btn {
@@ -568,16 +877,18 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .btn-primary {
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
             background-color: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
         }
 
         .btn-secondary {
@@ -586,16 +897,19 @@
         }
 
         .btn-secondary:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            transform: translateY(-1px);
         }
 
         .btn-danger {
-            background-color: #ef4444;
+            background-color: var(--danger-color);
             color: white;
         }
 
         .btn-danger:hover {
             background-color: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
         }
 
         /* Indicators Modal */
@@ -611,16 +925,30 @@
             align-items: center;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .indicators-modal.show {
+            opacity: 1;
         }
 
         .modal-content {
-            background-color: #1e293b;
+            background-color: var(--card-bg);
             border-radius: 12px;
             width: 800px;
             max-width: 90%;
             max-height: 90vh;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .indicators-modal.show .modal-content {
+            transform: scale(1);
         }
 
         .modal-header {
@@ -628,14 +956,18 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
-            border-bottom: 1px solid #334155;
-            background-color: #1e293b;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
         }
 
         .modal-title {
             font-size: 18px;
             font-weight: 500;
-            color: #3b82f6;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .modal-close {
@@ -650,12 +982,13 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .modal-close:hover {
             background-color: #334155;
             color: white;
+            transform: rotate(90deg);
         }
 
         .modal-body {
@@ -666,16 +999,21 @@
 
         .indicators-categories {
             display: flex;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            gap: 4px;
         }
 
         .category-tab {
             padding: 12px 16px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            border-radius: 6px 6px 0 0;
         }
 
         .category-tab:hover {
@@ -683,9 +1021,10 @@
         }
 
         .category-tab.active {
-            border-bottom: 2px solid #3b82f6;
-            color: #3b82f6;
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
             font-weight: 500;
+            background-color: rgba(59, 130, 246, 0.1);
         }
 
         .indicators-grid {
@@ -699,27 +1038,64 @@
             background-color: #334155;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 13px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .indicator-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .indicator-item:hover::before {
+            opacity: 1;
+            transform: scale(1);
+            transition: transform 0.3s ease;
         }
 
         .indicator-item:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .indicator-item.active {
-            background-color: #10b981;
+            background-color: var(--success-color);
             color: white;
+            border-color: white;
+            font-weight: 500;
         }
 
         .indicator-name {
             font-weight: 500;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .indicator-icon {
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .indicator-desc {
             font-size: 11px;
             opacity: 0.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* Indicator Settings Modal */
@@ -735,14 +1111,28 @@
             align-items: center;
             z-index: 1001;
             display: none;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-modal.show {
+            opacity: 1;
         }
 
         .settings-content {
-            background-color: #1e293b;
+            background-color: var(--card-bg);
             border-radius: 12px;
             width: 500px;
             max-width: 90%;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-modal.show .settings-content {
+            transform: scale(1);
         }
 
         .settings-header {
@@ -750,14 +1140,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
-            border-bottom: 1px solid #334155;
-            background-color: #1e293b;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
         }
 
         .settings-title {
             font-size: 18px;
             font-weight: 500;
-            color: #3b82f6;
+            color: var(--primary-color);
         }
 
         .settings-body {
@@ -766,7 +1157,7 @@
 
         .settings-footer {
             padding: 16px 24px;
-            border-top: 1px solid #334155;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: flex-end;
             gap: 12px;
@@ -783,7 +1174,8 @@
             z-index: 1000;
             display: none;
             flex-direction: column;
-            border-left: 1px solid #334155;
+            border-left: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
         }
 
         .editor-header {
@@ -791,14 +1183,17 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 24px;
-            background-color: #1e293b;
-            border-bottom: 1px solid #334155;
+            background-color: var(--sidebar-bg);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .editor-title {
             font-weight: 500;
             font-size: 16px;
-            color: #3b82f6;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .editor-actions {
@@ -813,16 +1208,17 @@
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
         .editor-btn-primary {
-            background-color: #3b82f6;
+            background-color: var(--primary-color);
             color: white;
         }
 
         .editor-btn-primary:hover {
             background-color: #2563eb;
+            transform: translateY(-1px);
         }
 
         .editor-btn-secondary {
@@ -831,16 +1227,18 @@
         }
 
         .editor-btn-secondary:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            transform: translateY(-1px);
         }
 
         .editor-btn-danger {
-            background-color: #ef4444;
+            background-color: var(--danger-color);
             color: white;
         }
 
         .editor-btn-danger:hover {
             background-color: #dc2626;
+            transform: translateY(-1px);
         }
 
         .editor-content {
@@ -850,8 +1248,8 @@
 
         .editor-sidebar {
             width: 280px;
-            background-color: #1e293b;
-            border-left: 1px solid #334155;
+            background-color: var(--sidebar-bg);
+            border-left: 1px solid var(--border-color);
             padding: 16px;
             overflow-y: auto;
         }
@@ -865,6 +1263,14 @@
             font-weight: 500;
             margin-bottom: 12px;
             color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sidebar-icon {
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .indicator-template {
@@ -873,17 +1279,41 @@
             border-radius: 6px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-size: 13px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .indicator-template::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .indicator-template:hover::before {
+            opacity: 1;
+            transform: scale(1);
+            transition: transform 0.3s ease;
         }
 
         .indicator-template:hover {
-            background-color: #475569;
+            background-color: var(--hover-color);
+            border-color: var(--border-color);
+            transform: translateY(-1px);
         }
 
         .CodeMirror {
             height: 100%;
             font-size: 14px;
+            border-radius: 0 0 0 6px;
         }
 
         .CodeMirror-scroll {
@@ -892,7 +1322,7 @@
 
         .CodeMirror-gutters {
             background-color: #111827 !important;
-            border-right: 1px solid #334155 !important;
+            border-right: 1px solid var(--border-color) !important;
         }
 
         .CodeMirror-linenumbers {
@@ -913,18 +1343,114 @@
 
         .CodeMirror-hints {
             border-radius: 6px !important;
-            border: 1px solid #334155 !important;
-            background-color: #1e293b !important;
+            border: 1px solid var(--border-color) !important;
+            background-color: var(--card-bg) !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         .CodeMirror-hint {
             padding: 8px 12px !important;
-            border-bottom: 1px solid #334155 !important;
+            border-bottom: 1px solid var(--border-color) !important;
         }
 
         .CodeMirror-hint-active {
-            background-color: #3b82f6 !important;
+            background-color: var(--primary-color) !important;
             color: white !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .indicators-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .indicators-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 16px 8px;
+            }
+            
+            .logo-container {
+                justify-content: center;
+            }
+            
+            .logo {
+                margin: 0 auto;
+            }
+            
+            .platform-title {
+                display: none;
+            }
+            
+            .symbol-selector {
+                display: none;
+            }
+            
+            .main-content {
+                flex: 1;
+            }
+            
+            .topbar {
+                padding: 12px 16px;
+            }
+            
+            .chart-controls {
+                gap: 4px;
+            }
+            
+            .timeframe-display {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+            
+            .tool-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .drawing-settings {
+                min-width: 280px;
+                left: 8px;
+                bottom: 72px;
+            }
+            
+            .drawing-tools-dropdown {
+                min-width: 240px;
+                left: 8px;
+                bottom: 72px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .drawing-settings, .drawing-tools-dropdown {
+                min-width: 200px;
+                left: 8px;
+            }
+            
+            .tool-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .settings-footer {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -1028,40 +1554,128 @@
         </div>
     </div>
     
-    <!-- Drawing Tools Panel -->
-    <div class="drawing-panel" id="drawingPanel">
-        <div class="drawing-tool" data-tool="trend-line" title="Trend Line">╱</div>
-        <div class="drawing-tool" data-tool="ray" title="Ray">→</div>
-        <div class="drawing-tool" data-tool="extended-line" title="Extended Line">↔</div>
-        <div class="drawing-tool" data-tool="horizontal" title="Horizontal Line">—</div>
-        <div class="drawing-tool" data-tool="horizontal-ray" title="Horizontal Ray">→</div>
-        <div class="drawing-tool" data-tool="vertical" title="Vertical Line">|</div>
-        <div class="drawing-tool" data-tool="parallel-channel" title="Parallel Channel">▭</div>
-        <div class="drawing-tool" data-tool="rectangle" title="Rectangle">▭</div>
-        <div class="drawing-tool" data-tool="ellipse" title="Ellipse">○</div>
-        <div class="drawing-tool" data-tool="triangle" title="Triangle">△</div>
-        <div class="drawing-tool" data-tool="path" title="Path">✎</div>
-        <div class="drawing-tool" data-tool="arrow" title="Arrow">➤</div>
-        <div class="drawing-tool" data-tool="text" title="Text">T</div>
-        <div class="drawing-tool" data-tool="price-label" title="Price Label">$</div>
-        <div class="drawing-tool" data-tool="fib-retracement" title="Fibonacci Retracement">Φ</div>
-        <div class="drawing-tool" data-tool="fib-extension" title="Fibonacci Extension">Φ→</div>
-        <div class="drawing-tool" data-tool="pitchfork" title="Pitchfork">⌡</div>
-        <div class="drawing-tool" data-tool="brush" title="Brush">🖌</div>
-        <div class="drawing-tool" data-tool="highlighter" title="Highlighter">🖍</div>
-        <div class="drawing-tool" data-tool="measure" title="Measure">📏</div>
-        <div class="drawing-tool" data-tool="clear-all" title="Clear All">🗑</div>
+    <!-- Drawing Tools Dropdown -->
+    <div class="drawing-tools-dropdown" id="drawingToolsDropdown">
+        <div class="tools-category">
+            <div class="category-title"><span class="category-icon">📏</span> Trend & Lines</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="trend-line">
+                    <i>╱</i>
+                    <span>Trend Line</span>
+                </div>
+                <div class="tool-item" data-tool="ray">
+                    <i>→</i>
+                    <span>Ray</span>
+                </div>
+                <div class="tool-item" data-tool="extended-line">
+                    <i>↔</i>
+                    <span>Extended</span>
+                </div>
+                <div class="tool-item" data-tool="horizontal">
+                    <i>—</i>
+                    <span>Horizontal</span>
+                </div>
+                <div class="tool-item" data-tool="vertical">
+                    <i>|</i>
+                    <span>Vertical</span>
+                </div>
+                <div class="tool-item" data-tool="parallel-channel">
+                    <i>▭</i>
+                    <span>Channel</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title"><span class="category-icon">🟦</span> Shapes</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="rectangle">
+                    <i>▭</i>
+                    <span>Rectangle</span>
+                </div>
+                <div class="tool-item" data-tool="ellipse">
+                    <i>○</i>
+                    <span>Ellipse</span>
+                </div>
+                <div class="tool-item" data-tool="triangle">
+                    <i>△</i>
+                    <span>Triangle</span>
+                </div>
+                <div class="tool-item" data-tool="arrow">
+                    <i>➤</i>
+                    <span>Arrow</span>
+                </div>
+                <div class="tool-item" data-tool="text">
+                    <i>T</i>
+                    <span>Text</span>
+                </div>
+                <div class="tool-item" data-tool="price-label">
+                    <i>$</i>
+                    <span>Price Label</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title"><span class="category-icon">🔢</span> Fibonacci</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="fib-retracement">
+                    <i>Φ</i>
+                    <span>Fib Retracement</span>
+                </div>
+                <div class="tool-item" data-tool="fib-extension">
+                    <i>Φ→</i>
+                    <span>Fib Extension</span>
+                </div>
+                <div class="tool-item" data-tool="pitchfork">
+                    <i>⌡</i>
+                    <span>Pitchfork</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title"><span class="category-icon">🎨</span> Drawing</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="brush">
+                    <i>🖌</i>
+                    <span>Brush</span>
+                </div>
+                <div class="tool-item" data-tool="highlighter">
+                    <i>🖍</i>
+                    <span>Highlighter</span>
+                </div>
+                <div class="tool-item" data-tool="measure">
+                    <i>📏</i>
+                    <span>Measure</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tools-category">
+            <div class="category-title"><span class="category-icon">⚙️</span> Management</div>
+            <div class="tool-grid">
+                <div class="tool-item" data-tool="clear-all">
+                    <i>🗑</i>
+                    <span>Clear All</span>
+                </div>
+                <div class="tool-item" data-tool="hide-tools">
+                    <i>👁️</i>
+                    <span>Hide Tools</span>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Drawing Settings Panel -->
     <div class="drawing-settings" id="drawingSettings">
         <div class="settings-header">
-            <div class="settings-title" id="drawingSettingsTitle">Trend Line Settings</div>
+            <div class="settings-title"><span class="settings-icon">⚙️</span> <span id="drawingSettingsTitle">Trend Line Settings</span></div>
             <button class="settings-close" id="closeDrawingSettings">×</button>
         </div>
         
         <div class="form-group">
-            <label for="lineColor">Color</label>
+            <label for="lineColor"><i>🎨</i> Color</label>
             <div class="color-picker">
                 <div class="color-option active" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
                 <div class="color-option" style="background-color: #10b981;" data-color="#10b981"></div>
@@ -1076,13 +1690,15 @@
         </div>
         
         <div class="form-group">
-            <label for="lineWidth">Line Width</label>
-            <input type="range" id="lineWidth" class="form-control" min="1" max="5" value="2">
-            <div id="lineWidthValue" style="text-align: right; margin-top: 4px;">2px</div>
+            <label for="lineWidth"><i>📏</i> Line Width</label>
+            <div class="range-container">
+                <input type="range" id="lineWidth" class="form-control" min="1" max="5" value="2">
+                <div id="lineWidthValue" class="range-value">2px</div>
+            </div>
         </div>
         
         <div class="form-group">
-            <label>Line Style</label>
+            <label><i>〰️</i> Line Style</label>
             <div class="line-style">
                 <div class="style-option active" data-style="solid">Solid</div>
                 <div class="style-option" data-style="dashed">Dashed</div>
@@ -1090,14 +1706,16 @@
             </div>
         </div>
         
-        <div class="form-group" id="opacityGroup">
-            <label for="opacity">Opacity</label>
-            <input type="range" id="opacity" class="form-control" min="0" max="1" step="0.1" value="1">
-            <div id="opacityValue" style="text-align: right; margin-top: 4px;">100%</div>
+        <div class="form-group">
+            <label for="opacity"><i>👁️</i> Opacity</label>
+            <div class="range-container">
+                <input type="range" id="opacity" class="form-control" min="0" max="1" step="0.1" value="1">
+                <div id="opacityValue" class="range-value">100%</div>
+            </div>
         </div>
         
         <div class="form-group" id="fillGroup">
-            <label for="fillColor">Fill Color</label>
+            <label for="fillColor"><i>🟦</i> Fill Color</label>
             <div class="color-picker">
                 <div class="color-option active" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
                 <div class="color-option" style="background-color: #10b981;" data-color="#10b981"></div>
@@ -1112,7 +1730,7 @@
         </div>
         
         <div class="form-group" id="textGroup">
-            <label for="textValue">Text</label>
+            <label for="textValue"><i>T</i> Text</label>
             <input type="text" id="textValue" class="form-control" value="Label">
         </div>
         
@@ -1126,7 +1744,7 @@
     <div class="indicators-modal" id="indicatorsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Indicators</div>
+                <div class="modal-title"><span>📊</span> Indicators</div>
                 <button class="modal-close" id="closeIndicatorsModal">×</button>
             </div>
             <div class="modal-body">
@@ -1140,126 +1758,126 @@
                 <div class="indicators-grid" id="indicatorsGrid">
                     <!-- Trend Indicators -->
                     <div class="indicator-item" data-indicator="ma" data-category="trend">
-                        <div class="indicator-name">Moving Average (MA)</div>
-                        <div class="indicator-desc">Simple moving average</div>
+                        <div class="indicator-name"><span class="indicator-icon">📊</span> Moving Average (MA)</div>
+                        <div class="indicator-desc">Simple moving average for trend identification</div>
                     </div>
                     <div class="indicator-item" data-indicator="ema" data-category="trend">
-                        <div class="indicator-name">Exponential MA (EMA)</div>
-                        <div class="indicator-desc">Weighted moving average</div>
+                        <div class="indicator-name"><span class="indicator-icon">📈</span> Exponential MA (EMA)</div>
+                        <div class="indicator-desc">Weighted moving average with more weight on recent prices</div>
                     </div>
                     <div class="indicator-item" data-indicator="wma" data-category="trend">
-                        <div class="indicator-name">Weighted MA (WMA)</div>
-                        <div class="indicator-desc">Linear weighted average</div>
+                        <div class="indicator-name"><span class="indicator-icon">📉</span> Weighted MA (WMA)</div>
+                        <div class="indicator-desc">Linear weighted average with progressive weights</div>
                     </div>
                     <div class="indicator-item" data-indicator="hma" data-category="trend">
-                        <div class="indicator-name">Hull MA (HMA)</div>
-                        <div class="indicator-desc">Smoothed moving average</div>
+                        <div class="indicator-name"><span class="indicator-icon">⚡</span> Hull MA (HMA)</div>
+                        <div class="indicator-desc">Smoothed moving average with reduced lag</div>
                     </div>
                     <div class="indicator-item" data-indicator="ichimoku" data-category="trend">
-                        <div class="indicator-name">Ichimoku Cloud</div>
-                        <div class="indicator-desc">Complete trend system</div>
+                        <div class="indicator-name"><span class="indicator-icon">🌤️</span> Ichimoku Cloud</div>
+                        <div class="indicator-desc">Complete trend system with cloud indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="parabolic-sar" data-category="trend">
-                        <div class="indicator-name">Parabolic SAR</div>
-                        <div class="indicator-desc">Trend reversal points</div>
+                        <div class="indicator-name"><span class="indicator-icon">🎯</span> Parabolic SAR</div>
+                        <div class="indicator-desc">Trend reversal points with dots</div>
                     </div>
                     <div class="indicator-item" data-indicator="linear-regression" data-category="trend">
-                        <div class="indicator-name">Linear Regression</div>
-                        <div class="indicator-desc">Statistical trend line</div>
+                        <div class="indicator-name"><span class="indicator-icon">📏</span> Linear Regression</div>
+                        <div class="indicator-desc">Statistical trend line based on linear regression</div>
                     </div>
                     
                     <!-- Momentum Indicators -->
                     <div class="indicator-item" data-indicator="rsi" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Relative Strength Index (RSI)</div>
-                        <div class="indicator-desc">Momentum oscillator</div>
+                        <div class="indicator-name"><span class="indicator-icon">⚡</span> Relative Strength Index (RSI)</div>
+                        <div class="indicator-desc">Momentum oscillator showing overbought/oversold levels</div>
                     </div>
                     <div class="indicator-item" data-indicator="macd" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">MACD</div>
-                        <div class="indicator-desc">Trend & momentum combo</div>
+                        <div class="indicator-name"><span class="indicator-icon">📊</span> MACD</div>
+                        <div class="indicator-desc">Trend & momentum combo with histogram</div>
                     </div>
                     <div class="indicator-item" data-indicator="stochastic" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Stochastic Oscillator</div>
-                        <div class="indicator-desc">Overbought/oversold levels</div>
+                        <div class="indicator-name"><span class="indicator-icon">📉</span> Stochastic Oscillator</div>
+                        <div class="indicator-desc">Overbought/oversold levels with %K and %D lines</div>
                     </div>
                     <div class="indicator-item" data-indicator="stochastic-rsi" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Stochastic RSI</div>
-                        <div class="indicator-desc">RSI of RSI</div>
+                        <div class="indicator-name"><span class="indicator-icon">⚡</span> Stochastic RSI</div>
+                        <div class="indicator-desc">RSI of RSI for enhanced momentum signals</div>
                     </div>
                     <div class="indicator-item" data-indicator="cci" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Commodity Channel Index (CCI)</div>
-                        <div class="indicator-desc">Cyclical trend indicator</div>
+                        <div class="indicator-name"><span class="indicator-icon">🔄</span> Commodity Channel Index (CCI)</div>
+                        <div class="indicator-desc">Cyclical trend indicator for overbought/oversold</div>
                     </div>
                     <div class="indicator-item" data-indicator="adx" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">ADX</div>
-                        <div class="indicator-desc">Trend strength</div>
+                        <div class="indicator-name"><span class="indicator-icon">💪</span> ADX</div>
+                        <div class="indicator-desc">Trend strength indicator with DI+ and DI-</div>
                     </div>
                     <div class="indicator-item" data-indicator="momentum" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Momentum</div>
-                        <div class="indicator-desc">Price change rate</div>
+                        <div class="indicator-name"><span class="indicator-icon">🚀</span> Momentum</div>
+                        <div class="indicator-desc">Price change rate indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="williams-r" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Williams %R</div>
-                        <div class="indicator-desc">Momentum indicator</div>
+                        <div class="indicator-name"><span class="indicator-icon">📉</span> Williams %R</div>
+                        <div class="indicator-desc">Momentum indicator showing overbought/oversold</div>
                     </div>
                     <div class="indicator-item" data-indicator="ultimate-oscillator" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">Ultimate Oscillator</div>
-                        <div class="indicator-desc">Multi-timeframe momentum</div>
+                        <div class="indicator-name"><span class="indicator-icon">🎯</span> Ultimate Oscillator</div>
+                        <div class="indicator-desc">Multi-timeframe momentum indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="roc" data-category="momentum" style="display: none;">
-                        <div class="indicator-name">ROC</div>
-                        <div class="indicator-desc">Rate of change</div>
+                        <div class="indicator-name"><span class="indicator-icon">📈</span> ROC</div>
+                        <div class="indicator-desc">Rate of change indicator</div>
                     </div>
                     
                     <!-- Volume Indicators -->
                     <div class="indicator-item" data-indicator="volume" data-category="volume" style="display: none;">
-                        <div class="indicator-name">Volume</div>
-                        <div class="indicator-desc">Trading volume</div>
+                        <div class="indicator-name"><span class="indicator-icon">🔊</span> Volume</div>
+                        <div class="indicator-desc">Trading volume bars</div>
                     </div>
                     <div class="indicator-item" data-indicator="obv" data-category="volume" style="display: none;">
-                        <div class="indicator-name">On-Balance Volume (OBV)</div>
-                        <div class="indicator-desc">Volume flow indicator</div>
+                        <div class="indicator-name"><span class="indicator-icon">📊</span> On-Balance Volume (OBV)</div>
+                        <div class="indicator-desc">Volume flow indicator with cumulative sum</div>
                     </div>
                     <div class="indicator-item" data-indicator="ad-line" data-category="volume" style="display: none;">
-                        <div class="indicator-name">Accumulation/Distribution</div>
-                        <div class="indicator-desc">Volume & price flow</div>
+                        <div class="indicator-name"><span class="indicator-icon">📈</span> Accumulation/Distribution</div>
+                        <div class="indicator-desc">Volume & price flow indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="cmf" data-category="volume" style="display: none;">
-                        <div class="indicator-name">Chaikin Money Flow (CMF)</div>
-                        <div class="indicator-desc">Volume-weighted indicator</div>
+                        <div class="indicator-name"><span class="indicator-icon">💰</span> Chaikin Money Flow (CMF)</div>
+                        <div class="indicator-desc">Volume-weighted money flow indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="mfi" data-category="volume" style="display: none;">
-                        <div class="indicator-name">Money Flow Index (MFI)</div>
-                        <div class="indicator-desc">Volume-weighted RSI</div>
+                        <div class="indicator-name"><span class="indicator-icon">📊</span> Money Flow Index (MFI)</div>
+                        <div class="indicator-desc">Volume-weighted RSI indicator</div>
                     </div>
                     <div class="indicator-item" data-indicator="vwap" data-category="volume" style="display: none;">
-                        <div class="indicator-name">VWAP</div>
-                        <div class="indicator-desc">Volume weighted price</div>
+                        <div class="indicator-name"><span class="indicator-icon">⚖️</span> VWAP</div>
+                        <div class="indicator-desc">Volume weighted average price</div>
                     </div>
                     <div class="indicator-item" data-indicator="force-index" data-category="volume" style="display: none;">
-                        <div class="indicator-name">Force Index</div>
-                        <div class="indicator-desc">Price & volume strength</div>
+                        <div class="indicator-name"><span class="indicator-icon">💪</span> Force Index</div>
+                        <div class="indicator-desc">Price & volume strength indicator</div>
                     </div>
                     
                     <!-- Volatility Indicators -->
                     <div class="indicator-item" data-indicator="bollinger-bands" data-category="volatility" style="display: none;">
-                        <div class="indicator-name">Bollinger Bands</div>
-                        <div class="indicator-desc">Volatility bands</div>
+                        <div class="indicator-name"><span class="indicator-icon">〰️</span> Bollinger Bands</div>
+                        <div class="indicator-desc">Volatility bands with moving average</div>
                     </div>
                     <div class="indicator-item" data-indicator="atr" data-category="volatility" style="display: none;">
-                        <div class="indicator-name">ATR</div>
-                        <div class="indicator-desc">Average True Range</div>
+                        <div class="indicator-name"><span class="indicator-icon">📏</span> ATR</div>
+                        <div class="indicator-desc">Average True Range for volatility</div>
                     </div>
                     <div class="indicator-item" data-indicator="keltner-channels" data-category="volatility" style="display: none;">
-                        <div class="indicator-name">Keltner Channels</div>
-                        <div class="indicator-desc">Volatility-based channels</div>
+                        <div class="indicator-name"><span class="indicator-icon">〰️</span> Keltner Channels</div>
+                        <div class="indicator-desc">Volatility-based channels with ATR</div>
                     </div>
                     <div class="indicator-item" data-indicator="donchian-channels" data-category="volatility" style="display: none;">
-                        <div class="indicator-name">Donchian Channels</div>
-                        <div class="indicator-desc">Price range channels</div>
+                        <div class="indicator-name"><span class="indicator-icon">〰️</span> Donchian Channels</div>
+                        <div class="indicator-desc">Price range channels with high/low</div>
                     </div>
                     <div class="indicator-item" data-indicator="standard-deviation" data-category="volatility" style="display: none;">
-                        <div class="indicator-name">Standard Deviation</div>
-                        <div class="indicator-desc">Statistical volatility</div>
+                        <div class="indicator-name"><span class="indicator-icon">📊</span> Standard Deviation</div>
+                        <div class="indicator-desc">Statistical volatility measurement</div>
                     </div>
                 </div>
             </div>
@@ -1316,7 +1934,7 @@
     <!-- Pine Editor -->
     <div class="pine-editor" id="pineEditor">
         <div class="editor-header">
-            <div class="editor-title">Pine Script Editor</div>
+            <div class="editor-title"><span>📝</span> Pine Script Editor</div>
             <div class="editor-actions">
                 <button id="runPine" class="editor-btn editor-btn-primary">Run (F5)</button>
                 <button id="savePine" class="editor-btn editor-btn-secondary">Save</button>
@@ -1326,7 +1944,7 @@
         <div class="editor-content">
             <div class="editor-sidebar">
                 <div class="sidebar-section">
-                    <div class="sidebar-title">Popular Indicators</div>
+                    <div class="sidebar-title"><span class="sidebar-icon">📚</span> Templates</div>
                     <div class="indicator-template" data-template="sma">
                         <strong>SMA Crossover</strong>
                         <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Simple Moving Average strategy with buy/sell signals</div>
@@ -1367,102 +1985,141 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
 
     <script>
-        // Chart Configuration
-        const chartCanvas = document.getElementById('chartCanvas');
-        const ctx = chartCanvas.getContext('2d');
-        const overlay = document.getElementById('chartOverlay');
-        
-        // State Management
-        let state = {
-            symbol: 'BTC/USD',
-            timeframe: '1m',
-            isRunning: true,
-            candles: [],
-            visibleRange: { start: 0, end: 100 },
-            yAxisRange: { min: 0, max: 1 },
-            currentPrice: 0,
-            selectedTool: null,
-            drawing: null,
-            drawings: [],
-            activeDrawing: null,
-            indicators: {},
-            activeIndicators: [],
-            apiKey: 'secured_api_key_12345',
-            simulationInterval: null,
-            zoomLevel: 1,
-            panOffset: 0,
-            autoScroll: true,
-            chartPosition: 'center'
-        };
-
-        // DOM Elements
-        const elements = {
-            symbolItems: document.querySelectorAll('.symbol-item'),
-            timeframeDisplay: document.getElementById('timeframeDisplay'),
-            timeframeList: document.getElementById('timeframeList'),
-            timeframeOptions: document.querySelectorAll('.timeframe-option'),
-            drawingToolsBtn: document.getElementById('drawingToolsBtn'),
-            indicatorsBtn: document.getElementById('indicatorsBtn'),
-            pineEditorBtn: document.getElementById('pineEditorBtn'),
-            visibleBars: document.getElementById('visibleBars'),
-            activeIndicatorsCount: document.getElementById('activeIndicatorsCount'),
-            activeIndicators: document.getElementById('activeIndicators'),
-            drawingPanel: document.getElementById('drawingPanel'),
-            drawingTools: document.querySelectorAll('.drawing-tool'),
-            drawingSettings: document.getElementById('drawingSettings'),
-            drawingSettingsTitle: document.getElementById('drawingSettingsTitle'),
-            closeDrawingSettings: document.getElementById('closeDrawingSettings'),
-            lineColorOptions: document.querySelectorAll('.color-picker .color-option'),
-            customColor: document.getElementById('customColor'),
-            lineWidth: document.getElementById('lineWidth'),
-            lineWidthValue: document.getElementById('lineWidthValue'),
-            lineStyleOptions: document.querySelectorAll('.line-style .style-option'),
-            opacity: document.getElementById('opacity'),
-            opacityValue: document.getElementById('opacityValue'),
-            fillColorOptions: document.querySelectorAll('#fillGroup .color-picker .color-option'),
-            customFillColor: document.getElementById('customFillColor'),
-            textValue: document.getElementById('textValue'),
-            deleteDrawing: document.getElementById('deleteDrawing'),
-            applyDrawingSettings: document.getElementById('applyDrawingSettings'),
-            fillGroup: document.getElementById('fillGroup'),
-            textGroup: document.getElementById('textGroup'),
-            opacityGroup: document.getElementById('opacityGroup'),
-            indicatorsModal: document.getElementById('indicatorsModal'),
-            indicatorsCategories: document.getElementById('indicatorsCategories'),
-            indicatorsGrid: document.getElementById('indicatorsGrid'),
-            closeIndicatorsModal: document.getElementById('closeIndicatorsModal'),
-            settingsModal: document.getElementById('settingsModal'),
-            settingsTitle: document.getElementById('settingsTitle'),
-            length: document.getElementById('length'),
-            source: document.getElementById('source'),
-            colorOptions: document.querySelectorAll('.color-option'),
-            customColorInput: document.querySelector('.custom-color-input'),
-            customColor: document.getElementById('customColor'),
-            closeSettingsModal: document.getElementById('closeSettingsModal'),
-            cancelSettings: document.getElementById('cancelSettings'),
-            applySettings: document.getElementById('applySettings'),
-            pineEditor: document.getElementById('pineEditor'),
-            codeEditor: document.getElementById('codeEditor'),
-            runPine: document.getElementById('runPine'),
-            savePine: document.getElementById('savePine'),
-            closePine: document.getElementById('closePine'),
-            addSymbol: document.getElementById('addSymbol'),
-            symbolList: document.getElementById('symbolList'),
-            currentTF: document.getElementById('currentTF'),
-            symbolChips: document.getElementById('symbolChips'),
-            navLeft: document.getElementById('navLeft'),
-            navRight: document.getElementById('navRight'),
-            autoScroll: document.getElementById('autoScroll'),
-            resetChart: document.getElementById('resetChart'),
-            zoomIn: document.getElementById('zoomIn'),
-            zoomOut: document.getElementById('zoomOut')
-        };
-
-        // Initialize CodeMirror
-        let codeMirror;
-        function initCodeMirror() {
-            codeMirror = CodeMirror(elements.codeEditor, {
-                value: `// Pine Script - Moving Average Crossover
+        // Modern JavaScript with ES6+ features
+        class TradingChart {
+            constructor() {
+                // Chart elements
+                this.chartCanvas = document.getElementById('chartCanvas');
+                this.ctx = this.chartCanvas.getContext('2d');
+                this.overlay = document.getElementById('chartOverlay');
+                
+                // UI elements
+                this.elements = this.initializeElements();
+                
+                // State management
+                this.state = {
+                    symbol: 'BTC/USD',
+                    timeframe: '1m',
+                    isRunning: true,
+                    candles: [],
+                    visibleRange: { start: 0, end: 100 },
+                    yAxisRange: { min: 0, max: 1 },
+                    currentPrice: 0,
+                    selectedTool: null,
+                    drawing: null,
+                    drawings: [],
+                    activeDrawing: null,
+                    indicators: {},
+                    activeIndicators: [],
+                    apiKey: 'secured_api_key_12345',
+                    simulationInterval: null,
+                    zoomLevel: 1,
+                    panOffset: 0,
+                    autoScroll: true,
+                    chartPosition: 'center',
+                    settings: {
+                        lineWidth: 2,
+                        lineColor: '#3b82f6',
+                        lineStyle: 'solid',
+                        opacity: 1,
+                        fillColor: '#3b82f6'
+                    }
+                };
+                
+                // Initialize the application
+                this.initialize();
+            }
+            
+            initializeElements() {
+                return {
+                    // Symbol elements
+                    symbolItems: document.querySelectorAll('.symbol-item'),
+                    addSymbol: document.getElementById('addSymbol'),
+                    symbolList: document.getElementById('symbolList'),
+                    symbolChips: document.getElementById('symbolChips'),
+                    
+                    // Timeframe elements
+                    timeframeDisplay: document.getElementById('timeframeDisplay'),
+                    timeframeList: document.getElementById('timeframeList'),
+                    timeframeOptions: document.querySelectorAll('.timeframe-option'),
+                    currentTF: document.getElementById('currentTF'),
+                    
+                    // Tool buttons
+                    drawingToolsBtn: document.getElementById('drawingToolsBtn'),
+                    indicatorsBtn: document.getElementById('indicatorsBtn'),
+                    pineEditorBtn: document.getElementById('pineEditorBtn'),
+                    
+                    // Chart info
+                    visibleBars: document.getElementById('visibleBars'),
+                    activeIndicatorsCount: document.getElementById('activeIndicatorsCount'),
+                    activeIndicators: document.getElementById('activeIndicators'),
+                    
+                    // Drawing tools
+                    drawingToolsDropdown: document.getElementById('drawingToolsDropdown'),
+                    drawingTools: document.querySelectorAll('.tool-item'),
+                    drawingSettings: document.getElementById('drawingSettings'),
+                    drawingSettingsTitle: document.getElementById('drawingSettingsTitle'),
+                    closeDrawingSettings: document.getElementById('closeDrawingSettings'),
+                    
+                    // Drawing settings controls
+                    lineColorOptions: document.querySelectorAll('.color-picker .color-option'),
+                    customColor: document.getElementById('customColor'),
+                    lineWidth: document.getElementById('lineWidth'),
+                    lineWidthValue: document.getElementById('lineWidthValue'),
+                    lineStyleOptions: document.querySelectorAll('.line-style .style-option'),
+                    opacity: document.getElementById('opacity'),
+                    opacityValue: document.getElementById('opacityValue'),
+                    fillColorOptions: document.querySelectorAll('#fillGroup .color-picker .color-option'),
+                    customFillColor: document.getElementById('customFillColor'),
+                    textValue: document.getElementById('textValue'),
+                    deleteDrawing: document.getElementById('deleteDrawing'),
+                    applyDrawingSettings: document.getElementById('applyDrawingSettings'),
+                    fillGroup: document.getElementById('fillGroup'),
+                    textGroup: document.getElementById('textGroup'),
+                    opacityGroup: document.getElementById('opacityGroup'),
+                    
+                    // Navigation controls
+                    navLeft: document.getElementById('navLeft'),
+                    navRight: document.getElementById('navRight'),
+                    autoScroll: document.getElementById('autoScroll'),
+                    resetChart: document.getElementById('resetChart'),
+                    zoomIn: document.getElementById('zoomIn'),
+                    zoomOut: document.getElementById('zoomOut')
+                };
+            }
+            
+            initialize() {
+                this.initializeCodeMirror();
+                this.setupEventListeners();
+                this.resizeCanvas();
+                this.resetChart();
+                this.startSimulation();
+            }
+            
+            initializeCodeMirror() {
+                this.codeMirror = CodeMirror(this.elements.codeEditor, {
+                    value: this.getDefaultPineScript(),
+                    mode: "javascript",
+                    theme: "monokai",
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    autoCloseBrackets: true,
+                    styleActiveLine: true,
+                    foldGutter: true,
+                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                    extraKeys: {
+                        "Ctrl-Space": "autocomplete",
+                        "F5": () => this.executePineScript(),
+                        "Esc": () => this.elements.pineEditor.style.display = 'none'
+                    }
+                });
+                
+                // Add linting
+                this.codeMirror.setOption("lint", true);
+            }
+            
+            getDefaultPineScript() {
+                return `// Pine Script - Moving Average Crossover
 // @version=5
 indicator("MA Crossover", overlay=true)
 
@@ -1501,1106 +2158,1252 @@ if (buy_signal)
     strategy.entry("Buy", strategy.long)
 
 if (sell_signal)
-    strategy.entry("Sell", strategy.short)`,
-                mode: "javascript",
-                theme: "monokai",
-                lineNumbers: true,
-                matchBrackets: true,
-                autoCloseBrackets: true,
-                styleActiveLine: true,
-                foldGutter: true,
-                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                extraKeys: {
-                    "Ctrl-Space": "autocomplete",
-                    "F5": function(cm) { executePineScript(); },
-                    "Esc": function(cm) { elements.pineEditor.style.display = 'none'; }
-                }
-            });
-
-            // Add linting
-            codeMirror.setOption("lint", true);
-        }
-
-        // Utility Functions
-        function getTimeframeInMs(tf) {
-            const map = { 
-                '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000,
-                '15m': 900000, '30m': 1800000, '1h': 3600000, '2h': 7200000, '4h': 14400000,
-                '1d': 86400000
-            };
-            return map[tf] || 60000;
-        }
-
-        function generateInitialCandles(symbol, timeframe) {
-            const now = Date.now();
-            const interval = getTimeframeInMs(timeframe);
-            const candlesData = [];
-            let price = 50000 + Math.random() * 10000;
-            
-            for (let i = 200; i >= 0; i--) {
-                const time = now - (i * interval);
-                const volatility = price * 0.02;
-                const change = (Math.random() - 0.5) * volatility * 2;
-                const open = price;
-                const close = price + change;
-                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
-                const volume = 100 + Math.random() * 200;
-                
-                candlesData.push({ time, open, high, low, close, volume, symbol });
-                price = close;
+    strategy.entry("Sell", strategy.short)`;
             }
             
-            return candlesData;
-        }
-
-        function calculateIndicator(data, type, params = {}) {
-            if (data.length < params.length) return [];
-            
-            const source = params.source === 'close' ? data.map(c => c.close) :
-                          params.source === 'open' ? data.map(c => c.open) :
-                          params.source === 'high' ? data.map(c => c.high) :
-                          params.source === 'low' ? data.map(c => c.low) :
-                          params.source === 'hl2' ? data.map(c => (c.high + c.low) / 2) :
-                          params.source === 'hlc3' ? data.map(c => (c.high + c.low + c.close) / 3) :
-                          data.map(c => (c.open + c.high + c.low + c.close) / 4);
-            
-            switch (type) {
-                case 'ma':
-                    return source.map((_, index) => {
-                        if (index < params.length - 1) return null;
-                        const sum = source.slice(index - params.length + 1, index + 1).reduce((acc, val) => acc + val, 0);
-                        return sum / params.length;
-                    });
+            setupEventListeners() {
+                // Resize event
+                window.addEventListener('resize', () => {
+                    this.resizeCanvas();
+                    this.renderChart();
+                });
                 
-                case 'ema':
-                    const multiplier = 2 / (params.length + 1);
-                    return source.map((_, index) => {
-                        if (index < params.length - 1) return null;
-                        if (index === params.length - 1) return source.slice(0, params.length).reduce((acc, val) => acc + val, 0) / params.length;
-                        
-                        const prevEMA = calculateIndicator(data.slice(0, index), 'ema', params)[params.length - 2];
-                        return (source[index] - prevEMA) * multiplier + prevEMA;
-                    });
+                // Chart canvas events
+                this.chartCanvas.addEventListener('wheel', (e) => this.handleWheel(e));
+                this.chartCanvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
                 
-                case 'rsi':
-                    return source.map((_, index) => {
-                        if (index < params.length) return null;
-                        const gains = [];
-                        const losses = [];
-                        
-                        for (let i = index - params.length + 1; i <= index; i++) {
-                            const change = source[i] - source[i-1];
-                            gains.push(Math.max(change, 0));
-                            losses.push(Math.max(-change, 0));
-                        }
-                        
-                        const avgGain = gains.reduce((a, b) => a + b, 0) / params.length;
-                        const avgLoss = losses.reduce((a, b) => a + b, 0) / params.length;
-                        
-                        if (avgLoss === 0) return 100;
-                        const rs = avgGain / avgLoss;
-                        return 100 - (100 / (1 + rs));
-                    });
-                
-                case 'macd':
-                    const fastEMA = calculateIndicator(data, 'ema', { ...params, length: 12 });
-                    const slowEMA = calculateIndicator(data, 'ema', { ...params, length: 26 });
-                    const macdLine = fastEMA.map((val, i) => val !== null && slowEMA[i] !== null ? val - slowEMA[i] : null);
-                    const signalLine = calculateIndicator(data.map((_, i) => ({ close: macdLine[i] })), 'ema', { ...params, length: 9 });
-                    const histogram = macdLine.map((val, i) => val !== null && signalLine[i] !== null ? val - signalLine[i] : null);
-                    
-                    return { macdLine, signalLine, histogram };
-                
-                default:
-                    return [];
-            }
-        }
-
-        // Chart Rendering
-        function resizeCanvas() {
-            const container = chartCanvas.parentElement;
-            const dpi = window.devicePixelRatio;
-            
-            chartCanvas.width = container.clientWidth * dpi;
-            chartCanvas.height = container.clientHeight * dpi;
-            ctx.scale(dpi, dpi);
-            
-            chartCanvas.style.width = container.clientWidth + 'px';
-            chartCanvas.style.height = container.clientHeight + 'px';
-        }
-
-        function renderChart() {
-            if (!state.candles.length) return;
-            
-            const container = chartCanvas.parentElement;
-            const width = container.clientWidth;
-            const height = container.clientHeight;
-            const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
-            
-            if (!visibleCandles.length) return;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, width, height);
-            
-            const candleWidth = Math.max(2, Math.min(12, width / visibleCandles.length));
-            const gap = 1;
-            const actualWidth = candleWidth - gap;
-            
-            const priceToY = (price) => {
-                const range = state.yAxisRange.max - state.yAxisRange.min;
-                return height - ((price - state.yAxisRange.min) / range) * height;
-            };
-            
-            const timeToX = (index) => {
-                return (index * candleWidth);
-            };
-            
-            // Grid lines
-            for (let i = 0; i < 8; i++) {
-                const y = (i / 7) * height;
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-                ctx.strokeStyle = '#1e293b';
-                ctx.lineWidth = 0.5;
-                ctx.globalAlpha = 0.3;
-                ctx.stroke();
-                ctx.globalAlpha = 1;
+                // UI events
+                this.setupSymbolEvents();
+                this.setupTimeframeEvents();
+                this.setupToolButtonEvents();
+                this.setupDrawingToolEvents();
+                this.setupDrawingSettingsEvents();
+                this.setupNavigationEvents();
             }
             
-            // Price labels
-            for (let i = 0; i < 6; i++) {
-                const y = (i / 5) * height;
-                const price = state.yAxisRange.max - (i / 5) * (state.yAxisRange.max - state.yAxisRange.min);
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '11px Arial';
-                ctx.textAlign = 'right';
-                ctx.fillText(price.toFixed(2), width - 8, y + 4);
-            }
-            
-            // Time labels
-            const labelInterval = Math.max(1, Math.floor(visibleCandles.length / 6));
-            for (let i = 0; i < visibleCandles.length; i += labelInterval) {
-                const x = timeToX(i) + actualWidth / 2;
-                const date = new Date(visibleCandles[i].time);
-                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                ctx.fillStyle = '#94a3b8';
-                ctx.font = '10px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(timeStr, x, height - 8);
-            }
-            
-            // Candles
-            visibleCandles.forEach((candle, index) => {
-                const x = timeToX(index);
-                const openY = priceToY(candle.open);
-                const closeY = priceToY(candle.close);
-                const highY = priceToY(candle.high);
-                const lowY = priceToY(candle.low);
-                const isUp = candle.close >= candle.open;
-                const color = isUp ? '#10b981' : '#ef4444';
+            handleWheel(e) {
+                e.preventDefault();
+                const rect = this.chartCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const chartWidth = rect.width;
                 
-                // Wick
-                ctx.beginPath();
-                ctx.moveTo(x + actualWidth / 2, highY);
-                ctx.lineTo(x + actualWidth / 2, lowY);
-                ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
-                ctx.lineWidth = 1;
-                ctx.stroke();
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                const currentLength = this.state.visibleRange.end - this.state.visibleRange.start + 1;
+                const newLength = Math.max(50, Math.min(500, Math.round(currentLength * zoomFactor)));
                 
-                // Body
-                ctx.fillStyle = color;
-                ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
-                ctx.lineWidth = 1;
-                ctx.fillRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
-                ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
-            });
-            
-            // Render all active indicators
-            Object.keys(state.indicators).forEach(key => {
-                const indicator = state.indicators[key];
-                if (indicator.enabled) {
-                    renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX);
-                }
-            });
-            
-            // Render drawings
-            renderDrawings(width, height, priceToY, timeToX);
-            
-            // Update legend
-            elements.visibleBars.textContent = visibleCandles.length;
-            elements.activeIndicatorsCount.textContent = Object.keys(state.indicators).filter(key => state.indicators[key].enabled).length;
-        }
-
-        function renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX) {
-            const data = state.candles;
-            const params = indicator.params;
-            
-            switch (indicator.type) {
-                case 'ma':
-                case 'ema':
-                    const values = calculateIndicator(data, indicator.type, params);
-                    ctx.strokeStyle = params.color;
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    
-                    let firstPoint = true;
-                    values.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                        if (!value) return;
-                        const x = timeToX(index) + actualWidth / 2;
-                        const y = priceToY(value);
-                        
-                        if (firstPoint) {
-                            ctx.moveTo(x, y);
-                            firstPoint = false;
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                    });
-                    
-                    ctx.stroke();
-                    break;
+                const relativePos = x / chartWidth;
+                const centerIndex = Math.round(this.state.visibleRange.start + relativePos * currentLength);
                 
-                case 'rsi':
-                    // RSI is rendered in a separate panel
-                    break;
+                const newStart = Math.max(0, centerIndex - Math.round(newLength * relativePos));
+                const newEnd = Math.min(this.state.candles.length - 1, newStart + newLength - 1);
                 
-                case 'macd':
-                    const macdData = calculateIndicator(data, 'macd', params);
-                    const zeroLine = height * 0.8;
-                    
-                    // MACD line
-                    ctx.strokeStyle = params.color;
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    let firstPoint1 = true;
-                    macdData.macdLine.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                        if (!value) return;
-                        const x = timeToX(index) + actualWidth / 2;
-                        const y = zeroLine - value * 100; // Scale factor
-                        if (firstPoint1) {
-                            ctx.moveTo(x, y);
-                            firstPoint1 = false;
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                    });
-                    ctx.stroke();
-                    
-                    // Signal line
-                    ctx.strokeStyle = '#ff6b6b';
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    let firstPoint2 = true;
-                    macdData.signalLine.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                        if (!value) return;
-                        const x = timeToX(index) + actualWidth / 2;
-                        const y = zeroLine - value * 100;
-                        if (firstPoint2) {
-                            ctx.moveTo(x, y);
-                            firstPoint2 = false;
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                    });
-                    ctx.stroke();
-                    
-                    // Histogram
-                    macdData.histogram.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((value, index) => {
-                        if (!value) return;
-                        const x = timeToX(index);
-                        const y = zeroLine - value * 100;
-                        const height = Math.abs(value) * 100;
-                        ctx.fillStyle = value > 0 ? '#4ade80' : '#ef4444';
-                        ctx.fillRect(x, y, actualWidth, height);
-                    });
-                    break;
-            }
-        }
-
-        function renderDrawings(width, height, priceToY, timeToX) {
-            state.drawings.forEach(drawing => {
-                ctx.save();
-                ctx.globalAlpha = drawing.opacity || 1;
+                this.state.visibleRange = { start: newStart, end: newEnd };
                 
-                switch (drawing.type) {
-                    case 'trend-line':
-                        renderTrendLine(drawing, priceToY, timeToX);
-                        break;
-                    case 'horizontal':
-                        renderHorizontalLine(drawing, priceToY, timeToX);
-                        break;
-                    case 'vertical':
-                        renderVerticalLine(drawing, priceToY, timeToX);
-                        break;
-                    case 'rectangle':
-                        renderRectangle(drawing, priceToY, timeToX);
-                        break;
-                    case 'ellipse':
-                        renderEllipse(drawing, priceToY, timeToX);
-                        break;
-                    case 'fib-retracement':
-                        renderFibonacciRetracement(drawing, priceToY, timeToX);
-                        break;
-                    case 'arrow':
-                        renderArrow(drawing, priceToY, timeToX);
-                        break;
-                    case 'text':
-                        renderText(drawing, priceToY, timeToX);
-                        break;
-                }
+                this.updateYAxisRange();
+                this.renderChart();
+            }
+            
+            handleMouseDown(e) {
+                const rect = this.chartCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 
-                ctx.restore();
-            });
-        }
-
-        function renderTrendLine(drawing, priceToY, timeToX) {
-            const x1 = timeToX(drawing.points[0].index);
-            const y1 = priceToY(drawing.points[0].price);
-            const x2 = timeToX(drawing.points[1].index);
-            const y2 = priceToY(drawing.points[1].price);
-            
-            ctx.strokeStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            
-            if (drawing.style === 'dashed') {
-                ctx.setLineDash([5, 5]);
-            } else if (drawing.style === 'dotted') {
-                ctx.setLineDash([2, 3]);
-            }
-            
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            
-            ctx.setLineDash([]);
-        }
-
-        function renderHorizontalLine(drawing, priceToY, timeToX) {
-            const y = priceToY(drawing.price);
-            const x1 = 0;
-            const x2 = chartCanvas.width;
-            
-            ctx.strokeStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            
-            if (drawing.style === 'dashed') {
-                ctx.setLineDash([5, 5]);
-            } else if (drawing.style === 'dotted') {
-                ctx.setLineDash([2, 3]);
-            }
-            
-            ctx.beginPath();
-            ctx.moveTo(x1, y);
-            ctx.lineTo(x2, y);
-            ctx.stroke();
-            
-            // Add text label
-            if (drawing.text) {
-                ctx.fillStyle = drawing.color;
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText(drawing.text, 8, y - 4);
-            }
-            
-            ctx.setLineDash([]);
-        }
-
-        function renderVerticalLine(drawing, priceToY, timeToX) {
-            const x = timeToX(drawing.index);
-            const y1 = 0;
-            const y2 = chartCanvas.height;
-            
-            ctx.strokeStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            
-            if (drawing.style === 'dashed') {
-                ctx.setLineDash([5, 5]);
-            } else if (drawing.style === 'dotted') {
-                ctx.setLineDash([2, 3]);
-            }
-            
-            ctx.beginPath();
-            ctx.moveTo(x, y1);
-            ctx.lineTo(x, y2);
-            ctx.stroke();
-            
-            ctx.setLineDash([]);
-        }
-
-        function renderRectangle(drawing, priceToY, timeToX) {
-            const x1 = timeToX(drawing.points[0].index);
-            const y1 = priceToY(drawing.points[0].price);
-            const x2 = timeToX(drawing.points[1].index);
-            const y2 = priceToY(drawing.points[1].price);
-            const x = Math.min(x1, x2);
-            const y = Math.min(y1, y2);
-            const width = Math.abs(x2 - x1);
-            const height = Math.abs(y2 - y1);
-            
-            // Fill
-            if (drawing.fillColor) {
-                ctx.fillStyle = drawing.fillColor;
-                ctx.fillRect(x, y, width, height);
-            }
-            
-            // Stroke
-            ctx.strokeStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            ctx.strokeRect(x, y, width, height);
-        }
-
-        function renderEllipse(drawing, priceToY, timeToX) {
-            const x1 = timeToX(drawing.points[0].index);
-            const y1 = priceToY(drawing.points[0].price);
-            const x2 = timeToX(drawing.points[1].index);
-            const y2 = priceToY(drawing.points[1].price);
-            const x = (x1 + x2) / 2;
-            const y = (y1 + y2) / 2;
-            const radiusX = Math.abs(x2 - x1) / 2;
-            const radiusY = Math.abs(y2 - y1) / 2;
-            
-            ctx.beginPath();
-            ctx.ellipse(x, y, radiusX, radiusY, 0, 0, 2 * Math.PI);
-            
-            // Fill
-            if (drawing.fillColor) {
-                ctx.fillStyle = drawing.fillColor;
-                ctx.fill();
-            }
-            
-            // Stroke
-            ctx.strokeStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            ctx.stroke();
-        }
-
-        function renderFibonacciRetracement(drawing, priceToY, timeToX) {
-            const x1 = timeToX(drawing.points[0].index);
-            const y1 = priceToY(drawing.points[0].price);
-            const x2 = timeToX(drawing.points[1].index);
-            const y2 = priceToY(drawing.points[1].price);
-            const levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-            
-            levels.forEach(level => {
-                const y = y1 + (y2 - y1) * level;
-                
-                ctx.strokeStyle = drawing.color;
-                ctx.lineWidth = drawing.width;
-                ctx.setLineDash([5, 5]);
-                
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(chartCanvas.width, y);
-                ctx.stroke();
-                
-                // Level label
-                ctx.fillStyle = drawing.color;
-                ctx.font = '11px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText((level * 100).toFixed(1) + '%', 8, y - 4);
-            });
-            
-            ctx.setLineDash([]);
-        }
-
-        function renderArrow(drawing, priceToY, timeToX) {
-            const x1 = timeToX(drawing.points[0].index);
-            const y1 = priceToY(drawing.points[0].price);
-            const x2 = timeToX(drawing.points[1].index);
-            const y2 = priceToY(drawing.points[1].price);
-            
-            const headLength = 10;
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            
-            ctx.strokeStyle = drawing.color;
-            ctx.fillStyle = drawing.color;
-            ctx.lineWidth = drawing.width;
-            
-            // Line
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-            
-            // Arrowhead
-            ctx.beginPath();
-            ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI / 6), y2 - headLength * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI / 6), y2 - headLength * Math.sin(angle + Math.PI / 6));
-            ctx.closePath();
-            ctx.fill();
-        }
-
-        function renderText(drawing, priceToY, timeToX) {
-            const x = timeToX(drawing.index);
-            const y = priceToY(drawing.price);
-            
-            // Background
-            if (drawing.bgColor) {
-                ctx.fillStyle = drawing.bgColor;
-                const textWidth = ctx.measureText(drawing.text).width;
-                ctx.fillRect(x - 4, y - 16, textWidth + 8, 20);
-            }
-            
-            // Text
-            ctx.fillStyle = drawing.color || '#ffffff';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText(drawing.text, x, y);
-        }
-
-        // Drawing Functions
-        function startDrawing(type, x, y) {
-            const container = chartCanvas.parentElement;
-            const rect = chartCanvas.getBoundingClientRect();
-            const chartX = x - rect.left;
-            const chartY = y - rect.top;
-            
-            const timeIndex = Math.floor(chartX / (container.clientWidth / state.candles.length));
-            const price = yToPrice(chartY);
-            
-            state.drawing = {
-                type: type,
-                points: [{ index: timeIndex, price: price }],
-                color: '#3b82f6',
-                width: 2,
-                style: 'solid',
-                opacity: 1
-            };
-            
-            // Special cases
-            if (type === 'horizontal') {
-                state.drawing.price = price;
-            } else if (type === 'vertical') {
-                state.drawing.index = timeIndex;
-            } else if (type === 'text') {
-                state.drawing.index = timeIndex;
-                state.drawing.price = price;
-                state.drawing.text = 'Label';
-                state.drawing.bgColor = '#000000';
-            }
-        }
-
-        function updateDrawing(x, y) {
-            if (!state.drawing) return;
-            
-            const container = chartCanvas.parentElement;
-            const rect = chartCanvas.getBoundingClientRect();
-            const chartX = x - rect.left;
-            const chartY = y - rect.top;
-            
-            const timeIndex = Math.floor(chartX / (container.clientWidth / state.candles.length));
-            const price = yToPrice(chartY);
-            
-            if (state.drawing.type === 'horizontal') {
-                state.drawing.price = price;
-            } else if (state.drawing.type === 'vertical') {
-                state.drawing.index = timeIndex;
-            } else if (state.drawing.type === 'text') {
-                state.drawing.index = timeIndex;
-                state.drawing.price = price;
-            } else {
-                // For multi-point drawings
-                if (state.drawing.points.length === 1) {
-                    state.drawing.points.push({ index: timeIndex, price: price });
+                if (!this.state.selectedTool) {
+                    this.isDragging = true;
+                    this.startX = x;
+                    this.startStart = this.state.visibleRange.start;
+                    this.chartCanvas.style.cursor = 'grabbing';
                 } else {
-                    state.drawing.points[1] = { index: timeIndex, price: price };
+                    this.startDrawing(this.state.selectedTool, e.clientX, e.clientY);
                 }
             }
             
-            renderChart();
-        }
-
-        function finishDrawing(x, y) {
-            if (!state.drawing) return;
-            
-            // If it's a single-point drawing, we already have all data
-            if (['horizontal', 'vertical', 'text'].includes(state.drawing.type)) {
-                state.drawings.push(state.drawing);
-            } 
-            // For multi-point drawings, ensure we have two points
-            else if (state.drawing.points.length === 2) {
-                state.drawings.push(state.drawing);
-            }
-            
-            state.drawing = null;
-            renderChart();
-        }
-
-        function yToPrice(y) {
-            const container = chartCanvas.parentElement;
-            const height = container.clientHeight;
-            const range = state.yAxisRange.max - state.yAxisRange.min;
-            return state.yAxisRange.max - (y / height) * range;
-        }
-
-        function priceToY(price) {
-            const container = chartCanvas.parentElement;
-            const height = container.clientHeight;
-            const range = state.yAxisRange.max - state.yAxisRange.min;
-            return height - ((price - state.yAxisRange.min) / range) * height;
-        }
-
-        // Event Listeners
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            renderChart();
-        });
-
-        chartCanvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const rect = chartCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const chartWidth = rect.width;
-            
-            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
-            const newLength = Math.max(50, Math.min(500, Math.round(currentLength * zoomFactor)));
-            
-            const relativePos = x / chartWidth;
-            const centerIndex = Math.round(state.visibleRange.start + relativePos * currentLength);
-            
-            const newStart = Math.max(0, centerIndex - Math.round(newLength * relativePos));
-            const newEnd = Math.min(state.candles.length - 1, newStart + newLength - 1);
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            
-            updateYAxisRange();
-            renderChart();
-        });
-
-        let isDragging = false;
-        let startX = 0;
-        let startStart = 0;
-
-        chartCanvas.addEventListener('mousedown', (e) => {
-            const rect = chartCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            if (!state.selectedTool) {
-                isDragging = true;
-                startX = x;
-                startStart = state.visibleRange.start;
-                chartCanvas.style.cursor = 'grabbing';
-            } else {
-                startDrawing(state.selectedTool, e.clientX, e.clientY);
-            }
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const rect = chartCanvas.getBoundingClientRect();
-                const deltaX = e.clientX - rect.left - startX;
-                const pixelsPerCandle = (rect.width) / (state.visibleRange.end - state.visibleRange.start + 1);
-                const candleShift = Math.round(deltaX / pixelsPerCandle);
+            handleMouseMove(e) {
+                if (this.isDragging) {
+                    const rect = this.chartCanvas.getBoundingClientRect();
+                    const deltaX = e.clientX - rect.left - this.startX;
+                    const pixelsPerCandle = (rect.width) / (this.state.visibleRange.end - this.state.visibleRange.start + 1);
+                    const candleShift = Math.round(deltaX / pixelsPerCandle);
+                    
+                    const newStart = Math.max(0, this.startStart - candleShift);
+                    const newEnd = Math.min(this.state.candles.length - 1, newStart + (this.state.visibleRange.end - this.state.visibleRange.start));
+                    
+                    this.state.visibleRange = { start: newStart, end: newEnd };
+                    this.renderChart();
+                }
                 
-                const newStart = Math.max(0, startStart - candleShift);
-                const newEnd = Math.min(state.candles.length - 1, newStart + (state.visibleRange.end - state.visibleRange.start));
-                
-                state.visibleRange = { start: newStart, end: newEnd };
-                renderChart();
+                if (this.state.drawing) {
+                    this.updateDrawing(e.clientX, e.clientY);
+                }
             }
             
-            if (state.drawing) {
-                updateDrawing(e.clientX, e.clientY);
-            }
-        });
-
-        document.addEventListener('mouseup', (e) => {
-            if (isDragging) {
-                isDragging = false;
-                chartCanvas.style.cursor = 'grab';
+            handleMouseUp(e) {
+                if (this.isDragging) {
+                    this.isDragging = false;
+                    this.chartCanvas.style.cursor = 'grab';
+                }
+                
+                if (this.state.drawing) {
+                    this.finishDrawing(e.clientX, e.clientY);
+                }
             }
             
-            if (state.drawing) {
-                finishDrawing(e.clientX, e.clientY);
-            }
-        });
-
-        // UI Event Listeners
-        elements.symbolItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const symbol = item.dataset.symbol;
+            setupSymbolEvents() {
+                this.elements.symbolItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const symbol = item.dataset.symbol;
+                        this.selectSymbol(symbol);
+                    });
+                });
                 
+                this.elements.addSymbol.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.elements.symbolList.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.symbol-selector')) {
+                        this.elements.symbolList.classList.add('hidden');
+                    }
+                });
+            }
+            
+            selectSymbol(symbol) {
                 // Add symbol chip if not already exists
                 if (!document.querySelector(`.symbol-chip[data-symbol="${symbol}"]`)) {
-                    const chip = document.createElement('div');
-                    chip.className = 'symbol-chip';
-                    chip.dataset.symbol = symbol;
-                    chip.innerHTML = `
-                        ${symbol}
-                        <div class="chip-close">×</div>
-                    `;
-                    elements.symbolChips.appendChild(chip);
-                    
-                    // Add close event
-                    chip.querySelector('.chip-close').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        chip.remove();
-                        if (elements.symbolChips.children.length === 0) {
-                            addDefaultSymbol();
-                        }
-                    });
-                    
-                    // Add click event to switch chart
-                    chip.addEventListener('click', () => {
-                        state.symbol = symbol;
-                        state.candles = generateInitialCandles(symbol, state.timeframe);
-                        resetChart();
-                    });
+                    const chip = this.createSymbolChip(symbol);
+                    this.elements.symbolChips.appendChild(chip);
                 }
                 
                 // Reset active state
                 document.querySelectorAll('.symbol-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                elements.symbolList.classList.add('hidden');
+                document.querySelector(`.symbol-item[data-symbol="${symbol}"]`).classList.add('active');
+                this.elements.symbolList.classList.add('hidden');
                 
                 // Switch to this symbol
-                state.symbol = symbol;
-                state.candles = generateInitialCandles(symbol, state.timeframe);
-                resetChart();
-            });
-        });
-
-        function addDefaultSymbol() {
-            const chip = document.createElement('div');
-            chip.className = 'symbol-chip';
-            chip.dataset.symbol = 'BTC/USD';
-            chip.innerHTML = `
-                BTC/USD
-                <div class="chip-close">×</div>
-            `;
-            elements.symbolChips.appendChild(chip);
-            
-            // Add close event
-            chip.querySelector('.chip-close').addEventListener('click', (e) => {
-                e.stopPropagation();
-                chip.remove();
-                if (elements.symbolChips.children.length === 0) {
-                    addDefaultSymbol();
-                }
-            });
-            
-            // Add click event
-            chip.addEventListener('click', () => {
-                state.symbol = 'BTC/USD';
-                state.candles = generateInitialCandles('BTC/USD', state.timeframe);
-                resetChart();
-            });
-        }
-
-        elements.addSymbol.addEventListener('click', (e) => {
-            e.stopPropagation();
-            elements.symbolList.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.symbol-selector')) {
-                elements.symbolList.classList.add('hidden');
+                this.state.symbol = symbol;
+                this.state.candles = this.generateInitialCandles(symbol, this.state.timeframe);
+                this.resetChart();
             }
-        });
-
-        // Timeframe selection
-        elements.timeframeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.timeframe-option').forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                state.timeframe = option.dataset.tf;
-                elements.currentTF.textContent = state.timeframe;
-                elements.timeframeList.classList.add('hidden');
+            
+            createSymbolChip(symbol) {
+                const chip = document.createElement('div');
+                chip.className = 'symbol-chip';
+                chip.dataset.symbol = symbol;
+                chip.innerHTML = `
+                    ${symbol}
+                    <div class="chip-close">×</div>
+                `;
                 
-                // Update all symbol charts
-                state.candles = generateInitialCandles(state.symbol, state.timeframe);
-                resetChart();
-            });
-        });
-
-        elements.timeframeDisplay.addEventListener('click', () => {
-            elements.timeframeList.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.timeframe-container')) {
-                elements.timeframeList.classList.add('hidden');
-            }
-        });
-
-        // Drawing Tools
-        elements.drawingTools.forEach(tool => {
-            tool.addEventListener('click', () => {
-                const toolType = tool.dataset.tool;
-                
-                // Clear active state from all tools
-                elements.drawingTools.forEach(t => t.classList.remove('active'));
-                
-                // If clicking the same tool, deactivate it
-                if (state.selectedTool === toolType) {
-                    state.selectedTool = null;
-                    chartCanvas.style.cursor = 'grab';
-                } else {
-                    // Activate the tool
-                    state.selectedTool = toolType;
-                    tool.classList.add('active');
-                    chartCanvas.style.cursor = 'crosshair';
-                }
-            });
-        });
-
-        // Drawing Settings
-        elements.closeDrawingSettings.addEventListener('click', () => {
-            elements.drawingSettings.style.display = 'none';
-        });
-
-        elements.lineWidth.addEventListener('input', () => {
-            elements.lineWidthValue.textContent = `${elements.lineWidth.value}px`;
-        });
-
-        elements.opacity.addEventListener('input', () => {
-            elements.opacityValue.textContent = `${Math.round(elements.opacity.value * 100)}%`;
-        });
-
-        // Color pickers
-        elements.lineColorOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                elements.lineColorOptions.forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                
-                if (option.dataset.color === 'custom') {
-                    document.querySelector('#customColor').parentElement.style.display = 'block';
-                } else {
-                    document.querySelector('#customColor').parentElement.style.display = 'none';
-                }
-            });
-        });
-
-        elements.fillColorOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                elements.fillColorOptions.forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                
-                if (option.dataset.color === 'custom') {
-                    document.querySelector('#customFillColor').parentElement.style.display = 'block';
-                } else {
-                    document.querySelector('#customFillColor').parentElement.style.display = 'none';
-                }
-            });
-        });
-
-        elements.lineStyleOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                elements.lineStyleOptions.forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-            });
-        });
-
-        // Navigation Controls
-        elements.navLeft.addEventListener('click', () => {
-            const shift = Math.floor((state.visibleRange.end - state.visibleRange.start) * 0.3);
-            const newStart = Math.max(0, state.visibleRange.start - shift);
-            const newEnd = Math.min(state.candles.length - 1, state.visibleRange.end - shift);
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            state.autoScroll = false;
-            elements.autoScroll.classList.remove('active');
-            renderChart();
-        });
-
-        elements.navRight.addEventListener('click', () => {
-            const shift = Math.floor((state.visibleRange.end - state.visibleRange.start) * 0.3);
-            const newStart = Math.min(state.candles.length - (state.visibleRange.end - state.visibleRange.start + 1), state.visibleRange.start + shift);
-            const newEnd = Math.min(state.candles.length - 1, state.visibleRange.end + shift);
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            state.autoScroll = false;
-            elements.autoScroll.classList.remove('active');
-            renderChart();
-        });
-
-        elements.autoScroll.addEventListener('click', () => {
-            state.autoScroll = !state.autoScroll;
-            elements.autoScroll.classList.toggle('active', state.autoScroll);
-            
-            if (state.autoScroll) {
-                state.visibleRange = {
-                    start: Math.max(0, state.candles.length - 100),
-                    end: state.candles.length - 1
-                };
-                renderChart();
-            }
-        });
-
-        elements.resetChart.addEventListener('click', () => {
-            state.visibleRange = {
-                start: Math.max(0, state.candles.length - 100),
-                end: state.candles.length - 1
-            };
-            state.autoScroll = true;
-            elements.autoScroll.classList.add('active');
-            renderChart();
-        });
-
-        elements.zoomIn.addEventListener('click', () => {
-            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
-            const newLength = Math.max(10, Math.floor(currentLength * 0.8));
-            
-            const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
-            const half = Math.floor(newLength / 2);
-            
-            const newStart = Math.max(0, center - half);
-            const newEnd = Math.min(state.candles.length - 1, center + half);
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            state.autoScroll = false;
-            elements.autoScroll.classList.remove('active');
-            renderChart();
-        });
-
-        elements.zoomOut.addEventListener('click', () => {
-            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
-            const newLength = Math.min(500, Math.floor(currentLength * 1.25));
-            
-            const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
-            const half = Math.floor(newLength / 2);
-            
-            const newStart = Math.max(0, center - half);
-            const newEnd = Math.min(state.candles.length - 1, center + half);
-            
-            state.visibleRange = { start: newStart, end: newEnd };
-            state.autoScroll = false;
-            elements.autoScroll.classList.remove('active');
-            renderChart();
-        });
-
-        // Initialize Functions
-        function updateYAxisRange() {
-            const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
-            if (visibleCandles.length === 0) return;
-            
-            const prices = visibleCandles.flatMap(c => [c.high, c.low]);
-            const min = Math.min(...prices) * 0.99;
-            const max = Math.max(...prices) * 1.01;
-            
-            // Hysteresis to prevent constant rescaling
-            const range = state.yAxisRange.max - state.yAxisRange.min;
-            const lowerBand = state.yAxisRange.min + range * 0.1;
-            const upperBand = state.yAxisRange.max - range * 0.1;
-            
-            if (min < lowerBand || max > upperBand) {
-                state.yAxisRange = { min, max };
-            }
-        }
-
-        function updateActiveIndicators() {
-            elements.activeIndicators.innerHTML = '';
-            Object.keys(state.indicators).forEach(key => {
-                if (state.indicators[key].enabled) {
-                    const div = document.createElement('div');
-                    div.className = 'active-indicator';
-                    const name = key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                    div.innerHTML = `
-                        <span>${name}</span>
-                        <div class="indicator-close" data-indicator="${key}">×</div>
-                    `;
-                    elements.activeIndicators.appendChild(div);
-                }
-            });
-            
-            // Add event listeners to close buttons
-            document.querySelectorAll('.indicator-close').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                // Add close event
+                chip.querySelector('.chip-close').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const indicator = e.target.dataset.indicator;
-                    state.indicators[indicator].enabled = false;
-                    updateActiveIndicators();
-                    renderChart();
+                    chip.remove();
+                    if (this.elements.symbolChips.children.length === 0) {
+                        this.addDefaultSymbol();
+                    }
                 });
-            });
-        }
-
-        function resetChart() {
-            state.candles = generateInitialCandles(state.symbol, state.timeframe);
-            state.currentPrice = state.candles[state.candles.length - 1].close;
-            
-            updateYAxisRange();
-            
-            state.visibleRange = {
-                start: Math.max(0, state.candles.length - 100),
-                end: state.candles.length - 1
-            };
-            
-            renderChart();
-            updateActiveIndicators();
-        }
-
-        // Auto-update simulation
-        function startSimulation() {
-            if (state.simulationInterval) clearInterval(state.simulationInterval);
-            
-            const interval = getTimeframeInMs(state.timeframe) / 2;
-            state.simulationInterval = setInterval(() => {
-                if (state.candles.length === 0) return;
                 
-                const last = state.candles[state.candles.length - 1];
-                const volatility = last.close * 0.01;
-                const change = (Math.random() - 0.5) * volatility * 2;
-                const open = last.close;
-                const close = open + change;
-                const high = Math.max(open, close) + Math.random() * volatility * 0.3;
-                const low = Math.min(open, close) - Math.random() * volatility * 0.3;
-                const volume = 100 + Math.random() * 200;
+                // Add click event to switch chart
+                chip.addEventListener('click', () => {
+                    this.state.symbol = symbol;
+                    this.state.candles = this.generateInitialCandles(symbol, this.state.timeframe);
+                    this.resetChart();
+                });
                 
-                const newCandle = { 
-                    time: Date.now(), 
-                    open, 
-                    high, 
-                    low, 
-                    close, 
-                    volume,
-                    symbol: state.symbol
+                return chip;
+            }
+            
+            addDefaultSymbol() {
+                const chip = this.createSymbolChip('BTC/USD');
+                this.elements.symbolChips.appendChild(chip);
+            }
+            
+            setupTimeframeEvents() {
+                this.elements.timeframeOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.timeframe-option').forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        this.state.timeframe = option.dataset.tf;
+                        this.elements.currentTF.textContent = this.state.timeframe;
+                        this.elements.timeframeList.classList.add('hidden');
+                        
+                        // Update all symbol charts
+                        this.state.candles = this.generateInitialCandles(this.state.symbol, this.state.timeframe);
+                        this.resetChart();
+                    });
+                });
+                
+                this.elements.timeframeDisplay.addEventListener('click', () => {
+                    this.elements.timeframeList.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.timeframe-container')) {
+                        this.elements.timeframeList.classList.add('hidden');
+                    }
+                });
+            }
+            
+            setupToolButtonEvents() {
+                // Drawing tools button
+                this.elements.drawingToolsBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.elements.drawingToolsDropdown.style.display = 
+                        this.elements.drawingToolsDropdown.style.display === 'none' ? 'block' : 'none';
+                });
+                
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.tool-btn') && !e.target.closest('.drawing-tools-dropdown')) {
+                        this.elements.drawingToolsDropdown.style.display = 'none';
+                    }
+                });
+                
+                // Indicators button
+                this.elements.indicatorsBtn.addEventListener('click', () => {
+                    this.elements.indicatorsModal.classList.add('show');
+                    this.elements.indicatorsModal.style.display = 'flex';
+                });
+                
+                // Pine Editor button
+                this.elements.pineEditorBtn.addEventListener('click', () => {
+                    this.elements.pineEditor.style.display = 'flex';
+                });
+            }
+            
+            setupDrawingToolEvents() {
+                this.elements.drawingTools.forEach(tool => {
+                    tool.addEventListener('click', (e) => {
+                        const toolType = tool.dataset.tool;
+                        
+                        // Handle special tools
+                        if (toolType === 'clear-all') {
+                            if (confirm('Are you sure you want to delete all drawings?')) {
+                                this.state.drawings = [];
+                                this.elements.drawingToolsDropdown.style.display = 'none';
+                                this.renderChart();
+                            }
+                            return;
+                        }
+                        
+                        if (toolType === 'hide-tools') {
+                            this.elements.drawingToolsDropdown.style.display = 'none';
+                            return;
+                        }
+                        
+                        // Clear active state from all tools
+                        this.elements.drawingTools.forEach(t => t.classList.remove('active'));
+                        
+                        // If clicking the same tool, deactivate it
+                        if (this.state.selectedTool === toolType) {
+                            this.state.selectedTool = null;
+                            this.chartCanvas.style.cursor = 'grab';
+                            tool.classList.remove('active');
+                        } else {
+                            // Activate the tool
+                            this.state.selectedTool = toolType;
+                            tool.classList.add('active');
+                            this.chartCanvas.style.cursor = 'crosshair';
+                            
+                            // Update settings panel title
+                            const toolName = tool.querySelector('span').textContent;
+                            this.elements.drawingSettingsTitle.textContent = `${toolName} Settings`;
+                            
+                            // Show settings panel
+                            this.showDrawingSettings();
+                        }
+                        
+                        // Hide dropdown
+                        this.elements.drawingToolsDropdown.style.display = 'none';
+                    });
+                });
+            }
+            
+            setupDrawingSettingsEvents() {
+                // Close settings panel
+                this.elements.closeDrawingSettings.addEventListener('click', () => {
+                    this.elements.drawingSettings.style.display = 'none';
+                });
+                
+                // Line width slider
+                this.elements.lineWidth.addEventListener('input', () => {
+                    this.elements.lineWidthValue.textContent = `${this.elements.lineWidth.value}px`;
+                });
+                
+                // Opacity slider
+                this.elements.opacity.addEventListener('input', () => {
+                    this.elements.opacityValue.textContent = `${Math.round(this.elements.opacity.value * 100)}%`;
+                });
+                
+                // Color pickers
+                this.setupColorPickerEvents();
+                
+                // Line style
+                this.elements.lineStyleOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        this.elements.lineStyleOptions.forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                    });
+                });
+                
+                // Delete drawing
+                this.elements.deleteDrawing.addEventListener('click', () => {
+                    if (this.state.activeDrawing) {
+                        this.state.drawings = this.state.drawings.filter(d => d !== this.state.activeDrawing);
+                        this.elements.drawingSettings.style.display = 'none';
+                        this.renderChart();
+                    }
+                });
+                
+                // Apply settings
+                this.elements.applyDrawingSettings.addEventListener('click', () => {
+                    this.applyDrawingSettings();
+                });
+            }
+            
+            setupColorPickerEvents() {
+                // Line color
+                this.elements.lineColorOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        this.elements.lineColorOptions.forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        
+                        if (option.dataset.color === 'custom') {
+                            document.querySelector('#customColor').parentElement.style.display = 'block';
+                        } else {
+                            document.querySelector('#customColor').parentElement.style.display = 'none';
+                        }
+                    });
+                });
+                
+                // Fill color
+                this.elements.fillColorOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        this.elements.fillColorOptions.forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        
+                        if (option.dataset.color === 'custom') {
+                            document.querySelector('#customFillColor').parentElement.style.display = 'block';
+                        } else {
+                            document.querySelector('#customFillColor').parentElement.style.display = 'none';
+                        }
+                    });
+                });
+            }
+            
+            setupNavigationEvents() {
+                // Navigation buttons
+                this.elements.navLeft.addEventListener('click', () => this.navigateLeft());
+                this.elements.navRight.addEventListener('click', () => this.navigateRight());
+                
+                // Auto scroll
+                this.elements.autoScroll.addEventListener('click', () => {
+                    this.state.autoScroll = !this.state.autoScroll;
+                    this.elements.autoScroll.classList.toggle('active', this.state.autoScroll);
+                    
+                    if (this.state.autoScroll) {
+                        this.state.visibleRange = {
+                            start: Math.max(0, this.state.candles.length - 100),
+                            end: this.state.candles.length - 1
+                        };
+                        this.renderChart();
+                    }
+                });
+                
+                // Reset chart
+                this.elements.resetChart.addEventListener('click', () => {
+                    this.state.visibleRange = {
+                        start: Math.max(0, this.state.candles.length - 100),
+                        end: this.state.candles.length - 1
+                    };
+                    this.state.autoScroll = true;
+                    this.elements.autoScroll.classList.add('active');
+                    this.renderChart();
+                });
+                
+                // Zoom controls
+                this.elements.zoomIn.addEventListener('click', () => this.zoomIn());
+                this.elements.zoomOut.addEventListener('click', () => this.zoomOut());
+            }
+            
+            startDrawing(type, x, y) {
+                const container = this.chartCanvas.parentElement;
+                const rect = this.chartCanvas.getBoundingClientRect();
+                const chartX = x - rect.left;
+                const chartY = y - rect.top;
+                
+                const timeIndex = Math.floor(chartX / (container.clientWidth / this.state.candles.length));
+                const price = this.yToPrice(chartY);
+                
+                this.state.drawing = {
+                    type: type,
+                    points: [{ index: timeIndex, price: price }],
+                    color: this.state.settings.lineColor,
+                    width: this.state.settings.lineWidth,
+                    style: this.state.settings.lineStyle,
+                    opacity: this.state.settings.opacity
                 };
                 
-                // Update current price
-                state.currentPrice = close;
+                // Special cases
+                if (type === 'horizontal') {
+                    this.state.drawing.price = price;
+                } else if (type === 'vertical') {
+                    this.state.drawing.index = timeIndex;
+                } else if (type === 'text') {
+                    this.state.drawing.index = timeIndex;
+                    this.state.drawing.price = price;
+                    this.state.drawing.text = 'Label';
+                    this.state.drawing.bgColor = '#000000';
+                }
+            }
+            
+            updateDrawing(x, y) {
+                if (!this.state.drawing) return;
                 
-                // Add new candle
-                state.candles.push(newCandle);
+                const container = this.chartCanvas.parentElement;
+                const rect = this.chartCanvas.getBoundingClientRect();
+                const chartX = x - rect.left;
+                const chartY = y - rect.top;
                 
-                // Keep only last 20000 candles
-                if (state.candles.length > 20000) {
-                    state.candles = state.candles.slice(-20000);
+                const timeIndex = Math.floor(chartX / (container.clientWidth / this.state.candles.length));
+                const price = this.yToPrice(chartY);
+                
+                if (this.state.drawing.type === 'horizontal') {
+                    this.state.drawing.price = price;
+                } else if (this.state.drawing.type === 'vertical') {
+                    this.state.drawing.index = timeIndex;
+                } else if (this.state.drawing.type === 'text') {
+                    this.state.drawing.index = timeIndex;
+                    this.state.drawing.price = price;
+                } else {
+                    // For multi-point drawings
+                    if (this.state.drawing.points.length === 1) {
+                        this.state.drawing.points.push({ index: timeIndex, price: price });
+                    } else {
+                        this.state.drawing.points[1] = { index: timeIndex, price: price };
+                    }
                 }
                 
-                // Update Y-axis if needed
-                updateYAxisRange();
+                this.renderChart();
+            }
+            
+            finishDrawing(x, y) {
+                if (!this.state.drawing) return;
                 
-                // Auto-follow logic
-                if (state.autoScroll) {
-                    state.visibleRange = {
-                        start: Math.max(0, state.candles.length - 100),
-                        end: state.candles.length - 1
+                // If it's a single-point drawing, we already have all data
+                if (['horizontal', 'vertical', 'text'].includes(this.state.drawing.type)) {
+                    this.state.drawings.push(this.state.drawing);
+                } 
+                // For multi-point drawings, ensure we have two points
+                else if (this.state.drawing.points.length === 2) {
+                    this.state.drawings.push(this.state.drawing);
+                }
+                
+                this.state.drawing = null;
+                this.renderChart();
+            }
+            
+            showDrawingSettings() {
+                // Set default values from current settings
+                this.elements.lineWidth.value = this.state.settings.lineWidth;
+                this.elements.lineWidthValue.textContent = `${this.state.settings.lineWidth}px`;
+                this.elements.opacity.value = this.state.settings.opacity;
+                this.elements.opacityValue.textContent = `${Math.round(this.state.settings.opacity * 100)}%`;
+                
+                // Reset color selection
+                this.elements.lineColorOptions.forEach(option => {
+                    option.classList.remove('active');
+                });
+                this.elements.lineColorOptions[0].classList.add('active');
+                document.querySelector('#customColor').parentElement.style.display = 'none';
+                
+                // Show appropriate groups based on tool type
+                this.updateSettingsVisibility();
+                
+                this.elements.drawingSettings.style.display = 'block';
+            }
+            
+            updateSettingsVisibility() {
+                const tool = this.state.selectedTool;
+                
+                // Hide all optional groups
+                this.elements.fillGroup.style.display = 'none';
+                this.elements.textGroup.style.display = 'none';
+                
+                // Show relevant groups
+                if (['rectangle', 'ellipse', 'fib-retracement', 'fib-extension'].includes(tool)) {
+                    this.elements.fillGroup.style.display = 'block';
+                }
+                
+                if (['text', 'price-label'].includes(tool)) {
+                    this.elements.textGroup.style.display = 'block';
+                }
+            }
+            
+            applyDrawingSettings() {
+                // Update settings
+                this.state.settings.lineWidth = parseInt(this.elements.lineWidth.value);
+                this.state.settings.opacity = parseFloat(this.elements.opacity.value);
+                this.state.settings.lineStyle = this.elements.lineStyleOptions[0].dataset.style;
+                
+                // Get line color
+                const activeColorOption = this.elements.lineColorOptions[0];
+                if (activeColorOption.dataset.color === 'custom') {
+                    this.state.settings.lineColor = this.elements.customColor.value;
+                } else {
+                    this.state.settings.lineColor = activeColorOption.dataset.color;
+                }
+                
+                // Get fill color if applicable
+                if (this.elements.fillGroup.style.display !== 'none') {
+                    const activeFillOption = this.elements.fillColorOptions[0];
+                    if (activeFillOption.dataset.color === 'custom') {
+                        this.state.settings.fillColor = this.elements.customFillColor.value;
+                    } else {
+                        this.state.settings.fillColor = activeFillOption.dataset.color;
+                    }
+                }
+                
+                // Apply to active drawing if exists
+                if (this.state.activeDrawing) {
+                    this.state.activeDrawing.color = this.state.settings.lineColor;
+                    this.state.activeDrawing.width = this.state.settings.lineWidth;
+                    this.state.activeDrawing.style = this.state.settings.lineStyle;
+                    this.state.activeDrawing.opacity = this.state.settings.opacity;
+                    
+                    if (this.elements.fillGroup.style.display !== 'none') {
+                        this.state.activeDrawing.fillColor = this.state.settings.fillColor;
+                    }
+                    
+                    if (this.elements.textGroup.style.display !== 'none') {
+                        this.state.activeDrawing.text = this.elements.textValue.value;
+                    }
+                }
+                
+                this.elements.drawingSettings.style.display = 'none';
+                this.renderChart();
+            }
+            
+            navigateLeft() {
+                const shift = Math.floor((this.state.visibleRange.end - this.state.visibleRange.start) * 0.3);
+                const newStart = Math.max(0, this.state.visibleRange.start - shift);
+                const newEnd = Math.min(this.state.candles.length - 1, this.state.visibleRange.end - shift);
+                
+                this.state.visibleRange = { start: newStart, end: newEnd };
+                this.state.autoScroll = false;
+                this.elements.autoScroll.classList.remove('active');
+                this.renderChart();
+            }
+            
+            navigateRight() {
+                const shift = Math.floor((this.state.visibleRange.end - this.state.visibleRange.start) * 0.3);
+                const newStart = Math.min(this.state.candles.length - (this.state.visibleRange.end - this.state.visibleRange.start + 1), this.state.visibleRange.start + shift);
+                const newEnd = Math.min(this.state.candles.length - 1, this.state.visibleRange.end + shift);
+                
+                this.state.visibleRange = { start: newStart, end: newEnd };
+                this.state.autoScroll = false;
+                this.elements.autoScroll.classList.remove('active');
+                this.renderChart();
+            }
+            
+            zoomIn() {
+                const currentLength = this.state.visibleRange.end - this.state.visibleRange.start + 1;
+                const newLength = Math.max(10, Math.floor(currentLength * 0.8));
+                
+                const center = Math.round((this.state.visibleRange.start + this.state.visibleRange.end) / 2);
+                const half = Math.floor(newLength / 2);
+                
+                const newStart = Math.max(0, center - half);
+                const newEnd = Math.min(this.state.candles.length - 1, center + half);
+                
+                this.state.visibleRange = { start: newStart, end: newEnd };
+                this.state.autoScroll = false;
+                this.elements.autoScroll.classList.remove('active');
+                this.renderChart();
+            }
+            
+            zoomOut() {
+                const currentLength = this.state.visibleRange.end - this.state.visibleRange.start + 1;
+                const newLength = Math.min(500, Math.floor(currentLength * 1.25));
+                
+                const center = Math.round((this.state.visibleRange.start + this.state.visibleRange.end) / 2);
+                const half = Math.floor(newLength / 2);
+                
+                const newStart = Math.max(0, center - half);
+                const newEnd = Math.min(this.state.candles.length - 1, center + half);
+                
+                this.state.visibleRange = { start: newStart, end: newEnd };
+                this.state.autoScroll = false;
+                this.elements.autoScroll.classList.remove('active');
+                this.renderChart();
+            }
+            
+            // Utility Functions
+            getTimeframeInMs(tf) {
+                const map = { 
+                    '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000,
+                    '15m': 900000, '30m': 1800000, '1h': 3600000, '2h': 7200000, '4h': 14400000,
+                    '1d': 86400000
+                };
+                return map[tf] || 60000;
+            }
+            
+            generateInitialCandles(symbol, timeframe) {
+                const now = Date.now();
+                const interval = this.getTimeframeInMs(timeframe);
+                const candlesData = [];
+                let price = 50000 + Math.random() * 10000;
+                
+                for (let i = 200; i >= 0; i--) {
+                    const time = now - (i * interval);
+                    const volatility = price * 0.02;
+                    const change = (Math.random() - 0.5) * volatility * 2;
+                    const open = price;
+                    const close = price + change;
+                    const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                    const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                    const volume = 100 + Math.random() * 200;
+                    
+                    candlesData.push({ time, open, high, low, close, volume, symbol });
+                    price = close;
+                }
+                
+                return candlesData;
+            }
+            
+            calculateIndicator(data, type, params = {}) {
+                if (data.length < params.length) return [];
+                
+                const source = params.source === 'close' ? data.map(c => c.close) :
+                              params.source === 'open' ? data.map(c => c.open) :
+                              params.source === 'high' ? data.map(c => c.high) :
+                              params.source === 'low' ? data.map(c => c.low) :
+                              params.source === 'hl2' ? data.map(c => (c.high + c.low) / 2) :
+                              params.source === 'hlc3' ? data.map(c => (c.high + c.low + c.close) / 3) :
+                              data.map(c => (c.open + c.high + c.low + c.close) / 4);
+                
+                switch (type) {
+                    case 'ma':
+                        return source.map((_, index) => {
+                            if (index < params.length - 1) return null;
+                            const sum = source.slice(index - params.length + 1, index + 1).reduce((acc, val) => acc + val, 0);
+                            return sum / params.length;
+                        });
+                    
+                    case 'ema':
+                        const multiplier = 2 / (params.length + 1);
+                        return source.map((_, index) => {
+                            if (index < params.length - 1) return null;
+                            if (index === params.length - 1) return source.slice(0, params.length).reduce((acc, val) => acc + val, 0) / params.length;
+                            
+                            const prevEMA = this.calculateIndicator(data.slice(0, index), 'ema', params)[params.length - 2];
+                            return (source[index] - prevEMA) * multiplier + prevEMA;
+                        });
+                    
+                    case 'rsi':
+                        return source.map((_, index) => {
+                            if (index < params.length) return null;
+                            const gains = [];
+                            const losses = [];
+                            
+                            for (let i = index - params.length + 1; i <= index; i++) {
+                                const change = source[i] - source[i-1];
+                                gains.push(Math.max(change, 0));
+                                losses.push(Math.max(-change, 0));
+                            }
+                            
+                            const avgGain = gains.reduce((a, b) => a + b, 0) / params.length;
+                            const avgLoss = losses.reduce((a, b) => a + b, 0) / params.length;
+                            
+                            if (avgLoss === 0) return 100;
+                            const rs = avgGain / avgLoss;
+                            return 100 - (100 / (1 + rs));
+                        });
+                    
+                    case 'macd':
+                        const fastEMA = this.calculateIndicator(data, 'ema', { ...params, length: 12 });
+                        const slowEMA = this.calculateIndicator(data, 'ema', { ...params, length: 26 });
+                        const macdLine = fastEMA.map((val, i) => val !== null && slowEMA[i] !== null ? val - slowEMA[i] : null);
+                        const signalLine = this.calculateIndicator(data.map((_, i) => ({ close: macdLine[i] })), 'ema', { ...params, length: 9 });
+                        const histogram = macdLine.map((val, i) => val !== null && signalLine[i] !== null ? val - signalLine[i] : null);
+                        
+                        return { macdLine, signalLine, histogram };
+                    
+                    default:
+                        return [];
+                }
+            }
+            
+            // Chart Rendering
+            resizeCanvas() {
+                const container = this.chartCanvas.parentElement;
+                const dpi = window.devicePixelRatio;
+                
+                this.chartCanvas.width = container.clientWidth * dpi;
+                this.chartCanvas.height = container.clientHeight * dpi;
+                this.ctx.scale(dpi, dpi);
+                
+                this.chartCanvas.style.width = container.clientWidth + 'px';
+                this.chartCanvas.style.height = container.clientHeight + 'px';
+            }
+            
+            renderChart() {
+                if (!this.state.candles.length) return;
+                
+                const container = this.chartCanvas.parentElement;
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                const visibleCandles = this.state.candles.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1);
+                
+                if (!visibleCandles.length) return;
+                
+                // Clear canvas
+                this.ctx.clearRect(0, 0, width, height);
+                
+                const candleWidth = Math.max(2, Math.min(12, width / visibleCandles.length));
+                const gap = 1;
+                const actualWidth = candleWidth - gap;
+                
+                const priceToY = (price) => {
+                    const range = this.state.yAxisRange.max - this.state.yAxisRange.min;
+                    return height - ((price - this.state.yAxisRange.min) / range) * height;
+                };
+                
+                const timeToX = (index) => {
+                    return (index * candleWidth);
+                };
+                
+                // Grid lines
+                for (let i = 0; i < 8; i++) {
+                    const y = (i / 7) * height;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(width, y);
+                    this.ctx.strokeStyle = '#1e293b';
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.globalAlpha = 0.3;
+                    this.ctx.stroke();
+                    this.ctx.globalAlpha = 1;
+                }
+                
+                // Price labels
+                for (let i = 0; i < 6; i++) {
+                    const y = (i / 5) * height;
+                    const price = this.state.yAxisRange.max - (i / 5) * (this.state.yAxisRange.max - this.state.yAxisRange.min);
+                    this.ctx.fillStyle = '#94a3b8';
+                    this.ctx.font = '11px Arial';
+                    this.ctx.textAlign = 'right';
+                    this.ctx.fillText(price.toFixed(2), width - 8, y + 4);
+                }
+                
+                // Time labels
+                const labelInterval = Math.max(1, Math.floor(visibleCandles.length / 6));
+                for (let i = 0; i < visibleCandles.length; i += labelInterval) {
+                    const x = timeToX(i) + actualWidth / 2;
+                    const date = new Date(visibleCandles[i].time);
+                    const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    this.ctx.fillStyle = '#94a3b8';
+                    this.ctx.font = '10px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(timeStr, x, height - 8);
+                }
+                
+                // Candles
+                visibleCandles.forEach((candle, index) => {
+                    const x = timeToX(index);
+                    const openY = priceToY(candle.open);
+                    const closeY = priceToY(candle.close);
+                    const highY = priceToY(candle.high);
+                    const lowY = priceToY(candle.low);
+                    const isUp = candle.close >= candle.open;
+                    const color = isUp ? '#10b981' : '#ef4444';
+                    
+                    // Wick
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x + actualWidth / 2, highY);
+                    this.ctx.lineTo(x + actualWidth / 2, lowY);
+                    this.ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                    
+                    // Body
+                    this.ctx.fillStyle = color;
+                    this.ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.fillRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
+                    this.ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(2, Math.abs(closeY - openY)));
+                });
+                
+                // Render all active indicators
+                Object.keys(this.state.indicators).forEach(key => {
+                    const indicator = this.state.indicators[key];
+                    if (indicator.enabled) {
+                        this.renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX);
+                    }
+                });
+                
+                // Render drawings
+                this.renderDrawings(width, height, priceToY, timeToX);
+                
+                // Update legend
+                this.elements.visibleBars.textContent = visibleCandles.length;
+                this.elements.activeIndicatorsCount.textContent = Object.keys(this.state.indicators).filter(key => this.state.indicators[key].enabled).length;
+            }
+            
+            renderIndicator(indicator, visibleCandles, width, height, priceToY, timeToX) {
+                const data = this.state.candles;
+                const params = indicator.params;
+                
+                switch (indicator.type) {
+                    case 'ma':
+                    case 'ema':
+                        const values = this.calculateIndicator(data, indicator.type, params);
+                        this.ctx.strokeStyle = params.color;
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        
+                        let firstPoint = true;
+                        values.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1).forEach((value, index) => {
+                            if (!value) return;
+                            const x = timeToX(index) + actualWidth / 2;
+                            const y = priceToY(value);
+                            
+                            if (firstPoint) {
+                                this.ctx.moveTo(x, y);
+                                firstPoint = false;
+                            } else {
+                                this.ctx.lineTo(x, y);
+                            }
+                        });
+                        
+                        this.ctx.stroke();
+                        break;
+                    
+                    case 'rsi':
+                        // RSI is rendered in a separate panel
+                        break;
+                    
+                    case 'macd':
+                        const macdData = this.calculateIndicator(data, 'macd', params);
+                        const zeroLine = height * 0.8;
+                        
+                        // MACD line
+                        this.ctx.strokeStyle = params.color;
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        let firstPoint1 = true;
+                        macdData.macdLine.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1).forEach((value, index) => {
+                            if (!value) return;
+                            const x = timeToX(index) + actualWidth / 2;
+                            const y = zeroLine - value * 100; // Scale factor
+                            if (firstPoint1) {
+                                this.ctx.moveTo(x, y);
+                                firstPoint1 = false;
+                            } else {
+                                this.ctx.lineTo(x, y);
+                            }
+                        });
+                        this.ctx.stroke();
+                        
+                        // Signal line
+                        this.ctx.strokeStyle = '#ff6b6b';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.beginPath();
+                        let firstPoint2 = true;
+                        macdData.signalLine.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1).forEach((value, index) => {
+                            if (!value) return;
+                            const x = timeToX(index) + actualWidth / 2;
+                            const y = zeroLine - value * 100;
+                            if (firstPoint2) {
+                                this.ctx.moveTo(x, y);
+                                firstPoint2 = false;
+                            } else {
+                                this.ctx.lineTo(x, y);
+                            }
+                        });
+                        this.ctx.stroke();
+                        
+                        // Histogram
+                        macdData.histogram.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1).forEach((value, index) => {
+                            if (!value) return;
+                            const x = timeToX(index);
+                            const y = zeroLine - value * 100;
+                            const height = Math.abs(value) * 100;
+                            this.ctx.fillStyle = value > 0 ? '#4ade80' : '#ef4444';
+                            this.ctx.fillRect(x, y, actualWidth, height);
+                        });
+                        break;
+                }
+            }
+            
+            renderDrawings(width, height, priceToY, timeToX) {
+                this.state.drawings.forEach(drawing => {
+                    this.ctx.save();
+                    this.ctx.globalAlpha = drawing.opacity || 1;
+                    
+                    switch (drawing.type) {
+                        case 'trend-line':
+                            this.renderTrendLine(drawing, priceToY, timeToX);
+                            break;
+                        case 'horizontal':
+                            this.renderHorizontalLine(drawing, priceToY, timeToX);
+                            break;
+                        case 'vertical':
+                            this.renderVerticalLine(drawing, priceToY, timeToX);
+                            break;
+                        case 'rectangle':
+                            this.renderRectangle(drawing, priceToY, timeToX);
+                            break;
+                        case 'ellipse':
+                            this.renderEllipse(drawing, priceToY, timeToX);
+                            break;
+                        case 'fib-retracement':
+                            this.renderFibonacciRetracement(drawing, priceToY, timeToX);
+                            break;
+                        case 'arrow':
+                            this.renderArrow(drawing, priceToY, timeToX);
+                            break;
+                        case 'text':
+                            this.renderText(drawing, priceToY, timeToX);
+                            break;
+                    }
+                    
+                    this.ctx.restore();
+                });
+            }
+            
+            renderTrendLine(drawing, priceToY, timeToX) {
+                const x1 = timeToX(drawing.points[0].index);
+                const y1 = priceToY(drawing.points[0].price);
+                const x2 = timeToX(drawing.points[1].index);
+                const y2 = priceToY(drawing.points[1].price);
+                
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                
+                if (drawing.style === 'dashed') {
+                    this.ctx.setLineDash([5, 5]);
+                } else if (drawing.style === 'dotted') {
+                    this.ctx.setLineDash([2, 3]);
+                }
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1, y1);
+                this.ctx.lineTo(x2, y2);
+                this.ctx.stroke();
+                
+                this.ctx.setLineDash([]);
+            }
+            
+            renderHorizontalLine(drawing, priceToY, timeToX) {
+                const y = priceToY(drawing.price);
+                const x1 = 0;
+                const x2 = this.chartCanvas.width;
+                
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                
+                if (drawing.style === 'dashed') {
+                    this.ctx.setLineDash([5, 5]);
+                } else if (drawing.style === 'dotted') {
+                    this.ctx.setLineDash([2, 3]);
+                }
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1, y);
+                this.ctx.lineTo(x2, y);
+                this.ctx.stroke();
+                
+                // Add text label
+                if (drawing.text) {
+                    this.ctx.fillStyle = drawing.color;
+                    this.ctx.font = '12px Arial';
+                    this.ctx.textAlign = 'left';
+                    this.ctx.fillText(drawing.text, 8, y - 4);
+                }
+                
+                this.ctx.setLineDash([]);
+            }
+            
+            renderVerticalLine(drawing, priceToY, timeToX) {
+                const x = timeToX(drawing.index);
+                const y1 = 0;
+                const y2 = this.chartCanvas.height;
+                
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                
+                if (drawing.style === 'dashed') {
+                    this.ctx.setLineDash([5, 5]);
+                } else if (drawing.style === 'dotted') {
+                    this.ctx.setLineDash([2, 3]);
+                }
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y1);
+                this.ctx.lineTo(x, y2);
+                this.ctx.stroke();
+                
+                this.ctx.setLineDash([]);
+            }
+            
+            renderRectangle(drawing, priceToY, timeToX) {
+                const x1 = timeToX(drawing.points[0].index);
+                const y1 = priceToY(drawing.points[0].price);
+                const x2 = timeToX(drawing.points[1].index);
+                const y2 = priceToY(drawing.points[1].price);
+                const x = Math.min(x1, x2);
+                const y = Math.min(y1, y2);
+                const width = Math.abs(x2 - x1);
+                const height = Math.abs(y2 - y1);
+                
+                // Fill
+                if (drawing.fillColor) {
+                    this.ctx.fillStyle = drawing.fillColor;
+                    this.ctx.fillRect(x, y, width, height);
+                }
+                
+                // Stroke
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                this.ctx.strokeRect(x, y, width, height);
+            }
+            
+            renderEllipse(drawing, priceToY, timeToX) {
+                const x1 = timeToX(drawing.points[0].index);
+                const y1 = priceToY(drawing.points[0].price);
+                const x2 = timeToX(drawing.points[1].index);
+                const y2 = priceToY(drawing.points[1].price);
+                const x = (x1 + x2) / 2;
+                const y = (y1 + y2) / 2;
+                const radiusX = Math.abs(x2 - x1) / 2;
+                const radiusY = Math.abs(y2 - y1) / 2;
+                
+                this.ctx.beginPath();
+                this.ctx.ellipse(x, y, radiusX, radiusY, 0, 0, 2 * Math.PI);
+                
+                // Fill
+                if (drawing.fillColor) {
+                    this.ctx.fillStyle = drawing.fillColor;
+                    this.ctx.fill();
+                }
+                
+                // Stroke
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                this.ctx.stroke();
+            }
+            
+            renderFibonacciRetracement(drawing, priceToY, timeToX) {
+                const x1 = timeToX(drawing.points[0].index);
+                const y1 = priceToY(drawing.points[0].price);
+                const x2 = timeToX(drawing.points[1].index);
+                const y2 = priceToY(drawing.points[1].price);
+                const levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+                
+                levels.forEach(level => {
+                    const y = y1 + (y2 - y1) * level;
+                    
+                    this.ctx.strokeStyle = drawing.color;
+                    this.ctx.lineWidth = drawing.width;
+                    this.ctx.setLineDash([5, 5]);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.chartCanvas.width, y);
+                    this.ctx.stroke();
+                    
+                    // Level label
+                    this.ctx.fillStyle = drawing.color;
+                    this.ctx.font = '11px Arial';
+                    this.ctx.textAlign = 'left';
+                    this.ctx.fillText((level * 100).toFixed(1) + '%', 8, y - 4);
+                });
+                
+                this.ctx.setLineDash([]);
+            }
+            
+            renderArrow(drawing, priceToY, timeToX) {
+                const x1 = timeToX(drawing.points[0].index);
+                const y1 = priceToY(drawing.points[0].price);
+                const x2 = timeToX(drawing.points[1].index);
+                const y2 = priceToY(drawing.points[1].price);
+                
+                const headLength = 10;
+                const angle = Math.atan2(y2 - y1, x2 - x1);
+                
+                this.ctx.strokeStyle = drawing.color;
+                this.ctx.fillStyle = drawing.color;
+                this.ctx.lineWidth = drawing.width;
+                
+                // Line
+                this.ctx.beginPath();
+                this.ctx.moveTo(x1, y1);
+                this.ctx.lineTo(x2, y2);
+                this.ctx.stroke();
+                
+                // Arrowhead
+                this.ctx.beginPath();
+                this.ctx.moveTo(x2, y2);
+                this.ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI / 6), y2 - headLength * Math.sin(angle - Math.PI / 6));
+                this.ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI / 6), y2 - headLength * Math.sin(angle + Math.PI / 6));
+                this.ctx.closePath();
+                this.ctx.fill();
+            }
+            
+            renderText(drawing, priceToY, timeToX) {
+                const x = timeToX(drawing.index);
+                const y = priceToY(drawing.price);
+                
+                // Background
+                if (drawing.bgColor) {
+                    this.ctx.fillStyle = drawing.bgColor;
+                    const textWidth = this.ctx.measureText(drawing.text).width;
+                    this.ctx.fillRect(x - 4, y - 16, textWidth + 8, 20);
+                }
+                
+                // Text
+                this.ctx.fillStyle = drawing.color || '#ffffff';
+                this.ctx.font = '12px Arial';
+                this.ctx.textAlign = 'left';
+                this.ctx.fillText(drawing.text, x, y);
+            }
+            
+            yToPrice(y) {
+                const container = this.chartCanvas.parentElement;
+                const height = container.clientHeight;
+                const range = this.state.yAxisRange.max - this.state.yAxisRange.min;
+                return this.state.yAxisRange.max - (y / height) * range;
+            }
+            
+            priceToY(price) {
+                const container = this.chartCanvas.parentElement;
+                const height = container.clientHeight;
+                const range = this.state.yAxisRange.max - this.state.yAxisRange.min;
+                return height - ((price - this.state.yAxisRange.min) / range) * height;
+            }
+            
+            updateYAxisRange() {
+                const visibleCandles = this.state.candles.slice(this.state.visibleRange.start, this.state.visibleRange.end + 1);
+                if (visibleCandles.length === 0) return;
+                
+                const prices = visibleCandles.flatMap(c => [c.high, c.low]);
+                const min = Math.min(...prices) * 0.99;
+                const max = Math.max(...prices) * 1.01;
+                
+                // Hysteresis to prevent constant rescaling
+                const range = this.state.yAxisRange.max - this.state.yAxisRange.min;
+                const lowerBand = this.state.yAxisRange.min + range * 0.1;
+                const upperBand = this.state.yAxisRange.max - range * 0.1;
+                
+                if (min < lowerBand || max > upperBand) {
+                    this.state.yAxisRange = { min, max };
+                }
+            }
+            
+            updateActiveIndicators() {
+                this.elements.activeIndicators.innerHTML = '';
+                Object.keys(this.state.indicators).forEach(key => {
+                    if (this.state.indicators[key].enabled) {
+                        const div = document.createElement('div');
+                        div.className = 'active-indicator';
+                        const name = key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        div.innerHTML = `
+                            <span>${name}</span>
+                            <div class="indicator-close" data-indicator="${key}">×</div>
+                        `;
+                        this.elements.activeIndicators.appendChild(div);
+                    }
+                });
+                
+                // Add event listeners to close buttons
+                document.querySelectorAll('.indicator-close').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const indicator = e.target.dataset.indicator;
+                        this.state.indicators[indicator].enabled = false;
+                        this.updateActiveIndicators();
+                        this.renderChart();
+                    });
+                });
+            }
+            
+            resetChart() {
+                this.state.candles = this.generateInitialCandles(this.state.symbol, this.state.timeframe);
+                this.state.currentPrice = this.state.candles[this.state.candles.length - 1].close;
+                
+                this.updateYAxisRange();
+                
+                this.state.visibleRange = {
+                    start: Math.max(0, this.state.candles.length - 100),
+                    end: this.state.candles.length - 1
+                };
+                
+                this.renderChart();
+                this.updateActiveIndicators();
+            }
+            
+            // Auto-update simulation
+            startSimulation() {
+                if (this.state.simulationInterval) clearInterval(this.state.simulationInterval);
+                
+                const interval = this.getTimeframeInMs(this.state.timeframe) / 2;
+                this.state.simulationInterval = setInterval(() => {
+                    if (this.state.candles.length === 0) return;
+                    
+                    const last = this.state.candles[this.state.candles.length - 1];
+                    const volatility = last.close * 0.01;
+                    const change = (Math.random() - 0.5) * volatility * 2;
+                    const open = last.close;
+                    const close = open + change;
+                    const high = Math.max(open, close) + Math.random() * volatility * 0.3;
+                    const low = Math.min(open, close) - Math.random() * volatility * 0.3;
+                    const volume = 100 + Math.random() * 200;
+                    
+                    const newCandle = { 
+                        time: Date.now(), 
+                        open, 
+                        high, 
+                        low, 
+                        close, 
+                        volume,
+                        symbol: this.state.symbol
                     };
-                }
-                
-                renderChart();
-            }, interval);
+                    
+                    // Update current price
+                    this.state.currentPrice = close;
+                    
+                    // Add new candle
+                    this.state.candles.push(newCandle);
+                    
+                    // Keep only last 20000 candles
+                    if (this.state.candles.length > 20000) {
+                        this.state.candles = this.state.candles.slice(-20000);
+                    }
+                    
+                    // Update Y-axis if needed
+                    this.updateYAxisRange();
+                    
+                    // Auto-follow logic
+                    if (this.state.autoScroll) {
+                        this.state.visibleRange = {
+                            start: Math.max(0, this.state.candles.length - 100),
+                            end: this.state.candles.length - 1
+                        };
+                    }
+                    
+                    this.renderChart();
+                }, interval);
+            }
         }
 
-        // Initialize
-        function init() {
-            resizeCanvas();
-            initCodeMirror();
-            resetChart();
-            updateActiveIndicators();
-            chartCanvas.style.cursor = 'grab';
-            startSimulation();
-        }
-
-        // Start the application
-        init();
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const chart = new TradingChart();
+        });
     </script>
 </body>
 </html>
