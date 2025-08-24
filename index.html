@@ -1,490 +1,1331 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>منصّة تحليل السيولة – تركيز على الحيتان + ملائمة للهاتف</title>
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <style>
-    :root{
-      --bg:#0b0f16; --panel:#121826; --panel-2:#0f1b2d; --text:#e6f0ff; --muted:#92a0b3; --neon:#20d3ff; --neon-2:#8a2eff; --up:#19d47b; --down:#ff4d5a; --warn:#ffbf47; --shadow: 0 10px 35px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0; font-family:'Cairo', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(1200px 600px at 90% -10%, rgba(32,211,255,.08), transparent 60%), radial-gradient(900px 500px at -10% -20%, rgba(138,46,255,.09), transparent 60%), var(--bg); color:var(--text); overflow-x:hidden}
-    a{color:var(--neon); text-decoration:none}
-    header{padding:14px 18px; display:flex; align-items:center; gap:12px; justify-content:space-between; position:sticky; top:0; z-index:40; backdrop-filter:saturate(140%) blur(6px); background:linear-gradient(180deg, rgba(11,15,22,.92), rgba(11,15,22,.65)); border-bottom:1px solid rgba(255,255,255,.06)}
-    .brand{display:flex; align-items:center; gap:12px}
-    .logo{width:38px; height:38px; border-radius:12px; background:linear-gradient(135deg, var(--neon), var(--neon-2)); box-shadow:0 0 24px rgba(32,211,255,.35), 0 0 24px rgba(138,46,255,.25) inset}
-    .title{font-weight:700; letter-spacing:.3px}
-    .note{color:var(--muted); font-size:.9rem}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة السيولة - النسخة المتقدمة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* Ticker */
-    .ticker-wrap{position:relative; overflow:hidden; border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06); background:#0b121d}
-    .ticker{display:flex; gap:26px; white-space:nowrap; animation:ticker 120s linear infinite}
-    .ticker:hover{animation-play-state:paused}
-    @keyframes ticker{from{transform:translateX(0)} to{transform:translateX(-50%)} }
-    .tick-item{display:flex; gap:10px; align-items:center; padding:10px 0; font-size:.95rem; color:var(--muted)}
-    .tick-sym{font-weight:700; color:var(--text)}
-    .chg.up{color:var(--up)}
-    .chg.down{color:var(--down)}
+        body {
+            background-color: #0c111c;
+            color: white;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
 
-    .container{max-width:1280px; margin:20px auto; padding:0 16px}
+        /* Sidebar Styles */
+        .sidebar {
+            width: 320px;
+            background-color: #1e293b;
+            border-right: 1px solid #334155;
+            padding: 20px;
+            overflow-y: auto;
+        }
 
-    /* Search */
-    .search-row{display:grid; grid-template-columns:1fr 320px; gap:12px; align-items:center; margin:14px 0 18px}
-    .search{position:relative}
-    .search input{width:100%; padding:14px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(18,24,38,.85), rgba(18,24,38,.65)); color:var(--text); outline:none; box-shadow:var(--shadow)}
-    .suggestions{position:absolute; top:100%; right:0; left:0; background:var(--panel); border:1px solid rgba(255,255,255,.08); border-top:none; z-index:45; max-height:260px; overflow:auto; display:none; border-radius:0 0 14px 14px; box-shadow:var(--shadow)}
-    .suggestions.show{display:block}
-    .suggestions button{width:100%; text-align:right; background:transparent; color:var(--text); border:0; padding:10px 14px; cursor:pointer}
-    .suggestions button:hover{background:#0e1522}
+        .sidebar h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #3b82f6;
+            text-align: right;
+        }
 
-    .kpis{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
-    .pill{padding:6px 12px; border-radius:999px; font-weight:700; font-size:.85rem; background:linear-gradient(180deg, #121826, #0f1b2d); border:1px solid rgba(255,255,255,.08)}
+        .form-group {
+            margin-bottom: 24px;
+        }
 
-    .grid{display:grid; gap:14px}
-    @media(min-width:960px){.grid{grid-template-columns:1.15fr .85fr}}
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-align: right;
+        }
 
-    .card{background:linear-gradient(180deg, rgba(18,24,38,.9), rgba(15,27,45,.9)); border:1px solid rgba(255,255,255,.07); border-radius:18px; padding:16px; box-shadow:var(--shadow)}
-    .card h3{margin:0 0 10px; font-size:1.05rem}
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            text-align: right;
+        }
 
-    .table{width:100%; border-collapse:collapse}
-    .table th,.table td{padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.06); font-size:.95rem}
-    .table th{color:var(--muted); font-weight:600; cursor:pointer; user-select:none}
+        .timeframe-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
 
-    /* Idle animated buy/sell bars BEFORE opening modal */
-    .bar{height:14px; background:#141b2a; border-radius:10px; overflow:hidden; display:flex; border:1px solid rgba(255,255,255,.06); position:relative}
-    .bar .buy{background:linear-gradient(90deg, rgba(25,212,123,.95), rgba(25,212,123,.55))}
-    .bar .sell{background:linear-gradient(90deg, rgba(255,77,90,.95), rgba(255,77,90,.55))}
-    .bar.idle::after{content:""; position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent); animation:shimmer 2.2s linear infinite}
-    @keyframes shimmer{from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+        .timeframe-btn {
+            padding: 8px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
 
-    /* News */
-    .news-list{max-height:360px; overflow:auto}
-    .news-item{display:grid; grid-template-columns:1fr 120px 120px; gap:12px; align-items:center; padding:10px 0; border-bottom:1px dashed rgba(255,255,255,.08)}
-    .glow{animation:glow 1s ease-in-out 5 alternate}
-    @keyframes glow{from{box-shadow:0 0 0 rgba(255,191,71,.0)} to{box-shadow:0 0 24px rgba(255,191,71,.35)} }
+        .timeframe-btn:hover {
+            background-color: #475569;
+        }
 
-    /* Gainers/Losers */
-    .cols{display:grid; gap:14px}
-    @media(min-width:880px){.cols{grid-template-columns:1fr 1fr}}
-    .list{max-height:380px; overflow:auto}
-    .row{display:grid; grid-template-columns:1.2fr .8fr .8fr .8fr .8fr .8fr; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.06)}
-    .row .up{color:var(--up)}
-    .row .down{color:var(--down)}
+        .timeframe-btn.active {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
 
-    /* Bottom table */
-    .bottom{margin:18px 0}
-    .filter-bar{display:flex; gap:10px; align-items:center; margin-bottom:10px}
-    .mini-indicator{height:10px; border-radius:999px; overflow:hidden; display:flex; width:160px; border:1px solid rgba(255,255,255,.08)}
+        .slider-container {
+            position: relative;
+            height: 20px;
+            margin-top: 8px;
+        }
 
-    /* Modal – لون مختلف + وضع الهاتف */
-    .overlay{position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; z-index:80}
-    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:90}
-    .modal .box{position:relative; width:min(1100px, 94vw); max-height:88vh; overflow:auto; padding:0; border-radius:18px; background:linear-gradient(180deg, rgba(14,27,55,1), rgba(10,22,48,1)); border:1px solid rgba(32,211,255,.25); box-shadow:0 0 32px rgba(32,211,255,.25), 0 0 32px rgba(138,46,255,.2)}
-    .drag-handle{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; position:sticky; top:0; background:rgba(10,22,48,.95); border-bottom:1px solid rgba(255,255,255,.08); cursor:grab; user-select:none}
-    .drag-handle:active{cursor:grabbing}
-    .modal .inner{padding:14px}
-    .ob{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .ob-col{background:#081220; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px}
-    .lv{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.06)}
-    .lv .barline{height:10px; flex:1; margin:0 8px; background:#0e1a2e; border-radius:8px; overflow:hidden}
-    .lv .barline span{display:block; height:100%}
-    .duo{display:grid; grid-template-columns:160px 1fr; gap:10px; align-items:center}
-    .duo .bar{height:18px}
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #334155;
+            outline: none;
+        }
 
-    /* هاتف: فول-سكرين وقابل للسحب */
-    @media(max-width:680px){
-      .modal{align-items:flex-end}
-      .modal .box{width:100vw; height:92vh; max-height:none; border-radius:18px 18px 0 0}
-    }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid #1e293b;
+        }
 
-    footer{margin:24px 0 30px; color:var(--muted); display:flex; align-items:center; justify-content:space-between}
-    .insta{display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:16px; border:1px solid rgba(255,255,255,.08); background: linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5); color:#fff; font-weight:700}
-    .insta img{width:18px; height:18px; border-radius:4px}
-  </style>
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid #1e293b;
+        }
+
+        .bars-count {
+            text-align: right;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-switch {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider-switch:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-switch {
+            background-color: #10b981;
+        }
+
+        input:checked + .slider-switch:before {
+            transform: translateX(24px);
+        }
+
+        .connection-status {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 20px;
+            text-align: right;
+            line-height: 1.5;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 6px;
+        }
+
+        .status-connected {
+            background-color: #10b981;
+        }
+
+        .status-connecting {
+            background-color: #f59e0b;
+        }
+
+        .status-disconnected {
+            background-color: #ef4444;
+        }
+
+        .legal-note {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 16px;
+            font-style: italic;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 15px 24px;
+        }
+
+        .topbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .symbol-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .symbol-info span {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .symbol-separator {
+            color: #94a3b8;
+        }
+
+        .current-price {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-running {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .status-stopped {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #475569;
+        }
+
+        .action-btn.active {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        /* Ticker */
+        .ticker {
+            background-color: #1e293b;
+            padding: 8px 24px;
+        }
+
+        .ticker-content {
+            display: flex;
+            align-items: center;
+            animation: scrollTicker 30s linear infinite;
+        }
+
+        @keyframes scrollTicker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            margin-left: 32px;
+            font-size: 13px;
+            color: #cbd5e1;
+            white-space: nowrap;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            flex: 1;
+            padding: 16px;
+            position: relative;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #0f172a;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-legend {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 10;
+        }
+
+        .legend-item {
+            color: #cbd5e1;
+            margin-bottom: 4px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-buy {
+            color: #10b981;
+        }
+
+        .legend-sell {
+            color: #ef4444;
+        }
+
+        /* Pine Editor */
+        .pine-editor {
+            background-color: #1e293b;
+            border-top: 1px solid #334155;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .editor-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .editor-btn {
+            padding: 6px 12px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .editor-btn:hover {
+            background-color: #475569;
+        }
+
+        .editor-btn-running {
+            background-color: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .editor-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .code-editor {
+            flex: 1;
+            background-color: #0f172a;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #4ade80;
+            resize: none;
+            border: none;
+            outline: none;
+        }
+
+        .logs-panel {
+            width: 256px;
+            background-color: #0f172a;
+            border-left: 1px solid #334155;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .logs-title {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #cbd5e1;
+        }
+
+        .log-entry {
+            font-size: 12px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .log-info {
+            color: #94a3b8;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-success {
+            color: #10b981;
+        }
+    </style>
 </head>
 <body>
-  <header class="container">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div>
-        <div class="title">منصّة تحليل السيولة – Crypto Liquidity</div>
-        <small class="note">تم برمجتها من أجل تسهيل القراءة للمبتدئين لدفتر الطلبات</small>
-      </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h1>منصة السيولة</h1>
+        
+        <div class="form-group">
+            <label for="symbol">الرمز</label>
+            <select id="symbol" class="form-control">
+                <option value="BTC/USD">BTC/USD</option>
+                <option value="ETH/USD">ETH/USD</option>
+                <option value="XAU/USD">XAU/USD</option>
+                <option value="EUR/USD">EUR/USD</option>
+                <option value="GBP/USD">GBP/USD</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>الإطار الزمني</label>
+            <div class="timeframe-buttons">
+                <button class="timeframe-btn active" data-tf="5s">5s</button>
+                <button class="timeframe-btn" data-tf="15s">15s</button>
+                <button class="timeframe-btn" data-tf="30s">30s</button>
+                <button class="timeframe-btn" data-tf="1m">1m</button>
+                <button class="timeframe-btn" data-tf="2m">2m</button>
+                <button class="timeframe-btn" data-tf="5m">5m</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>عدد الشموع الظاهرة</label>
+            <div class="slider-container">
+                <input type="range" min="50" max="500" value="100" class="slider" id="barsSlider">
+                <div class="bars-count">الشموع: <span id="barsCount">100</span></div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="control-buttons">
+                <button id="startStopBtn" class="btn btn-success">تشغيل</button>
+                <button id="exportBtn" class="btn btn-secondary">تصدير CSV</button>
+                <button id="resetBtn" class="btn btn-secondary">إعادة الضبط</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="toggle-switch">
+                <span class="toggle-label">إظهار الإشارات</span>
+                <label class="switch">
+                    <input type="checkbox" id="showSignals" checked>
+                    <span class="slider-switch"></span>
+                </label>
+            </div>
+            
+            <div class="form-group" style="margin-top: 16px;">
+                <label for="signalPosition">موضع الإشارات</label>
+                <select id="signalPosition" class="form-control">
+                    <option value="default">افتراضي (BUY أسفل، SELL أعلى)</option>
+                    <option value="below">كليهما أسفل الشمعة</option>
+                    <option value="above">كليهما أعلى الشمعة</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="apiKey">مفتاح API</label>
+            <input type="password" id="apiKey" class="form-control" placeholder="أدخل مفتاح API">
+            <button id="saveApiKey" class="btn btn-primary" style="width: 100%; margin-top: 8px;">حفظ</button>
+        </div>
+        
+        <div class="connection-status">
+            <span class="status-dot status-connected"></span>
+            <span id="connectionText">متصل بالبيانات الحقيقية</span>
+        </div>
+        
+        <div class="legal-note">
+            البيانات قد تكون محاكاة في حال عدم توفر مفتاح API
+        </div>
     </div>
-    <div id="global-flow" class="pill" title="تدفّق السوق (حيتان)">شراء/بيع حيتان: <strong><span id="gf-buy">50%</span> / <span id="gf-sell">50%</span></strong></div>
-  </header>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-content">
+                <div class="symbol-info">
+                    <span id="currentSymbol">BTC/USD</span>
+                    <span class="symbol-separator">|</span>
+                    <span id="currentTimeframe">1m</span>
+                    <span class="symbol-separator">|</span>
+                    <span class="current-price">السعر: <span id="currentPrice">0.00</span></span>
+                </div>
+                
+                <div class="status-badge status-running" id="statusBadge">يعمل</div>
+            </div>
+        </div>
+        
+        <!-- Ticker -->
+        <div class="ticker">
+            <div class="ticker-content">
+                <div class="ticker-item">BTC/USD 52,430.50 ▲ 2.3%</div>
+                <div class="ticker-item">ETH/USD 3,890.20 ▼ 1.1%</div>
+                <div class="ticker-item">XAU/USD 2,345.80 ▲ 0.8%</div>
+                <div class="ticker-item">EUR/USD 1.0845 ▼ 0.2%</div>
+                <div class="ticker-item">BTC/USD 52,430.50 ▲ 2.3%</div>
+                <div class="ticker-item">ETH/USD 3,890.20 ▼ 1.1%</div>
+                <div class="ticker-item">XAU/USD 2,345.80 ▲ 0.8%</div>
+                <div class="ticker-item">EUR/USD 1.0845 ▼ 0.2%</div>
+            </div>
+        </div>
+        
+        <!-- Chart Container -->
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <canvas id="chartCanvas" class="chart-canvas"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">الشموع: <span id="visibleBars">100</span></div>
+                    <div class="legend-item">SMA20: <span id="smaValue">-</span></div>
+                    <div class="legend-item legend-buy">BUY: <span id="buySignals">0</span></div>
+                    <div class="legend-item legend-sell">SELL: <span id="sellSignals">0</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pine Editor -->
+        <div class="pine-editor">
+            <div class="editor-header">
+                <div class="editor-title">محرّر Pine</div>
+                <div class="editor-actions">
+                    <button id="runPine" class="editor-btn editor-btn-running">تشغيل</button>
+                    <button id="savePine" class="editor-btn">حفظ</button>
+                    <button id="clearPine" class="editor-btn">حذف</button>
+                    <button id="clearLogs" class="editor-btn">مسح السجل</button>
+                </div>
+            </div>
+            <div class="editor-content">
+                <textarea id="pineCode" class="code-editor">// Pine Script Example
+strategy("SMA Crossover", overlay=true)
+length = input(20, "SMA Length")
+smaValue = sma(close, length)
+plot(smaValue, color=color.blue, width=2)
 
-  <!-- Ticker: كل العملات (USDT) -->
-  <div class="ticker-wrap"><div id="ticker" class="ticker"></div></div>
+// Buy signal
+buySignal = crossover(close, smaValue)
+plotshape(buySignal, location=location.belowbar, text="BUY", color=color.green)
 
-  <main class="container">
-    <!-- Search + KPIs -->
-    <div class="search-row">
-      <div class="search">
-        <input id="search" type="text" placeholder="ابحث عن عملة…" autocomplete="off" />
-        <div id="suggestions" class="suggestions"></div>
-      </div>
-      <div id="market-cards" class="kpis"></div>
+// Sell signal
+sellSignal = crossunder(close, smaValue)
+plotshape(sellSignal, location=location.abovebar, text="SELL", color=color.red)
+
+strategy.entry("Buy", strategy.long, when=buySignal)
+strategy.entry("Sell", strategy.short, when=sellSignal)</textarea>
+                <div class="logs-panel">
+                    <div class="logs-title">سجل الأخطاء</div>
+                    <div id="pineLogs" class="logs-content">
+                        <div class="log-entry log-success">تم تحميل السكربت بنجاح</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid">
-      <!-- يسار: جدول التحليلات (20 عملة فقط) -->
-      <section class="card">
-        <h3>التحليلات المباشرة (أعلى 20 حجمًا)</h3>
-        <table class="table" id="live-table">
-          <thead>
-          <tr>
-            <th data-sort="symbol">الرمز</th>
-            <th data-sort="price">السعر</th>
-            <th data-sort="chg">التغير 24س</th>
-            <th data-sort="rsi">RSI</th>
-            <th data-sort="vol">الحجم ($)</th>
-            <th>قوة الحيتان (Buy/Sell)</th>
-            <th>تحليل السيولة</th>
-          </tr>
-          </thead>
-          <tbody id="live-body"></tbody>
-        </table>
-      </section>
-
-      <!-- يمين: الأخبار (من Binance) -->
-      <aside class="card">
-        <h3>آخر أخبار Binance</h3>
-        <div class="news-list" id="news-list"></div>
-      </aside>
-    </div>
-
-    <!-- Gainers / Losers -->
-    <section class="card" style="margin-top:14px">
-      <h3>الأكثر ربحاً / الأكثر خسارة (USDT)</h3>
-      <div class="cols">
-        <div>
-          <div class="row" style="font-weight:600; color:var(--muted)"><div>الرمز</div><div>السعر</div><div>التغير%</div><div>الحجم ($)</div><div>الدوميننس*</div><div>تحليل</div></div>
-          <div id="gainers" class="list"></div>
-        </div>
-        <div>
-          <div class="row" style="font-weight:600; color:var(--muted)"><div>الرمز</div><div>السعر</div><div>التغير%</div><div>الحجم ($)</div><div>الدوميننس*</div><div>تحليل</div></div>
-          <div id="losers" class="list"></div>
-        </div>
-      </div>
-      <small style="color:var(--muted)">* تقدير سريع لنسبة حجم الرمز من إجمالي أحجام العينة.</small>
-    </section>
-
-    <!-- جدول متقدم أسفل الصفحة: 20 عملة فقط مرئية -->
-    <section class="card bottom">
-      <div class="filter-bar">
-        <strong>لوحة العملات (20 من أصل ~600)</strong>
-        <div class="mini-indicator"><span id="mini-buy" style="display:block; background:var(--up); width:50%"></span><span id="mini-sell" style="display:block; background:var(--down); width:50%"></span></div>
-        <small style="color:var(--muted)">أخضر = شراء حيتان • أحمر = بيع حيتان</small>
-      </div>
-      <table class="table" id="full-table">
-        <thead>
-          <tr>
-            <th data-sortf="symbol">الرمز</th>
-            <th data-sortf="price">السعر</th>
-            <th data-sortf="chg">التغير%</th>
-            <th data-sortf="vol">الحجم ($)</th>
-            <th>قوة الحيتان</th>
-            <th>تحليل</th>
-          </tr>
-        </thead>
-        <tbody id="full-body"></tbody>
-      </table>
-    </section>
-  </main>
-
-  <footer class="container">
-    <div>© <span id="year"></span> جميع الحقوق محفوظة</div>
-    <a class="insta" href="https://www.instagram.com/salah__badi__19/?hl=en" target="_blank" rel="noopener" title="Instagram">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram"/>
-      <span>Instagram</span>
-    </a>
-  </footer>
-
-  <!-- Modal: Liquidity Analysis (Draggable + Mobile Fullscreen) -->
-  <div id="overlay" class="overlay"></div>
-  <div id="modal" class="modal" aria-hidden="true">
-    <div class="box" id="m-box">
-      <div class="drag-handle" id="drag-handle">
-        <div style="display:flex; align-items:center; gap:10px">
-          <i class="fa-solid fa-grip-lines"></i>
-          <strong>تحليل السيولة – <span id="m-symbol"></span></strong>
-        </div>
-        <button id="m-close" class="close" style="background:transparent; border:0; color:var(--muted); font-size:1.1rem"><i class="fa-solid fa-xmark"></i> إغلاق</button>
-      </div>
-      <div class="inner">
-        <div class="duo" style="margin-bottom:12px">
-          <div style="color:var(--muted)">قوة الحيتان (شراء/بيع)</div>
-          <div class="bar"><div id="m-buy" class="buy" style="width:50%"></div><div id="m-sell" class="sell" style="width:50%"></div></div>
-        </div>
-        <div class="ob">
-          <div class="ob-col">
-            <strong>طلبات الشراء (Bids)</strong>
-            <div id="m-bids"></div>
-          </div>
-          <div class="ob-col">
-            <strong>طلبات البيع (Asks)</strong>
-            <div id="m-asks"></div>
-          </div>
-        </div>
-        <div style="margin-top:12px; color:var(--muted)">* عرض حي لدفتر الطلبات • التحليل يركّز على صفقات الحيتان فقط (إخفاء الصفقات الصغيرة).</div>
-        <div class="card" style="margin-top:12px">
-          <h3 style="margin:0 0 8px">شريط صفقات الحيتان – Whale Tape</h3>
-          <div id="whale-tape" style="max-height:220px; overflow:auto"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const API = {
-      tick24: 'https://api.binance.com/api/v3/ticker/24hr',
-      klines: (s, i='1m', l=60)=>`https://api.binance.com/api/v3/klines?symbol=${s}&interval=${i}&limit=${l}`,
-      // Binance news feeds (with proxy fallback for CORS)
-      news: [
-        'https://www.binance.com/en/blog/rss',
-        'https://www.binance.com/en/support/announcement/rss'
-      ],
-      proxy: url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
-    };
-
-    // Whale thresholds
-    const WHALE = {
-      BTC: 50000, // 50k$+
-      DEFAULT: 10000 // 10k$+
-    };
-
-    const el = id => document.getElementById(id);
-    const fmtUSD = n => { if(!n && n!==0) return '-'; const a = Math.abs(n); if(a>=1e12) return (n/1e12).toFixed(2)+'T$'; if(a>=1e9) return (n/1e9).toFixed(2)+'B$'; if(a>=1e6) return (n/1e6).toFixed(2)+'M$'; if(a>=1e3) return (n/1e3).toFixed(2)+'K$'; return Number(n).toLocaleString('en-US',{maximumFractionDigits:2})+'$'; };
-    const pct = x => (x>0?'+':'') + Number(x).toFixed(2)+'%';
-    el('year').textContent = new Date().getFullYear();
-
-    let ALL = []; // كل أزواج USDT
-    let TOP20 = []; // أعلى 20 حجمًا للعرض في الجداول
-
-    async function loadAll(){
-      const res = await fetch(API.tick24);
-      const data = await res.json();
-      ALL = data.filter(d=> d.symbol.endsWith('USDT'));
-      TOP20 = [...ALL].sort((a,b)=> Number(b.quoteVolume)-Number(a.quoteVolume)).slice(0,20);
-      buildTicker(ALL);            // الشريط العلوي: كل العملات
-      buildKPIs(ALL);
-      buildLiveTable(TOP20);       // 20 فقط
-      buildGainersLosers(ALL);
-      buildFullTable(TOP20);       // 20 فقط
-      setupSearch(ALL.map(d=>d.symbol));
-      bootGlobalFlow();            // تشغيل شريط قوة الحيتان قبل أي فتح
-      fetchBinanceNews();          // جلب الأخبار من Binance
-      initDrag();                  // تفعيل سحب المودال
-    }
-
-    function buildKPIs(list){
-      const totalVol = list.reduce((s,d)=>s + Number(d.quoteVolume||0), 0);
-      const qty = list.length;
-      const btc = list.find(d=>d.symbol==='BTCUSDT');
-      const btcDom = btc ? (Number(btc.quoteVolume)/totalVol*100) : 0;
-      const wrap = el('market-cards');
-      wrap.innerHTML='';
-      const items = [
-        {label:'إجمالي حجم 24س', val: fmtUSD(totalVol)},
-        {label:'عدد أزواج USDT', val: qty.toLocaleString()},
-        {label:'Bitcoin Dominance*', val: pct(btcDom)}
-      ];
-      for(const it of items){
-        const b = document.createElement('div'); b.className='pill'; b.textContent=`${it.label}: ${it.val}`; wrap.appendChild(b);
-      }
-    }
-
-    function buildTicker(list){
-      const container = el('ticker');
-      const seq = [...list].sort((a,b)=> Number(b.quoteVolume)-Number(a.quoteVolume));
-      const take = seq.slice(0, 1000);
-      const render = (arr)=> arr.map(d=>{
-        const ch = Number(d.priceChangePercent);
-        return `<div class="tick-item"><span class="tick-sym">${d.symbol}</span> <span>${Number(d.lastPrice).toLocaleString('en-US')}</span> <span class="chg ${ch>=0?'up':'down'}">${pct(ch)}</span></div>`;
-      }).join('');
-      container.innerHTML = render(take) + render(take);
-    }
-
-    // ===== جدول التحليلات (20 فقط) =====
-    let liveSortKey = 'symbol', liveSortAsc = true;
-    function buildLiveTable(list){
-      const body = el('live-body'); body.innerHTML = '';
-      const sorted = sortBy(list, liveSortKey, liveSortAsc);
-      for(const d of sorted){
-        const sym = d.symbol;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${sym}</strong></td>
-          <td>${Number(d.lastPrice||0).toLocaleString('en-US')}</td>
-          <td class="${(Number(d.priceChangePercent)||0)>=0?'up':'down'}">${pct(Number(d.priceChangePercent||0))}</td>
-          <td data-rsi="${sym}">—</td>
-          <td>${fmtUSD(d.quoteVolume||0)}</td>
-          <td><div class="bar idle"><div style="width:50%" class="buy"></div><div style="width:50%" class="sell"></div></div></td>
-          <td><button class="btn" data-analyze="${sym}">تحليل</button></td>`;
-        body.appendChild(tr);
-      }
-      document.querySelectorAll('#live-table thead th[data-sort]').forEach(th=>{ th.onclick = ()=>{ liveSortKey = th.dataset.sort; liveSortAsc = liveSortKey===th.dataset.sort ? !liveSortAsc : true; buildLiveTable(TOP20); }; });
-      document.querySelectorAll('[data-analyze]').forEach(btn=> btn.addEventListener('click',()=>openModal(btn.dataset.analyze)));
-      computeRSI(Array.from(new Set(list.map(d=>d.symbol))));
-    }
-
-    function sortBy(list, key, asc){
-      const dir = asc? 1 : -1;
-      return [...list].sort((a,b)=>{
-        const A = key==='symbol'? a.symbol : key==='price'? Number(a.lastPrice) : key==='chg'? Number(a.priceChangePercent) : key==='vol'? Number(a.quoteVolume) : 0;
-        const B = key==='symbol'? b.symbol : key==='price'? Number(b.lastPrice) : key==='chg'? Number(b.priceChangePercent) : key==='vol'? Number(b.quoteVolume) : 0;
-        return (A>B?1:-1)*dir;
-      });
-    }
-
-    // ===== Gainers / Losers =====
-    function buildGainersLosers(list){
-      const srt = (list.slice()).sort((a,b)=> Number(b.priceChangePercent)-Number(a.priceChangePercent));
-      const gain = srt.filter(d=> Number(d.priceChangePercent) >= 0).slice(0,200);
-      const loss = srt.filter(d=> Number(d.priceChangePercent) < 0).reverse().slice(0,200);
-      const totalVol = list.reduce((s,d)=>s+Number(d.quoteVolume||0),0);
-      const dom = d=> Number(d.quoteVolume)/totalVol*100;
-      const makeRow = (d)=>{
-        const ch = Number(d.priceChangePercent);
-        return `<div class="row"><div>${d.symbol}</div><div>${Number(d.lastPrice).toLocaleString('en-US')}</div><div class="${ch>=0?'up':'down'}">${pct(ch)}</div><div>${fmtUSD(d.quoteVolume)}</div><div>${pct(dom(d))}</div><div><button class="btn" data-analyze="${d.symbol}">تحليل</button></div></div>`
-      };
-      el('gainers').innerHTML = gain.map(makeRow).join('');
-      el('losers').innerHTML  = loss.map(makeRow).join('');
-      document.querySelectorAll('[data-analyze]').forEach(btn=>{ btn.addEventListener('click', ()=> openModal(btn.dataset.analyze)); });
-    }
-
-    // ===== جدول أسفل الصفحة (20 فقط) =====
-    let fullSortKey='symbol', fullSortAsc=true;
-    function buildFullTable(list){
-      const body = el('full-body'); const sorted = sortBy(list, fullSortKey, fullSortAsc); body.innerHTML='';
-      for(const d of sorted){
-        const sym = d.symbol; const buyPct = 50;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${sym}</td>
-          <td>${Number(d.lastPrice||0).toLocaleString('en-US')}</td>
-          <td class="${(Number(d.priceChangePercent)||0)>=0?'up':'down'}">${pct(Number(d.priceChangePercent||0))}</td>
-          <td>${fmtUSD(d.quoteVolume||0)}</td>
-          <td><div class="bar idle"><div style="width:${buyPct}%" class="buy"></div><div style="width:${100-buyPct}%" class="sell"></div></div></td>
-          <td><button class="btn" data-analyze="${sym}">تحليل</button></td>`;
-        body.appendChild(tr);
-      }
-      document.querySelectorAll('#full-table thead th[data-sortf]').forEach(th=>{ th.onclick = ()=>{ fullSortKey = th.dataset.sortf; fullSortAsc = fullSortKey===th.dataset.sortf ? !fullSortAsc : true; buildFullTable(TOP20); }; });
-      document.querySelectorAll('#full-body [data-analyze]').forEach(btn=> btn.addEventListener('click',()=>openModal(btn.dataset.analyze)));
-    }
-
-    // ===== RSI quick approximation =====
-    async function computeRSI(symbols){
-      for(const s of symbols){
-        try{ const res = await fetch(API.klines(s, '1m', 60)); const kl = await res.json(); const closes = kl.map(k=>Number(k[4])); const rsi = calcRSI(closes); const cell = document.querySelector(`[data-rsi="${s}"]`); if(cell) cell.textContent = rsi? rsi.toFixed(0): '—'; }catch{}
-      }
-    }
-    function calcRSI(closes, period=14){
-      if(!closes || closes.length < period+1) return null; let gains=0, losses=0; for(let i=1;i<=period;i++){ const d = closes[i]-closes[i-1]; if(d>=0) gains+=d; else losses-=d; } gains/=period; losses/=period; for(let i=period+1;i<closes.length;i++){ const d = closes[i]-closes[i-1]; gains = (gains*(period-1) + (d>0? d:0))/period; losses = (losses*(period-1) + (d<0? -d:0))/period; } const rs = losses===0? 100: gains/losses; return 100 - (100/(1+rs)); }
-
-    // ===== البحث + اقتراحات =====
-    function setupSearch(symbolList){
-      const input = el('search'); const box = el('suggestions'); let filtered = [];
-      function render(){ if(!filtered.length){ box.classList.remove('show'); box.innerHTML=''; return; } box.innerHTML = filtered.slice(0, 30).map(sym=>`<button data-sym="${sym}">${sym}</button>`).join(''); box.classList.add('show'); box.querySelectorAll('button').forEach(b=> b.addEventListener('click',()=>{ input.value=b.dataset.sym; box.classList.remove('show'); const sel = ALL.filter(d=>d.symbol===b.dataset.sym); buildFullTable(sel.slice(0,20)); openModal(b.dataset.sym); })); }
-      input.addEventListener('input', ()=>{ const q = input.value.toUpperCase().trim(); filtered = q? symbolList.filter(s=> s.includes(q)) : []; render(); });
-      input.addEventListener('blur', ()=> setTimeout(()=> box.classList.remove('show'), 200));
-    }
-
-    // ===== شريط قوة عام (حيتان فقط) قبل فتح أي عملة =====
-    function bootGlobalFlow(){
-      try{
-        const tws = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@trade');
-        let buy=0, sell=0, lastReset=Date.now();
-        tws.onmessage = (e)=>{
-          const t = JSON.parse(e.data); const price = Number(t.p), qty = Number(t.q); const isSell = t.m === true; const usd = price*qty; if(usd < WHALE.BTC) return; // فقط صفقات الحيتان
-          if(isSell) sell+=usd; else buy+=usd; const total = buy+sell; const bw = total? (buy/total*100):50; el('gf-buy').textContent = bw.toFixed(0)+'%'; el('gf-sell').textContent = (100-bw).toFixed(0)+'%'; updateMini(buy, sell); if(Date.now()-lastReset>15000){ buy=0; sell=0; lastReset=Date.now(); }
+    <script>
+        // Chart Configuration
+        const chartCanvas = document.getElementById('chartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+        
+        // State Management
+        let state = {
+            symbol: 'BTC/USD',
+            timeframe: '1m',
+            barsOnScreen: 100,
+            isRunning: true,
+            showSignals: true,
+            apiKey: '',
+            pineScript: '',
+            isPineRunning: true,
+            signalPosition: 'default',
+            autoFollow: true,
+            connectionStatus: 'connected',
+            candles: [],
+            sma20: [],
+            signals: [],
+            manualSignals: [],
+            currentPrice: 0,
+            visibleRange: { start: 0, end: 100 },
+            yAxisRange: { min: 0, max: 1 },
+            simulationInterval: null
         };
-      }catch(err){ console.warn('Global flow WS issue', err); }
-    }
 
-    function updateMini(buy, sell){ const total = buy+sell; const bw = total? (buy/total*100):50; el('mini-buy').style.width = bw+'%'; el('mini-sell').style.width = (100-bw)+'%'; }
+        // DOM Elements
+        const elements = {
+            symbol: document.getElementById('symbol'),
+            currentSymbol: document.getElementById('currentSymbol'),
+            currentTimeframe: document.getElementById('currentTimeframe'),
+            currentPrice: document.getElementById('currentPrice'),
+            statusBadge: document.getElementById('statusBadge'),
+            timeframeBtns: document.querySelectorAll('.timeframe-btn'),
+            barsSlider: document.getElementById('barsSlider'),
+            barsCount: document.getElementById('barsCount'),
+            visibleBars: document.getElementById('visibleBars'),
+            smaValue: document.getElementById('smaValue'),
+            buySignals: document.getElementById('buySignals'),
+            sellSignals: document.getElementById('sellSignals'),
+            startStopBtn: document.getElementById('startStopBtn'),
+            exportBtn: document.getElementById('exportBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            showSignals: document.getElementById('showSignals'),
+            signalPosition: document.getElementById('signalPosition'),
+            apiKey: document.getElementById('apiKey'),
+            saveApiKey: document.getElementById('saveApiKey'),
+            connectionText: document.getElementById('connectionText'),
+            runPine: document.getElementById('runPine'),
+            savePine: document.getElementById('savePine'),
+            clearPine: document.getElementById('clearPine'),
+            clearLogs: document.getElementById('clearLogs'),
+            pineCode: document.getElementById('pineCode'),
+            pineLogs: document.getElementById('pineLogs')
+        };
 
-    // ===== مودال تحليل السيولة (حيتان + قابل للسحب) =====
-    let MOD_WS = {depth:null, trade:null};
+        // Utility Functions
+        function getTimeframeInMs(tf) {
+            const map = { '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000 };
+            return map[tf] || 60000;
+        }
 
-    function openModal(symbol){
-      el('m-symbol').textContent = symbol; el('overlay').style.display='block'; el('modal').style.display='flex'; setTimeout(()=>{ el('m-buy').style.width='50%'; el('m-sell').style.width='50%'; },0); el('whale-tape').innerHTML=''; connectDepth(symbol);
-    }
-    function closeModal(){ el('overlay').style.display='none'; el('modal').style.display='none'; for(const k in MOD_WS){ try{ MOD_WS[k] && MOD_WS[k].close(); }catch{} MOD_WS[k]=null; } el('m-bids').innerHTML=''; el('m-asks').innerHTML=''; el('whale-tape').innerHTML=''; resetDrag(); }
-    el('overlay').addEventListener('click', closeModal); el('m-close').addEventListener('click', closeModal);
+        function generateInitialCandles() {
+            const now = Date.now();
+            const interval = getTimeframeInMs(state.timeframe);
+            const candlesData = [];
+            let price = 50000 + Math.random() * 10000;
+            
+            for (let i = state.barsOnScreen; i >= 0; i--) {
+                const time = now - (i * interval);
+                const volatility = price * 0.02;
+                const change = (Math.random() - 0.5) * volatility * 2;
+                const open = price;
+                const close = price + change;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.5;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.5;
+                const volume = 100 + Math.random() * 200;
+                
+                candlesData.push({ time, open, high, low, close, volume });
+                price = close;
+            }
+            
+            return candlesData;
+        }
 
-    function connectDepth(symbol){
-      const dws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth10@100ms`);
-      const tws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
-      MOD_WS.depth=dws; MOD_WS.trade=tws;
-      dws.onmessage = (e)=>{ const d = JSON.parse(e.data); renderOB('m-bids', d.bids, true); renderOB('m-asks', d.asks, false); };
-      let buy=0, sell=0; tws.onmessage = (e)=>{ const t = JSON.parse(e.data); const price = Number(t.p), qty = Number(t.q); const isSell = t.m === true; const usd = price*qty; const sym = symbol.toUpperCase(); const th = sym==='BTCUSDT'? WHALE.BTC : WHALE.DEFAULT; if(usd < th) return; // فقط الحيتان
-        if(isSell) sell+=usd; else buy+=usd; const total = buy+sell; const bw = total? (buy/total*100):50; el('m-buy').style.width = bw+'%'; el('m-sell').style.width = (100-bw)+'%';
-        // Whale tape
-        const row = document.createElement('div'); row.className='lv'; row.innerHTML = `<span class="${isSell?'down':'up'}">${isSell?'بيع كبير':'شراء كبير'}</span><div class="barline"><span style="width:100%; background:${isSell?'rgba(255,77,90,.55)':'rgba(25,212,123,.55)'}"></span></div><span>${fmtUSD(usd)}</span>`; el('whale-tape').prepend(row); while(el('whale-tape').children.length>160) el('whale-tape').removeChild(el('whale-tape').lastChild);
-      };
-    }
+        function calculateSMA(data, length = 20) {
+            if (data.length < length) return [];
+            return data.map((_, index) => {
+                if (index < length - 1) return null;
+                const sum = data.slice(index - length + 1, index + 1).reduce((acc, candle) => acc + candle.close, 0);
+                return sum / length;
+            });
+        }
 
-    function renderOB(containerId, levels, isBid){
-      const cont = el(containerId); cont.innerHTML = ''; const maxUSD = Math.max(...levels.map(([p,q])=> Number(p)*Number(q)));
-      levels.slice(0, 20).forEach(([p,q])=>{ const price = Number(p), qty = Number(q), usd = price*qty; const row = document.createElement('div'); row.className='lv'; const pc = isBid? 'up':'down'; const barPct = maxUSD? (usd/maxUSD*100):0; row.innerHTML = `<span class="${pc}">${price.toLocaleString('en-US')}</span><div class="barline"><span style="width:${barPct}%; background:${isBid?'rgba(25,212,123,.55)':'rgba(255,77,90,.55)'}"></span></div><span>${fmtUSD(usd)}</span>`; cont.appendChild(row); });
-    }
+        function parsePineScript(script) {
+            const indicators = [];
+            const signals = [];
+            const logs = [];
+            
+            try {
+                if (script.includes('sma(')) {
+                    const match = script.match(/sma\([^)]+\)/);
+                    if (match) {
+                        const lengthMatch = match[0].match(/\d+/);
+                        const length = lengthMatch ? parseInt(lengthMatch[0]) : 20;
+                        const smaData = calculateSMA(state.candles, length);
+                        indicators.push({ type: 'line', data: smaData, color: '#3b82f6', width: 2 });
+                        logs.push(`SMA(${length}) indicator added`);
+                    }
+                }
+                
+                if (script.includes('plotshape')) {
+                    state.candles.forEach((candle, index) => {
+                        if (index > 0 && candle.close > state.candles[index-1].close && 
+                            state.candles[index-1].close <= state.candles[index-2]?.close) {
+                            signals.push({
+                                type: 'BUY',
+                                time: candle.time,
+                                price: candle.low,
+                                text: 'BUY',
+                                color: '#10b981'
+                            });
+                        }
+                        if (index > 0 && candle.close < state.candles[index-1].close && 
+                            state.candles[index-1].close >= state.candles[index-2]?.close) {
+                            signals.push({
+                                type: 'SELL',
+                                time: candle.time,
+                                price: candle.high,
+                                text: 'SELL',
+                                color: '#ef4444'
+                            });
+                        }
+                    });
+                    
+                    logs.push(`Generated ${signals.length} trading signals`);
+                }
+                
+                return { indicators, signals, logs, error: null };
+            } catch (error) {
+                return { indicators: [], signals: [], logs: [], error: error.message };
+            }
+        }
 
-    // ===== أخبار Binance (RSS مع Proxy احتياطي) =====
-    async function fetchBinanceNews(){
-      for(const url of API.news){
-        try{
-          let txt = '';
-          try{ const r = await fetch(url); txt = await r.text(); }
-          catch{ const r2 = await fetch(API.proxy(url)); const j = await r2.json(); txt = j.contents; }
-          const items = parseRSSItems(txt).slice(0, 30);
-          if(items.length){ renderNews(items); return; }
-        }catch(err){ console.warn('News source failed', url, err); }
-      }
-      renderNews([]);
-    }
-    function parseRSSItems(xmlText){
-      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const arr = Array.from(doc.querySelectorAll('item')).map(it=>({
-        title: it.querySelector('title')?.textContent?.trim() || '',
-        link: it.querySelector('link')?.textContent?.trim() || '#',
-        pub: it.querySelector('pubDate')?.textContent?.trim() || ''
-      }));
-      return arr;
-    }
-    function renderNews(items){
-      const list = el('news-list'); list.innerHTML='';
-      if(!items.length){ list.innerHTML = '<div class="news-item">تعذّر تحميل أخبار Binance حاليًا.</div>'; return; }
-      items.forEach((n,i)=>{
-        const row = document.createElement('a'); row.target='_blank'; row.href=n.link; row.className='news-item'+(i<5?' glow':''); row.innerHTML = `<div>${n.title}</div><div>${new Date(n.pub).toLocaleString()}</div><div style="color:var(--muted)">Binance</div>`; list.appendChild(row); if(i<5) setTimeout(()=> row.classList.remove('glow'), 5000);
-      });
-    }
+        // Chart Rendering
+        function resizeCanvas() {
+            const container = chartCanvas.parentElement;
+            chartCanvas.width = container.clientWidth * window.devicePixelRatio;
+            chartCanvas.height = container.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        }
 
-    // ===== Draggable modal (pointer + touch) =====
-    let drag = {active:false, x:0, y:0, left:0, top:0, isMobile:false};
-    function initDrag(){
-      const box = el('m-box'); const handle = el('drag-handle');
-      const onDown = (ev)=>{ drag.active=true; handle.style.cursor='grabbing'; const rect = box.getBoundingClientRect(); drag.left = rect.left; drag.top = rect.top; drag.x = ev.touches? ev.touches[0].clientX : ev.clientX; drag.y = ev.touches? ev.touches[0].clientY : ev.clientY; drag.isMobile = window.matchMedia('(max-width:680px)').matches; if(!drag.isMobile){ box.style.transition='none'; box.style.position='fixed'; }
-        document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp); document.addEventListener('touchmove', onMove, {passive:false}); document.addEventListener('touchend', onUp);
-      };
-      const onMove = (ev)=>{ if(!drag.active) return; const cx = ev.touches? ev.touches[0].clientX : ev.clientX; const cy = ev.touches? ev.touches[0].clientY : ev.clientY; let nx = drag.left + (cx-drag.x); let ny = drag.top + (cy-drag.y); const pad = 10; const vw = window.innerWidth, vh = window.innerHeight; const rect = box.getBoundingClientRect(); nx = Math.max(pad, Math.min(vw-rect.width-pad, nx)); ny = Math.max(pad, Math.min(vh-rect.height-pad, ny)); if(!drag.isMobile){ box.style.left = nx+'px'; box.style.top = ny+'px'; box.style.right='auto'; box.style.bottom='auto'; }
-        if(ev.cancelable) ev.preventDefault();
-      };
-      const onUp = ()=>{ drag.active=false; handle.style.cursor='grab'; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onUp); };
-      handle.addEventListener('mousedown', onDown); handle.addEventListener('touchstart', onDown, {passive:false});
-    }
-    function resetDrag(){ const box = el('m-box'); box.style.left=''; box.style.top=''; box.style.right=''; box.style.bottom=''; box.style.transition=''; box.style.position=''; }
+        function renderChart() {
+            if (!state.candles.length) return;
+            
+            const container = chartCanvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
+            
+            if (!visibleCandles.length) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            const candleWidth = Math.max(1, Math.min(10, width / visibleCandles.length));
+            const gap = Math.min(1, candleWidth * 0.1);
+            const actualWidth = candleWidth - gap;
+            
+            const priceToY = (price) => {
+                const range = state.yAxisRange.max - state.yAxisRange.min;
+                return height - ((price - state.yAxisRange.min) / range) * height;
+            };
+            
+            const timeToX = (index) => {
+                return (index * candleWidth);
+            };
+            
+            // Grid lines
+            for (let i = 0; i < 5; i++) {
+                const y = (i / 4) * height;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.3;
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+            
+            // Price labels
+            for (let i = 0; i < 5; i++) {
+                const y = (i / 4) * height;
+                const price = state.yAxisRange.max - (i / 4) * (state.yAxisRange.max - state.yAxisRange.min);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(price.toFixed(2), width - 5, y + 4);
+            }
+            
+            // Time labels
+            const labelInterval = Math.max(1, Math.floor(visibleCandles.length / 5));
+            for (let i = 0; i < visibleCandles.length; i += labelInterval) {
+                const x = timeToX(i) + actualWidth / 2;
+                const date = new Date(visibleCandles[i].time);
+                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(timeStr, x, height - 5);
+            }
+            
+            // Candles
+            visibleCandles.forEach((candle, index) => {
+                const x = timeToX(index);
+                const openY = priceToY(candle.open);
+                const closeY = priceToY(candle.close);
+                const highY = priceToY(candle.high);
+                const lowY = priceToY(candle.low);
+                const isUp = candle.close >= candle.open;
+                const color = isUp ? '#10b981' : '#ef4444';
+                
+                // Wick
+                ctx.beginPath();
+                ctx.moveTo(x + actualWidth / 2, highY);
+                ctx.lineTo(x + actualWidth / 2, lowY);
+                ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Body
+                ctx.fillStyle = color;
+                ctx.strokeStyle = isUp ? '#059669' : '#dc2626';
+                ctx.lineWidth = 1;
+                ctx.fillRect(x, Math.min(openY, closeY), actualWidth, Math.max(1, Math.abs(closeY - openY)));
+                ctx.strokeRect(x, Math.min(openY, closeY), actualWidth, Math.max(1, Math.abs(closeY - openY)));
+            });
+            
+            // SMA 20
+            if (state.sma20.length) {
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                let firstPoint = true;
+                state.sma20.slice(state.visibleRange.start, state.visibleRange.end + 1).forEach((sma, index) => {
+                    if (!sma) return;
+                    const x = timeToX(index) + actualWidth / 2;
+                    const y = priceToY(sma);
+                    
+                    if (firstPoint) {
+                        ctx.moveTo(x, y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+            }
+            
+            // Signals
+            state.signals.forEach(signal => {
+                const signalIndex = state.candles.findIndex(c => c.time === signal.time);
+                if (signalIndex < state.visibleRange.start || signalIndex > state.visibleRange.end) return;
+                
+                const relativeIndex = signalIndex - state.visibleRange.start;
+                const x = timeToX(relativeIndex) + actualWidth / 2;
+                const y = priceToY(signal.price);
+                const textY = signal.type === 'BUY' ? y + 15 : y - 5;
+                
+                // Arrow
+                ctx.fillStyle = signal.color;
+                if (signal.type === 'BUY') {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y + 8);
+                    ctx.lineTo(x - 6, y);
+                    ctx.lineTo(x + 6, y);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 8);
+                    ctx.lineTo(x - 6, y);
+                    ctx.lineTo(x + 6, y);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                
+                // Text
+                ctx.fillStyle = signal.color;
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(signal.text, x, textY);
+            });
+        }
 
-    // ===== تشغيل =====
-    loadAll().catch(err=>{ console.error(err); el('ticker').textContent = 'تعذر تحميل بيانات Binance مؤقتاً. ارفع الملف على استضافة للسماح بالطلبات الخارجية.'; });
-  </script>
+        // Event Listeners
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            renderChart();
+        });
+
+        chartCanvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = chartCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const chartWidth = rect.width;
+            
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
+            const newLength = Math.max(50, Math.min(500, Math.round(currentLength * zoomFactor)));
+            
+            const relativePos = x / chartWidth;
+            const centerIndex = Math.round(state.visibleRange.start + relativePos * currentLength);
+            
+            const newStart = Math.max(0, centerIndex - Math.round(newLength * relativePos));
+            const newEnd = Math.min(state.candles.length - 1, newStart + newLength - 1);
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            state.barsOnScreen = newLength;
+            
+            elements.barsSlider.value = newLength;
+            elements.barsCount.textContent = newLength;
+            elements.visibleBars.textContent = newLength;
+            
+            updateYAxisRange();
+            renderChart();
+        });
+
+        let isDragging = false;
+        let startX = 0;
+        let startStart = 0;
+
+        chartCanvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            const rect = chartCanvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startStart = state.visibleRange.start;
+            chartCanvas.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const rect = chartCanvas.getBoundingClientRect();
+            const deltaX = e.clientX - rect.left - startX;
+            const pixelsPerCandle = (rect.width) / (state.visibleRange.end - state.visibleRange.start + 1);
+            const candleShift = Math.round(deltaX / pixelsPerCandle);
+            
+            const newStart = Math.max(0, startStart - candleShift);
+            const newEnd = Math.min(state.candles.length - 1, newStart + (state.visibleRange.end - state.visibleRange.start));
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            renderChart();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            chartCanvas.style.cursor = 'grab';
+        });
+
+        // UI Event Listeners
+        elements.symbol.addEventListener('change', () => {
+            state.symbol = elements.symbol.value;
+            elements.currentSymbol.textContent = state.symbol;
+            resetChart();
+        });
+
+        elements.timeframeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.timeframeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.timeframe = btn.dataset.tf;
+                elements.currentTimeframe.textContent = state.timeframe;
+                resetChart();
+            });
+        });
+
+        elements.barsSlider.addEventListener('input', () => {
+            const value = parseInt(elements.barsSlider.value);
+            state.barsOnScreen = value;
+            elements.barsCount.textContent = value;
+            elements.visibleBars.textContent = value;
+            
+            // Adjust visible range
+            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
+            if (value !== currentLength) {
+                const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
+                const half = Math.floor(value / 2);
+                state.visibleRange = {
+                    start: Math.max(0, center - half),
+                    end: Math.min(state.candles.length - 1, center + half)
+                };
+            }
+            
+            renderChart();
+        });
+
+        elements.startStopBtn.addEventListener('click', () => {
+            state.isRunning = !state.isRunning;
+            if (state.isRunning) {
+                elements.startStopBtn.textContent = 'إيقاف';
+                elements.startStopBtn.className = 'btn btn-danger';
+                elements.statusBadge.textContent = 'يعمل';
+                elements.statusBadge.className = 'status-badge status-running';
+                startSimulation();
+            } else {
+                elements.startStopBtn.textContent = 'تشغيل';
+                elements.startStopBtn.className = 'btn btn-success';
+                elements.statusBadge.textContent = 'متوقف';
+                elements.statusBadge.className = 'status-badge status-stopped';
+                stopSimulation();
+            }
+        });
+
+        elements.exportBtn.addEventListener('click', () => {
+            const csv = [
+                ['time', 'open', 'high', 'low', 'close', 'volume'].join(','),
+                ...state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1).map(c => 
+                    [new Date(c.time).toISOString(), c.open, c.high, c.low, c.close, c.volume].join(',')
+                )
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.symbol}_${state.timeframe}_${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        elements.resetBtn.addEventListener('click', () => {
+            resetChart();
+        });
+
+        elements.showSignals.addEventListener('change', () => {
+            state.showSignals = elements.showSignals.checked;
+            renderChart();
+        });
+
+        elements.signalPosition.addEventListener('change', () => {
+            state.signalPosition = elements.signalPosition.value;
+            renderChart();
+        });
+
+        elements.saveApiKey.addEventListener('click', () => {
+            state.apiKey = elements.apiKey.value;
+            if (state.apiKey) {
+                elements.connectionText.textContent = 'جارٍ الاتصال...';
+                elements.connectionText.previousElementSibling.className = 'status-dot status-connecting';
+                
+                // Simulate connection
+                setTimeout(() => {
+                    elements.connectionText.textContent = 'متصل بالبيانات الحقيقية';
+                    elements.connectionText.previousElementSibling.className = 'status-dot status-connected';
+                    state.connectionStatus = 'connected';
+                }, 1000);
+            } else {
+                elements.connectionText.textContent = 'اتصال محاكى (لا يوجد API)';
+                elements.connectionText.previousElementSibling.className = 'status-dot status-disconnected';
+                state.connectionStatus = 'disconnected';
+            }
+        });
+
+        elements.runPine.addEventListener('click', () => {
+            state.isPineRunning = !state.isPineRunning;
+            if (state.isPineRunning) {
+                elements.runPine.textContent = 'إيقاف';
+                elements.runPine.className = 'editor-btn editor-btn-running';
+            } else {
+                elements.runPine.textContent = 'تشغيل';
+                elements.runPine.className = 'editor-btn';
+            }
+            updatePineScript();
+        });
+
+        elements.savePine.addEventListener('click', () => {
+            state.pineScript = elements.pineCode.value;
+            addLog('تم حفظ السكربت', 'success');
+        });
+
+        elements.clearPine.addEventListener('click', () => {
+            elements.pineCode.value = '';
+        });
+
+        elements.clearLogs.addEventListener('click', () => {
+            elements.pineLogs.innerHTML = '';
+            addLog('تم مسح السجل', 'info');
+        });
+
+        // Simulation Functions
+        function startSimulation() {
+            if (state.simulationInterval) clearInterval(state.simulationInterval);
+            
+            const interval = getTimeframeInMs(state.timeframe) / 2;
+            state.simulationInterval = setInterval(() => {
+                if (state.candles.length === 0) return;
+                
+                const last = state.candles[state.candles.length - 1];
+                const volatility = last.close * 0.01;
+                const change = (Math.random() - 0.5) * volatility * 2;
+                const open = last.close;
+                const close = open + change;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.3;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.3;
+                const volume = 100 + Math.random() * 200;
+                
+                const newCandle = { time: Date.now(), open, high, low, close, volume };
+                
+                // Update current price
+                state.currentPrice = close;
+                elements.currentPrice.textContent = close.toFixed(2);
+                
+                // Add new candle
+                state.candles.push(newCandle);
+                
+                // Keep only last 20000 candles
+                if (state.candles.length > 20000) {
+                    state.candles = state.candles.slice(-20000);
+                }
+                
+                // Recalculate SMA
+                state.sma20 = calculateSMA(state.candles);
+                elements.smaValue.textContent = state.sma20[state.sma20.length - 1]?.toFixed(2) || '-';
+                
+                // Parse Pine script for signals
+                if (state.isPineRunning) {
+                    const result = parsePineScript(state.pineScript || elements.pineCode.value);
+                    if (result.error) {
+                        addLog(`Error: ${result.error}`, 'error');
+                    } else {
+                        state.signals = result.signals;
+                        elements.buySignals.textContent = state.signals.filter(s => s.type === 'BUY').length;
+                        elements.sellSignals.textContent = state.signals.filter(s => s.type === 'SELL').length;
+                        addLog(`تم إنشاء ${result.signals.length} إشارات تداول`, 'success');
+                    }
+                }
+                
+                // Update Y-axis if needed
+                updateYAxisRange();
+                
+                // Auto-follow logic
+                if (state.autoFollow) {
+                    state.visibleRange = {
+                        start: Math.max(0, state.candles.length - state.barsOnScreen),
+                        end: state.candles.length - 1
+                    };
+                }
+                
+                renderChart();
+            }, interval);
+        }
+
+        function stopSimulation() {
+            if (state.simulationInterval) {
+                clearInterval(state.simulationInterval);
+                state.simulationInterval = null;
+            }
+        }
+
+        function updateYAxisRange() {
+            const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
+            if (visibleCandles.length === 0) return;
+            
+            const prices = visibleCandles.flatMap(c => [c.high, c.low]);
+            const min = Math.min(...prices) * 0.99;
+            const max = Math.max(...prices) * 1.01;
+            
+            // Hysteresis to prevent constant rescaling
+            const range = state.yAxisRange.max - state.yAxisRange.min;
+            const lowerBand = state.yAxisRange.min + range * 0.1;
+            const upperBand = state.yAxisRange.max - range * 0.1;
+            
+            if (min < lowerBand || max > upperBand) {
+                state.yAxisRange = { min, max };
+            }
+        }
+
+        function resetChart() {
+            state.candles = generateInitialCandles();
+            state.currentPrice = state.candles[state.candles.length - 1].close;
+            elements.currentPrice.textContent = state.currentPrice.toFixed(2);
+            
+            state.sma20 = calculateSMA(state.candles);
+            elements.smaValue.textContent = state.sma20[state.sma20.length - 1]?.toFixed(2) || '-';
+            
+            updateYAxisRange();
+            
+            state.visibleRange = {
+                start: Math.max(0, state.candles.length - state.barsOnScreen),
+                end: state.candles.length - 1
+            };
+            
+            updatePineScript();
+            renderChart();
+        }
+
+        function updatePineScript() {
+            if (!state.isPineRunning) return;
+            
+            const script = state.pineScript || elements.pineCode.value;
+            const result = parsePineScript(script);
+            
+            if (result.error) {
+                addLog(`خطأ في السكربت: ${result.error}`, 'error');
+            } else {
+                state.signals = result.signals;
+                elements.buySignals.textContent = state.signals.filter(s => s.type === 'BUY').length;
+                elements.sellSignals.textContent = state.signals.filter(s => s.type === 'SELL').length;
+                result.logs.forEach(log => addLog(log, 'success'));
+            }
+        }
+
+        function addLog(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `log-entry log-${type}`;
+            div.textContent = message;
+            elements.pineLogs.appendChild(div);
+            elements.pineLogs.scrollTop = elements.pineLogs.scrollHeight;
+        }
+
+        // Initialize
+        function init() {
+            resizeCanvas();
+            state.pineScript = elements.pineCode.value;
+            resetChart();
+            startSimulation();
+        }
+
+        // Start the application
+        init();
+    </script>
 </body>
 </html>
