@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quotex برو - منصة التداول المتقدمة</title>
+    <title>Quotex Pro - Advanced Trading Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -25,26 +28,27 @@
             width: 300px;
             background-color: #1e293b;
             border-right: 1px solid #334155;
-            padding: 20px;
+            padding: 16px;
             overflow-y: auto;
         }
 
         .logo-container {
-            text-align: center;
-            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .logo {
-            width: 180px;
-            height: auto;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
         }
 
         .platform-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #3b82f6;
-            margin-top: 10px;
         }
 
         .symbol-selector {
@@ -72,7 +76,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
         }
 
@@ -80,6 +84,8 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
+            margin-top: 8px;
+            display: none;
         }
 
         .symbol-item {
@@ -115,20 +121,21 @@
         }
 
         .indicators-list {
-            display: none;
+            display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
         .indicator-item {
-            padding: 8px;
+            padding: 10px 12px;
             background-color: #334155;
             border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            font-size: 13px;
+            transition: all 0.2s;
+            font-size: 14px;
         }
 
         .indicator-item:hover {
@@ -141,8 +148,8 @@
         }
 
         .indicator-toggle {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             border-radius: 4px;
             display: flex;
             align-items: center;
@@ -168,7 +175,7 @@
         .topbar {
             background-color: #1e293b;
             border-bottom: 1px solid #334155;
-            padding: 15px 24px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -176,31 +183,67 @@
 
         .chart-controls {
             display: flex;
-            gap: 16px;
+            gap: 8px;
             align-items: center;
         }
 
-        .timeframe-btn {
+        .timeframe-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .timeframe-display {
             padding: 6px 12px;
             background-color: #334155;
             border: 1px solid #475569;
             border-radius: 6px;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .timeframe-btn:hover {
+        .timeframe-display:hover {
             background-color: #475569;
         }
 
-        .timeframe-btn.active {
+        .timeframe-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            margin-top: 4px;
+            display: none;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .timeframe-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .timeframe-option:hover {
+            background-color: #334155;
+        }
+
+        .timeframe-option.active {
             background-color: #3b82f6;
-            border-color: #3b82f6;
             color: white;
         }
 
-        .control-btn {
+        .tools-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
             width: 32px;
             height: 32px;
             border-radius: 6px;
@@ -211,15 +254,17 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 14px;
         }
 
-        .control-btn:hover {
+        .tool-btn:hover {
             background-color: #475569;
         }
 
-        .control-btn.active {
+        .tool-btn.active {
             background-color: #3b82f6;
             border-color: #3b82f6;
+            color: white;
         }
 
         /* Chart Container */
@@ -284,42 +329,6 @@
             color: #f59e0b;
         }
 
-        /* Chart Tools */
-        .chart-tools {
-            position: absolute;
-            bottom: 16px;
-            left: 16px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .tool-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid #475569;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #94a3b8;
-        }
-
-        .tool-btn:hover {
-            background-color: rgba(51, 65, 85, 0.7);
-            color: white;
-        }
-
-        .tool-btn.active {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-            color: white;
-        }
-
-        /* Active Indicators */
         .active-indicators {
             position: absolute;
             top: 16px;
@@ -354,86 +363,157 @@
 
         /* Pine Editor */
         .pine-editor {
-            position: absolute;
-            bottom: 0;
+            position: fixed;
+            top: 0;
             right: 0;
-            width: 600px;
-            height: 400px;
-            background-color: #1e293b;
-            border-top-left-radius: 12px;
-            border-right: 1px solid #334155;
-            border-bottom: 1px solid #334155;
-            z-index: 20;
-            box-shadow: -4px -4px 12px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            height: 100%;
+            background-color: #111827;
+            z-index: 1000;
             display: none;
+            flex-direction: column;
+            border-left: 1px solid #334155;
         }
 
         .editor-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
+            padding: 12px 24px;
+            background-color: #1e293b;
             border-bottom: 1px solid #334155;
         }
 
         .editor-title {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 16px;
+            color: #3b82f6;
         }
 
         .editor-actions {
             display: flex;
-            gap: 8px;
+            gap: 12px;
         }
 
         .editor-btn {
-            padding: 6px 12px;
-            background-color: #334155;
-            border: 1px solid #475569;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .editor-btn:hover {
+        .editor-btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .editor-btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .editor-btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .editor-btn-secondary:hover {
             background-color: #475569;
         }
 
-        .editor-btn-running {
-            background-color: #10b981;
-            border-color: #10b981;
+        .editor-btn-danger {
+            background-color: #ef4444;
             color: white;
+        }
+
+        .editor-btn-danger:hover {
+            background-color: #dc2626;
         }
 
         .editor-content {
             display: flex;
-            flex-direction: column;
-            height: calc(100% - 44px);
-        }
-
-        .code-editor {
             flex: 1;
-            background-color: #0f172a;
-            padding: 16px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #4ade80;
-            resize: none;
-            border: none;
-            outline: none;
         }
 
-        .logs-panel {
-            height: 120px;
+        .editor-sidebar {
+            width: 280px;
+            background-color: #1e293b;
+            border-left: 1px solid #334155;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        .indicator-template {
+            padding: 12px;
+            background-color: #334155;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .indicator-template:hover {
+            background-color: #475569;
+        }
+
+        .indicator-template.active {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .code-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-header {
+            padding: 8px 16px;
+            background-color: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tab {
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .logs-container {
+            height: 180px;
             background-color: #0f172a;
             border-top: 1px solid #334155;
             padding: 12px;
             overflow-y: auto;
-            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
         }
 
         .logs-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             margin-bottom: 8px;
             color: #cbd5e1;
@@ -456,9 +536,78 @@
             color: #10b981;
         }
 
-        /* Hidden by default */
-        .hidden {
-            display: none;
+        .cm-s-monokai span.cm-variable {
+            color: #fd9800;
+        }
+
+        .cm-s-monokai span.cm-property {
+            color: #a6e22e;
+        }
+
+        .cm-s-monokai span.cm-operator {
+            color: #f92672;
+        }
+
+        .cm-s-monokai span.cm-keyword {
+            color: #f92672;
+        }
+
+        .cm-s-monokai span.cm-string {
+            color: #a6e22e;
+        }
+
+        .cm-s-monokai span.cm-number {
+            color: #fd9800;
+        }
+
+        .cm-s-monokai span.cm-comment {
+            color: #75715e;
+        }
+
+        .CodeMirror {
+            height: 100%;
+            font-size: 14px;
+        }
+
+        .CodeMirror-scroll {
+            overflow: auto !important;
+        }
+
+        .CodeMirror-gutters {
+            background-color: #111827 !important;
+            border-right: 1px solid #334155 !important;
+        }
+
+        .CodeMirror-linenumbers {
+            padding: 0 8px !important;
+        }
+
+        .CodeMirror-guttermarker {
+            color: white !important;
+        }
+
+        .CodeMirror-guttermarker-subtle {
+            color: #d4d4d4 !important;
+        }
+
+        .CodeMirror-foldgutter-open, .CodeMirror-foldgutter-folded {
+            color: #888 !important;
+        }
+
+        .CodeMirror-hints {
+            border-radius: 6px !important;
+            border: 1px solid #334155 !important;
+            background-color: #1e293b !important;
+        }
+
+        .CodeMirror-hint {
+            padding: 8px 12px !important;
+            border-bottom: 1px solid #334155 !important;
+        }
+
+        .CodeMirror-hint-active {
+            background-color: #3b82f6 !important;
+            color: white !important;
         }
     </style>
 </head>
@@ -466,13 +615,13 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-container">
-            <img src="https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Quotex برو" class="logo">
-            <div class="platform-title">Quotex برو</div>
+            <img src="https://i.imgur.com/5nHaOsf_d.jpeg?maxwidth=520&shape=thumb&fidelity=high" alt="Quotex Pro" class="logo">
+            <div class="platform-title">Quotex Pro</div>
         </div>
         
         <div class="symbol-selector">
             <div class="symbol-header">
-                <div class="symbol-title">الرمز</div>
+                <div class="symbol-title">Symbol</div>
                 <div class="add-symbol" id="addSymbol">+</div>
             </div>
             <div class="symbol-list" id="symbolList">
@@ -484,29 +633,32 @@
                 <div class="symbol-item" data-symbol="USD/JPY">USD/JPY</div>
                 <div class="symbol-item" data-symbol="AAPL">AAPL</div>
                 <div class="symbol-item" data-symbol="GOOGL">GOOGL</div>
+                <div class="symbol-item" data-symbol="TSLA">TSLA</div>
+                <div class="symbol-item" data-symbol="MSFT">MSFT</div>
+                <div class="symbol-item" data-symbol="AMZN">AMZN</div>
+                <div class="symbol-item" data-symbol="NVDA">NVDA</div>
             </div>
         </div>
         
         <div class="indicators-section">
-            <div class="indicators-header" id="indicatorsToggle">
-                <span>المؤشرات</span>
-                <span>▶</span>
+            <div class="indicators-header">
+                <span>Indicators</span>
             </div>
             <div class="indicators-list" id="indicatorsList">
                 <div class="indicator-item" data-indicator="sma">
-                    <span>SMA</span>
+                    <span>SMA - Simple Moving Average</span>
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="ema">
-                    <span>EMA</span>
+                    <span>EMA - Exponential Moving Average</span>
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="rsi">
-                    <span>RSI</span>
+                    <span>RSI - Relative Strength Index</span>
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="macd">
-                    <span>MACD</span>
+                    <span>MACD - Moving Average Convergence Divergence</span>
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="bollinger">
@@ -514,11 +666,63 @@
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="fibonacci">
-                    <span>Fibonacci</span>
+                    <span>Fibonacci Retracement</span>
                     <div class="indicator-toggle">+</div>
                 </div>
                 <div class="indicator-item" data-indicator="volume">
                     <span>Volume</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="stochastic">
+                    <span>Stochastic Oscillator</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="adx">
+                    <span>ADX - Average Directional Index</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="atr">
+                    <span>ATR - Average True Range</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="cci">
+                    <span>CCI - Commodity Channel Index</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="obv">
+                    <span>OBV - On Balance Volume</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="ichimoku">
+                    <span>Ichimoku Cloud</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="parabolic_sar">
+                    <span>Parabolic SAR</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="williams_r">
+                    <span>Williams %R</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="vwap">
+                    <span>VWAP - Volume Weighted Average Price</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="pivot_points">
+                    <span>Pivot Points</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="heikin_ashi">
+                    <span>Heikin-Ashi</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="supertrend">
+                    <span>Supertrend</span>
+                    <div class="indicator-toggle">+</div>
+                </div>
+                <div class="indicator-item" data-indicator="keltner_channels">
+                    <span>Keltner Channels</span>
                     <div class="indicator-toggle">+</div>
                 </div>
             </div>
@@ -530,19 +734,37 @@
         <!-- Topbar -->
         <div class="topbar">
             <div class="chart-controls">
-                <div class="timeframe-btn active" data-tf="1m">1m</div>
-                <div class="timeframe-btn" data-tf="5m">5m</div>
-                <div class="timeframe-btn" data-tf="15m">15m</div>
-                <div class="timeframe-btn" data-tf="30m">30m</div>
-                <div class="timeframe-btn" data-tf="1h">1h</div>
-                <div class="timeframe-btn" data-tf="4h">4h</div>
-                <div class="timeframe-btn" data-tf="1d">1d</div>
+                <div class="timeframe-container">
+                    <div class="timeframe-display" id="timeframeDisplay">
+                        <span id="currentTF">1m</span>
+                        <span>▼</span>
+                    </div>
+                    <div class="timeframe-list" id="timeframeList">
+                        <div class="timeframe-option active" data-tf="5s">5s</div>
+                        <div class="timeframe-option" data-tf="15s">15s</div>
+                        <div class="timeframe-option" data-tf="30s">30s</div>
+                        <div class="timeframe-option" data-tf="1m">1m</div>
+                        <div class="timeframe-option" data-tf="2m">2m</div>
+                        <div class="timeframe-option" data-tf="5m">5m</div>
+                        <div class="timeframe-option" data-tf="15m">15m</div>
+                        <div class="timeframe-option" data-tf="30m">30m</div>
+                        <div class="timeframe-option" data-tf="1h">1h</div>
+                        <div class="timeframe-option" data-tf="2h">2h</div>
+                        <div class="timeframe-option" data-tf="4h">4h</div>
+                        <div class="timeframe-option" data-tf="1d">1d</div>
+                        <div class="timeframe-option" data-tf="1w">1w</div>
+                        <div class="timeframe-option" data-tf="1M">1M</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="chart-actions">
-                <div class="control-btn" id="settingsBtn">⚙</div>
-                <div class="control-btn" id="screenshotBtn">📷</div>
-                <div class="control-btn active" id="pineEditorBtn"> </>
+            <div class="tools-container">
+                <div class="tool-btn active" id="selectTool">↖</div>
+                <div class="tool-btn" id="drawLine">─</div>
+                <div class="tool-btn" id="drawTrend">╱</div>
+                <div class="tool-btn" id="drawFibonacci">Φ</div>
+                <div class="tool-btn" id="drawText">T</div>
+                <div class="tool-btn" id="pineEditorBtn">Pine</div>
             </div>
         </div>
         
@@ -553,17 +775,9 @@
                 <div class="chart-overlay" id="chartOverlay"></div>
                 
                 <div class="chart-legend">
-                    <div class="legend-item">الشموع: <span id="visibleBars">100</span></div>
-                    <div class="legend-item legend-indicator">المؤشرات: <span id="activeIndicatorsCount">0</span></div>
-                    <div class="legend-item legend-fibonacci">فيبوناتشي: <span id="fibonacciLevels">0</span></div>
-                </div>
-                
-                <div class="chart-tools">
-                    <div class="tool-btn active" id="selectTool">↖</div>
-                    <div class="tool-btn" id="drawLine">─</div>
-                    <div class="tool-btn" id="drawTrend">╱</div>
-                    <div class="tool-btn" id="drawFibonacci">Φ</div>
-                    <div class="tool-btn" id="drawText">T</div>
+                    <div class="legend-item">Candles: <span id="visibleBars">100</span></div>
+                    <div class="legend-item legend-indicator">Indicators: <span id="activeIndicatorsCount">0</span></div>
+                    <div class="legend-item legend-fibonacci">Fibonacci: <span id="fibonacciLevels">0</span></div>
                 </div>
                 
                 <div class="active-indicators" id="activeIndicators"></div>
@@ -574,49 +788,115 @@
     <!-- Pine Editor -->
     <div class="pine-editor" id="pineEditor">
         <div class="editor-header">
-            <div class="editor-title">محرر المؤشرات</div>
+            <div class="editor-title">Pine Script Editor</div>
             <div class="editor-actions">
-                <button id="runPine" class="editor-btn editor-btn-running">تشغيل</button>
-                <button id="savePine" class="editor-btn">حفظ</button>
-                <button id="closePine" class="editor-btn">إغلاق</button>
+                <button id="runPine" class="editor-btn editor-btn-primary">Run (F5)</button>
+                <button id="savePine" class="editor-btn editor-btn-secondary">Save</button>
+                <button id="closePine" class="editor-btn editor-btn-danger">Close (Esc)</button>
             </div>
         </div>
         <div class="editor-content">
-            <textarea id="pineCode" class="code-editor">// مؤشر فيبوناتشي الديناميكي
-// @version=5
-indicator("فيبوناتشي ديناميكي", overlay=true)
-
-// إعدادات المستخدم
-fib_levels = input.array([0.236, 0.382, 0.5, 0.618, 0.786], "مستويات فيبوناتشي")
-show_labels = input(true, "إظهار التسميات")
-
-// تحديد الأعلى والأدنى
-lookback = input(50, "فترة التحليل")
-highest_high = ta.highest(high, lookback)
-lowest_low = ta.lowest(low, lookback)
-
-// حساب مستويات فيبوناتشي
-range = highest_high - lowest_low
-fib_lines = array.new_line(5)
-
-for i = 0 to 4
-    level = lowest_low + range * fib_levels[i]
-    line.set_xy1(fib_lines[i], bar_index - lookback, level)
-    line.set_xy2(fib_lines[i], bar_index, level)
-    line.set_color(fib_lines[i], color.blue)
-    line.set_width(fib_lines[i], 1)
-    
-    if show_labels
-        label.new(bar_index, level, str.tostring(fib_levels[i]), color=color.new(color.blue, 80), 
-                 textcolor=color.white, style=label.style_label_down, yloc=yloc.price)</textarea>
-            <div class="logs-panel">
-                <div class="logs-title">سجل التنفيذ</div>
-                <div id="pineLogs" class="logs-content">
-                    <div class="log-entry log-success">تم تحميل بيئة التطوير بنجاح</div>
+            <div class="editor-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Popular Indicators</div>
+                    <div class="indicator-template" data-template="sma">
+                        <strong>SMA Crossover</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Simple Moving Average strategy with buy/sell signals</div>
+                    </div>
+                    <div class="indicator-template" data-template="rsi">
+                        <strong>RSI Divergence</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">RSI indicator with overbought/oversold levels</div>
+                    </div>
+                    <div class="indicator-template" data-template="macd">
+                        <strong>MACD Histogram</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">MACD with histogram and signal line</div>
+                    </div>
+                    <div class="indicator-template" data-template="bollinger">
+                        <strong>Bollinger Bands</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Volatility bands with moving average</div>
+                    </div>
+                    <div class="indicator-template" data-template="fibonacci">
+                        <strong>Fibonacci Retracement</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Dynamic Fibonacci levels based on swing points</div>
+                    </div>
+                    <div class="indicator-template" data-template="volume_profile">
+                        <strong>Volume Profile</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Volume distribution by price level</div>
+                    </div>
+                    <div class="indicator-template" data-template="supertrend">
+                        <strong>Supertrend</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Trend following indicator with buy/sell signals</div>
+                    </div>
+                    <div class="indicator-template" data-template="ichimoku">
+                        <strong>Ichimoku Cloud</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Complete trend identification system</div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">My Scripts</div>
+                    <div class="indicator-template">
+                        <strong>My SMA Strategy</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 2 hours ago</div>
+                    </div>
+                    <div class="indicator-template">
+                        <strong>Fibonacci Auto Levels</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 1 day ago</div>
+                    </div>
+                    <div class="indicator-template">
+                        <strong>RSI Divergence Scanner</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Last modified: 3 days ago</div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Documentation</div>
+                    <div class="indicator-template">
+                        <strong>Pine Script v5 Guide</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Complete language reference</div>
+                    </div>
+                    <div class="indicator-template">
+                        <strong>Indicator Examples</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Code samples and templates</div>
+                    </div>
+                    <div class="indicator-template">
+                        <strong>Backtesting Guide</strong>
+                        <div style="font-size: 12px; margin-top: 4px; opacity: 0.8;">Strategy testing and optimization</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="tab active">script.pine</div>
+                </div>
+                
+                <div id="codeEditor" style="flex: 1;"></div>
+                
+                <div class="logs-container">
+                    <div class="logs-title">Execution Log</div>
+                    <div id="pineLogs" class="logs-content">
+                        <div class="log-entry log-success">Pine Script environment loaded successfully</div>
+                        <div class="log-entry log-info">Ready to compile and run your script</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/javascript-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
 
     <script>
         // Chart Configuration
@@ -636,18 +916,15 @@ for i = 0 to 4
             selectedTool: 'select',
             drawing: null,
             indicators: {
-                sma: false,
-                ema: false,
-                rsi: false,
-                macd: false,
-                bollinger: false,
-                fibonacci: false,
-                volume: false
+                sma: false, ema: false, rsi: false, macd: false, bollinger: false,
+                fibonacci: false, volume: false, stochastic: false, adx: false, atr: false,
+                cci: false, obv: false, ichimoku: false, parabolic_sar: false, williams_r: false,
+                vwap: false, pivot_points: false, heikin_ashi: false, supertrend: false, keltner_channels: false
             },
             activeIndicators: [],
             fibonacciLevels: [],
-            pineRunning: true,
-            apiKey: 'secured_api_key_12345', // API key مخزنة في الكود
+            pineRunning: false,
+            apiKey: 'secured_api_key_12345',
             simulationInterval: null,
             zoomLevel: 1,
             panOffset: 0
@@ -656,33 +933,119 @@ for i = 0 to 4
         // DOM Elements
         const elements = {
             symbolItems: document.querySelectorAll('.symbol-item'),
-            indicatorsToggle: document.getElementById('indicatorsToggle'),
-            indicatorsList: document.getElementById('indicatorsList'),
-            indicatorItems: document.querySelectorAll('.indicator-item'),
-            timeframeBtns: document.querySelectorAll('.timeframe-btn'),
+            timeframeDisplay: document.getElementById('timeframeDisplay'),
+            timeframeList: document.getElementById('timeframeList'),
+            timeframeOptions: document.querySelectorAll('.timeframe-option'),
             selectTool: document.getElementById('selectTool'),
             drawLine: document.getElementById('drawLine'),
             drawTrend: document.getElementById('drawTrend'),
             drawFibonacci: document.getElementById('drawFibonacci'),
             drawText: document.getElementById('drawText'),
+            pineEditorBtn: document.getElementById('pineEditorBtn'),
             visibleBars: document.getElementById('visibleBars'),
             activeIndicatorsCount: document.getElementById('activeIndicatorsCount'),
             fibonacciLevels: document.getElementById('fibonacciLevels'),
             activeIndicators: document.getElementById('activeIndicators'),
             pineEditor: document.getElementById('pineEditor'),
-            pineCode: document.getElementById('pineCode'),
+            codeEditor: document.getElementById('codeEditor'),
             pineLogs: document.getElementById('pineLogs'),
             runPine: document.getElementById('runPine'),
             savePine: document.getElementById('savePine'),
             closePine: document.getElementById('closePine'),
-            pineEditorBtn: document.getElementById('pineEditorBtn'),
             addSymbol: document.getElementById('addSymbol'),
-            symbolList: document.getElementById('symbolList')
+            symbolList: document.getElementById('symbolList'),
+            currentTF: document.getElementById('currentTF'),
+            indicatorTemplates: document.querySelectorAll('.indicator-template'),
+            indicatorsList: document.getElementById('indicatorsList')
         };
+
+        // Initialize CodeMirror
+        let codeMirror;
+        function initCodeMirror() {
+            codeMirror = CodeMirror(elements.codeEditor, {
+                value: `// Pine Script - Fibonacci Dynamic Levels
+// @version=5
+indicator("Fibonacci Dynamic", overlay=true)
+
+// User settings
+fib_levels = array.from(0.236, 0.382, 0.5, 0.618, 0.786)
+show_labels = input.bool(true, "Show Labels")
+lookback = input.int(50, "Lookback Period")
+
+// Find swing points
+var float swing_high = na
+var float swing_low = na
+
+// Detect swing high
+if (high > high[1] and high > high[2] and high > high[3])
+    swing_high := high
+
+// Detect swing low
+if (low < low[1] and low < low[2] and low < low[3])
+    swing_low := low
+
+// Store recent swing points
+var float[] swing_highs = array.new_float()
+var float[] swing_lows = array.new_float()
+
+if (!na(swing_high))
+    array.unshift(swing_highs, swing_high)
+    if (array.size(swing_highs) > lookback)
+        array.pop(swing_highs)
+
+if (!na(swing_low))
+    array.unshift(swing_lows, swing_low)
+    if (array.size(swing_lows) > lookback)
+        array.pop(swing_lows)
+
+// Calculate Fibonacci levels from most recent swing
+if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
+{
+    float recent_high = array.get(swing_highs, 0)
+    float recent_low = array.get(swing_lows, 0)
+    
+    float fib_range = recent_high - recent_low
+    float base_level = recent_low
+    
+    // Draw Fibonacci levels
+    for i = 0 to array.size(fib_levels) - 1
+    {
+        float level_value = base_level + fib_range * array.get(fib_levels, i)
+        line.new(bar_index - lookback, level_value, bar_index, level_value, 
+                color=color.blue, width=1, extend=extend.right)
+        
+        if (show_labels)
+            label.new(bar_index, level_value, str.tostring(array.get(fib_levels, i)), 
+                     color=color.new(color.blue, 80), textcolor=color.white, 
+                     style=label.style_label_down, yloc=yloc.price)
+    }
+}`,
+                mode: "javascript",
+                theme: "monokai",
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                styleActiveLine: true,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete",
+                    "F5": function(cm) { executePineScript(); },
+                    "Esc": function(cm) { elements.pineEditor.style.display = 'none'; }
+                }
+            });
+
+            // Add linting
+            codeMirror.setOption("lint", true);
+        }
 
         // Utility Functions
         function getTimeframeInMs(tf) {
-            const map = { '1m': 60000, '5m': 300000, '15m': 900000, '30m': 1800000, '1h': 3600000, '4h': 14400000, '1d': 86400000 };
+            const map = { 
+                '5s': 5000, '15s': 15000, '30s': 30000, '1m': 60000, '2m': 120000, '5m': 300000,
+                '15m': 900000, '30m': 1800000, '1h': 3600000, '2h': 7200000, '4h': 14400000,
+                '1d': 86400000, '1w': 604800000, '1M': 2592000000
+            };
             return map[tf] || 60000;
         }
 
@@ -1142,61 +1505,41 @@ for i = 0 to 4
                 item.classList.add('active');
                 state.symbol = item.dataset.symbol;
                 resetChart();
+                elements.symbolList.classList.add('hidden');
             });
         });
 
-        elements.indicatorsToggle.addEventListener('click', () => {
-            elements.indicatorsList.classList.toggle('hidden');
-            const arrow = elements.indicatorsToggle.querySelector('span:last-child');
-            arrow.textContent = elements.indicatorsList.classList.contains('hidden') ? '▶' : '▼';
+        elements.addSymbol.addEventListener('click', (e) => {
+            e.stopPropagation();
+            elements.symbolList.classList.toggle('hidden');
         });
 
-        elements.indicatorItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const indicator = item.dataset.indicator;
-                state.indicators[indicator] = !state.indicators[indicator];
-                item.classList.toggle('active');
-                
-                // Update active indicators display
-                updateActiveIndicators();
-                renderChart();
-            });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.symbol-selector')) {
+                elements.symbolList.classList.add('hidden');
+            }
         });
 
-        function updateActiveIndicators() {
-            elements.activeIndicators.innerHTML = '';
-            Object.keys(state.indicators).forEach(key => {
-                if (state.indicators[key]) {
-                    const div = document.createElement('div');
-                    div.className = 'active-indicator';
-                    div.innerHTML = `
-                        <span>${key.toUpperCase()}</span>
-                        <div class="indicator-close" data-indicator="${key}">×</div>
-                    `;
-                    elements.activeIndicators.appendChild(div);
-                }
-            });
-            
-            // Add event listeners to close buttons
-            document.querySelectorAll('.indicator-close').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const indicator = e.target.dataset.indicator;
-                    state.indicators[indicator] = false;
-                    document.querySelector(`.indicator-item[data-indicator="${indicator}"]`).classList.remove('active');
-                    updateActiveIndicators();
-                    renderChart();
-                });
-            });
-        }
-
-        elements.timeframeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                elements.timeframeBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.timeframe = btn.dataset.tf;
+        // Timeframe selection
+        elements.timeframeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.timeframe-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                state.timeframe = option.dataset.tf;
+                elements.currentTF.textContent = state.timeframe;
+                elements.timeframeList.classList.add('hidden');
                 resetChart();
             });
+        });
+
+        elements.timeframeDisplay.addEventListener('click', () => {
+            elements.timeframeList.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.timeframe-container')) {
+                elements.timeframeList.classList.add('hidden');
+            }
         });
 
         // Tool selection
@@ -1217,48 +1560,427 @@ for i = 0 to 4
             });
         });
 
+        // Indicator selection
+        elements.indicatorsList.querySelectorAll('.indicator-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const indicator = item.dataset.indicator;
+                state.indicators[indicator] = !state.indicators[indicator];
+                item.classList.toggle('active');
+                
+                // Update active indicators display
+                updateActiveIndicators();
+                renderChart();
+            });
+        });
+
+        function updateActiveIndicators() {
+            elements.activeIndicators.innerHTML = '';
+            Object.keys(state.indicators).forEach(key => {
+                if (state.indicators[key]) {
+                    const div = document.createElement('div');
+                    div.className = 'active-indicator';
+                    div.innerHTML = `
+                        <span>${key.replace('_', ' ').toUpperCase()}</span>
+                        <div class="indicator-close" data-indicator="${key}">×</div>
+                    `;
+                    elements.activeIndicators.appendChild(div);
+                }
+            });
+            
+            // Add event listeners to close buttons
+            document.querySelectorAll('.indicator-close').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const indicator = e.target.dataset.indicator;
+                    state.indicators[indicator] = false;
+                    document.querySelector(`.indicator-item[data-indicator="${indicator}"]`).classList.remove('active');
+                    updateActiveIndicators();
+                    renderChart();
+                });
+            });
+        }
+
         // Pine Editor
         elements.pineEditorBtn.addEventListener('click', () => {
-            elements.pineEditor.style.display = elements.pineEditor.style.display === 'none' ? 'block' : 'none';
+            elements.pineEditor.style.display = 'flex';
         });
 
         elements.closePine.addEventListener('click', () => {
             elements.pineEditor.style.display = 'none';
         });
 
-        elements.runPine.addEventListener('click', () => {
-            state.pineRunning = !state.pineRunning;
-            if (state.pineRunning) {
-                elements.runPine.textContent = 'إيقاف';
-                elements.runPine.className = 'editor-btn editor-btn-running';
-                executePineScript();
-            } else {
-                elements.runPine.textContent = 'تشغيل';
-                elements.runPine.className = 'editor-btn';
-            }
+        elements.runPine.addEventListener('click', executePineScript);
+
+        // Template selection
+        elements.indicatorTemplates.forEach(template => {
+            template.addEventListener('click', () => {
+                const templateType = template.dataset.template;
+                loadTemplate(templateType);
+            });
         });
 
-        elements.savePine.addEventListener('click', () => {
-            addLog('تم حفظ السكربت بنجاح', 'success');
-        });
+        function loadTemplate(type) {
+            const templates = {
+                sma: `// SMA Crossover Strategy
+// @version=5
+indicator("SMA Crossover", overlay=true)
+
+// Input parameters
+fast_length = input.int(9, "Fast SMA Length")
+slow_length = input.int(21, "Slow SMA Length")
+
+// Calculate SMAs
+fast_sma = ta.sma(close, fast_length)
+slow_sma = ta.sma(close, slow_length)
+
+// Plot SMAs
+plot(fast_sma, "Fast SMA", color=color.blue)
+plot(slow_sma, "Slow SMA", color=color.red)
+
+// Generate signals
+buy_signal = ta.crossover(fast_sma, slow_sma)
+sell_signal = ta.crossunder(fast_sma, slow_sma)
+
+// Plot signals
+plotshape(buy_signal, title="Buy Signal", location=location.belowbar, 
+         color=color.green, style=shape.triangleup, size=size.small)
+plotshape(sell_signal, title="Sell Signal", location=location.abovebar, 
+         color=color.red, style=shape.triangledown, size=size.small)
+
+// Strategy execution
+if (buy_signal)
+    strategy.entry("Buy", strategy.long)
+
+if (sell_signal)
+    strategy.entry("Sell", strategy.short)`,
+                
+                rsi: `// RSI Divergence Indicator
+// @version=5
+indicator("RSI Divergence", overlay=false)
+
+// Input parameters
+rsi_length = input.int(14, "RSI Length")
+overbought = input.int(70, "Overbought Level")
+oversold = input.int(30, "Oversold Level")
+
+// Calculate RSI
+rsi = ta.rsi(close, rsi_length)
+
+// Plot RSI
+plot(rsi, "RSI", color=color.white)
+hline(overbought, "Overbought", color=color.red)
+hline(oversold, "Oversold", color=color.green)
+hline(50, "Midline", color=color.gray, linestyle=hline.style_dashed)
+
+// Divergence detection
+var float price_high = na
+var float rsi_high = na
+var float price_low = na
+var float rsi_low = na
+
+// Bullish divergence
+bullish_div = low < low[1] and rsi > rsi[1] and rsi < oversold
+plotshape(bullish_div, title="Bullish Divergence", location=location.belowbar, 
+         color=color.green, style=shape.triangleup, size=size.small)
+
+// Bearish divergence
+bearish_div = high > high[1] and rsi < rsi[1] and rsi > overbought
+plotshape(bearish_div, title="Bearish Divergence", location=location.abovebar, 
+         color=color.red, style=shape.triangledown, size=size.small)`,
+
+                macd: `// MACD Histogram
+// @version=5
+indicator("MACD Histogram", overlay=false)
+
+// Input parameters
+fast_length = input.int(12, "Fast Length")
+slow_length = input.int(26, "Slow Length")
+signal_length = input.int(9, "Signal Length")
+
+// Calculate MACD
+[macd_line, signal_line, hist] = ta.macd(close, fast_length, slow_length, signal_length)
+
+// Plot MACD
+plot(macd_line, "MACD", color=color.blue)
+plot(signal_line, "Signal", color=color.red)
+plot(hist, "Histogram", color=(hist > 0) ? color.green : color.red, style=plot.style_histogram)
+
+// Zero line
+hline(0, "Zero", color=color.gray, linestyle=hline.style_dashed)
+
+// Crossover signals
+bullish_cross = ta.crossover(macd_line, signal_line)
+bearish_cross = ta.crossunder(macd_line, signal_line)
+
+plotshape(bullish_cross, title="Bullish Cross", location=location.bottom, 
+         color=color.green, style=shape.triangleup, size=size.small)
+plotshape(bearish_cross, title="Bearish Cross", location=location.top, 
+         color=color.red, style=shape.triangledown, size=size.small)`,
+
+                bollinger: `// Bollinger Bands
+// @version=5
+indicator("Bollinger Bands", overlay=true)
+
+// Input parameters
+length = input.int(20, "Length")
+mult = input.float(2.0, "Multiplier")
+
+// Calculate Bollinger Bands
+basis = ta.sma(close, length)
+dev = mult * ta.stdev(close, length)
+upper = basis + dev
+lower = basis - dev
+
+// Plot Bollinger Bands
+plot(basis, "Middle", color=color.blue)
+plot(upper, "Upper", color=color.gray)
+plot(lower, "Lower", color=color.gray)
+
+// Fill between bands
+fill(upper, lower, color.new(color.gray, 90))
+
+// Price touch signals
+price_touch_upper = high >= upper
+price_touch_lower = low <= lower
+
+plotshape(price_touch_upper, title="Upper Touch", location=location.abovebar, 
+         color=color.red, style=shape.triangledown, size=size.small)
+plotshape(price_touch_lower, title="Lower Touch", location=location.belowbar, 
+         color=color.green, style=shape.triangleup, size=size.small)`,
+
+                fibonacci: `// Dynamic Fibonacci Levels
+// @version=5
+indicator("Fibonacci Dynamic", overlay=true)
+
+// Input parameters
+fib_levels = array.from(0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.272, 1.618)
+show_labels = input.bool(true, "Show Labels")
+lookback = input.int(50, "Lookback Period")
+
+// Find swing points
+var float swing_high = na
+var float swing_low = na
+
+// Detect swing high
+if (high > high[1] and high > high[2] and high > high[3])
+    swing_high := high
+
+// Detect swing low
+if (low < low[1] and low < low[2] and low < low[3])
+    swing_low := low
+
+// Store recent swing points
+var float[] swing_highs = array.new_float()
+var float[] swing_lows = array.new_float()
+
+if (!na(swing_high))
+    array.unshift(swing_highs, swing_high)
+    if (array.size(swing_highs) > lookback)
+        array.pop(swing_highs)
+
+if (!na(swing_low))
+    array.unshift(swing_lows, swing_low)
+    if (array.size(swing_lows) > lookback)
+        array.pop(swing_lows)
+
+// Calculate Fibonacci levels from most recent swing
+if (array.size(swing_highs) > 0 and array.size(swing_lows) > 0)
+{
+    float recent_high = array.get(swing_highs, 0)
+    float recent_low = array.get(swing_lows, 0)
+    
+    float fib_range = recent_high - recent_low
+    float base_level = recent_low
+    
+    // Draw Fibonacci levels
+    for i = 0 to array.size(fib_levels) - 1
+    {
+        float level_value = base_level + fib_range * array.get(fib_levels, i)
+        line.new(bar_index - lookback, level_value, bar_index, level_value, 
+                color=color.blue, width=1, extend=extend.right)
+        
+        if (show_labels)
+            label.new(bar_index, level_value, str.tostring(array.get(fib_levels, i)), 
+                     color=color.new(color.blue, 80), textcolor=color.white, 
+                     style=label.style_label_down, yloc=yloc.price)
+    }
+}`,
+
+                volume_profile: `// Volume Profile
+// @version=5
+indicator("Volume Profile", overlay=true)
+
+// Input parameters
+bins = input.int(20, "Number of Price Bins")
+lookback = input.int(100, "Lookback Period")
+
+// Calculate price range
+var float min_price = na
+var float max_price = na
+
+if (bar_index == 0)
+{
+    min_price := low
+    max_price := high
+}
+else
+{
+    min_price := math.min(min_price, low)
+    max_price := math.max(max_price, high)
+}
+
+// Create price bins
+var float[] volume_bins = array.new_float(bins)
+var float bin_size = (max_price - min_price) / bins
+
+// Accumulate volume in bins
+for i = 0 to lookback - 1
+{
+    if (i >= bar_index)
+        break
+    
+    float price = (high[i] + low[i]) / 2
+    int bin_index = math.floor((price - min_price) / bin_size)
+    bin_index := math.min(bin_index, bins - 1)
+    bin_index := math.max(bin_index, 0)
+    
+    array.set(volume_bins, bin_index, array.get(volume_bins, bin_index) + volume[i])
+}
+
+// Find max volume for scaling
+var float max_volume = na
+max_volume := array.max(volume_bins)
+
+// Plot volume profile
+for i = 0 to bins - 1
+{
+    float bin_volume = array.get(volume_bins, i)
+    float height = (bin_volume / max_volume) * 0.8
+    float price_level = min_price + (i + 0.5) * bin_size
+    
+    box.new(bar_index, price_level, bar_index + 5, price_level, 
+           bgcolor=color.new(color.green, 80), border_color=color.green)
+}`,
+
+                supertrend: `// Supertrend Indicator
+// @version=5
+indicator("Supertrend", overlay=true)
+
+// Input parameters
+factor = input.float(3.0, "Factor")
+period = input.int(10, "Period")
+
+// Calculate ATR
+atr = ta.atr(period)
+
+// Calculate basic upper and lower bands
+basic_upper = (high + low) / 2 + factor * atr
+basic_lower = (high + low) / 2 - factor * atr
+
+// Calculate final upper and lower bands
+var float final_upper = na
+var float final_lower = na
+
+final_upper := basic_upper
+final_lower := basic_lower
+
+if (final_upper[1] < final_lower[1])
+    final_upper := math.min(final_upper, final_lower[1])
+else
+    final_upper := final_upper
+
+if (final_upper[1] < final_lower[1])
+    final_lower := final_lower
+else
+    final_lower := math.max(final_lower, final_upper[1])
+
+// Calculate Supertrend
+var float supertrend = na
+supertrend := close > final_upper[1] ? final_lower : final_upper
+
+// Plot Supertrend
+plot(supertrend, "Supertrend", color=(supertrend < close) ? color.green : color.red, linewidth=2)
+
+// Buy/Sell signals
+buy_signal = ta.crossover(close, supertrend)
+sell_signal = ta.crossunder(close, supertrend)
+
+plotshape(buy_signal, title="Buy Signal", location=location.belowbar, 
+         color=color.green, style=shape.triangleup, size=size.small)
+plotshape(sell_signal, title="Sell Signal", location=location.abovebar, 
+         color=color.red, style=shape.triangledown, size=size.small)`,
+
+                ichimoku: `// Ichimoku Cloud
+// @version=5
+indicator("Ichimoku Cloud", overlay=true)
+
+// Input parameters
+conversion_periods = input.int(9, "Conversion Line Periods")
+base_periods = input.int(26, "Base Line Periods")
+lagging_span2_periods = input.int(52, "Lagging Span 2 Periods")
+
+// Conversion Line (Tenkan-sen)
+conversion_line = (ta.highest(high, conversion_periods) + ta.lowest(low, conversion_periods)) / 2
+
+// Base Line (Kijun-sen)
+base_line = (ta.highest(high, base_periods) + ta.lowest(low, base_periods)) / 2
+
+// Leading Span A (Senkou Span A)
+leading_span_a = (conversion_line + base_line) / 2
+
+// Leading Span B (Senkou Span B)
+leading_span_b = (ta.highest(high, lagging_span2_periods) + ta.lowest(low, lagging_span2_periods)) / 2
+
+// Plot lines
+plot(conversion_line, "Conversion Line", color=color.orange)
+plot(base_line, "Base Line", color=color.blue)
+plot(close, "Lagging Span", color=color.purple, offset=-26)
+
+// Plot cloud
+span_offset = 26
+plot(leading_span_a, "Leading Span A", color=color.green, offset=span_offset)
+plot(leading_span_b, "Leading Span B", color=color.red, offset=span_offset)
+fill(leading_span_a, leading_span_b, color=(leading_span_a > leading_span_b) ? color.green : color.red, transp=90)`
+
+            };
+
+            if (codeMirror && templates[type]) {
+                codeMirror.setValue(templates[type]);
+                addLog(`Template "${type}" loaded successfully`, 'success');
+            }
+        }
 
         function executePineScript() {
             try {
-                addLog('جاري تنفيذ السكربت...', 'info');
+                addLog('Compiling Pine Script...', 'info');
                 
-                // Simulate Pine Script execution
+                const code = codeMirror.getValue();
+                if (!code.trim()) {
+                    addLog('Error: Script is empty', 'error');
+                    return;
+                }
+                
+                // Simulate compilation
                 setTimeout(() => {
-                    addLog('تم تنفيذ السكربت بنجاح', 'success');
-                    addLog('تمت إضافة مؤشر فيبوناتشي ديناميكي', 'success');
+                    addLog('Pine Script compiled successfully', 'success');
                     
-                    // Enable fibonacci indicator
-                    state.indicators.fibonacci = true;
-                    document.querySelector('.indicator-item[data-indicator="fibonacci"]').classList.add('active');
+                    // Extract indicator name from code
+                    const nameMatch = code.match(/indicator\("([^"]+)"/);
+                    const indicatorName = nameMatch ? nameMatch[1] : 'Custom Indicator';
+                    
+                    addLog(`Indicator "${indicatorName}" applied to chart`, 'success');
+                    
+                    // Enable fibonacci as example
+                    if (code.includes('fibonacci') || code.includes('Fibonacci')) {
+                        state.indicators.fibonacci = true;
+                        document.querySelector('.indicator-item[data-indicator="fibonacci"]').classList.add('active');
+                    }
+                    
                     updateActiveIndicators();
                     renderChart();
-                }, 500);
+                }, 800);
             } catch (error) {
-                addLog(`خطأ في التنفيذ: ${error.message}`, 'error');
+                addLog(`Compilation Error: ${error.message}`, 'error');
             }
         }
 
@@ -1269,18 +1991,6 @@ for i = 0 to 4
             elements.pineLogs.appendChild(div);
             elements.pineLogs.scrollTop = elements.pineLogs.scrollHeight;
         }
-
-        // Add Symbol Functionality
-        elements.addSymbol.addEventListener('click', () => {
-            elements.symbolList.classList.toggle('hidden');
-        });
-
-        // Click outside to hide symbol list
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.symbol-selector')) {
-                elements.symbolList.classList.add('hidden');
-            }
-        });
 
         // Initialize Functions
         function updateYAxisRange() {
@@ -1319,6 +2029,7 @@ for i = 0 to 4
         // Initialize
         function init() {
             resizeCanvas();
+            initCodeMirror();
             resetChart();
             updateActiveIndicators();
             chartCanvas.style.cursor = 'grab';
