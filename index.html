@@ -182,6 +182,36 @@
             color: white;
         }
 
+        .symbol-chips {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+
+        .symbol-chip {
+            padding: 6px 12px;
+            background-color: #3b82f6;
+            border-radius: 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .chip-close {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: white;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
         .tools-container {
             display: flex;
             gap: 8px;
@@ -303,6 +333,60 @@
             justify-content: center;
             font-size: 10px;
             cursor: pointer;
+        }
+
+        .navigation-controls {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(51, 65, 85, 0.7);
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 16px;
+            right: 160px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .zoom-btn:hover {
+            background-color: rgba(51, 65, 85, 0.7);
         }
 
         /* Drawing Tools Panel */
@@ -568,6 +652,15 @@
             background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
         }
 
+        .color-custom.active {
+            border-color: white !important;
+        }
+
+        .custom-color-input {
+            display: none;
+            margin-top: 8px;
+        }
+
         .settings-footer {
             padding: 16px 24px;
             border-top: 1px solid #334155;
@@ -774,7 +867,7 @@
                 <div class="add-symbol" id="addSymbol">+</div>
             </div>
             <div class="symbol-list" id="symbolList">
-                <div class="symbol-item active" data-symbol="BTC/USD">BTC/USD</div>
+                <div class="symbol-item" data-symbol="BTC/USD">BTC/USD</div>
                 <div class="symbol-item" data-symbol="ETH/USD">ETH/USD</div>
                 <div class="symbol-item" data-symbol="XAU/USD">XAU/USD</div>
                 <div class="symbol-item" data-symbol="EUR/USD">EUR/USD</div>
@@ -815,6 +908,13 @@
                         <div class="timeframe-option" data-tf="1d">1d</div>
                     </div>
                 </div>
+                
+                <div class="symbol-chips" id="symbolChips">
+                    <div class="symbol-chip" data-symbol="BTC/USD">
+                        BTC/USD
+                        <div class="chip-close">×</div>
+                    </div>
+                </div>
             </div>
             
             <div class="tools-container">
@@ -836,6 +936,19 @@
                 </div>
                 
                 <div class="active-indicators" id="activeIndicators"></div>
+                
+                <!-- Navigation Controls -->
+                <div class="navigation-controls">
+                    <div class="nav-btn" id="navLeft">◀️</div>
+                    <div class="nav-btn" id="navRight">▶️</div>
+                    <div class="nav-btn" id="autoScroll" title="Auto Scroll">🔄</div>
+                    <div class="nav-btn" id="resetChart" title="Reset">🗙</div>
+                </div>
+                
+                <div class="zoom-controls">
+                    <div class="zoom-btn" id="zoomIn">+</div>
+                    <div class="zoom-btn" id="zoomOut">-</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1086,7 +1199,7 @@
                         <div class="color-option color-custom" data-color="custom"></div>
                     </div>
                 </div>
-                <div class="form-group" id="customColorGroup" style="display: none;">
+                <div class="form-group custom-color-input">
                     <label for="customColor">Custom Color</label>
                     <input type="color" id="customColor" class="form-control" value="#3b82f6">
                 </div>
@@ -1173,7 +1286,9 @@
             apiKey: 'secured_api_key_12345',
             simulationInterval: null,
             zoomLevel: 1,
-            panOffset: 0
+            panOffset: 0,
+            autoScroll: true,
+            chartPosition: 'center' // 'top', 'center', 'bottom'
         };
 
         // DOM Elements
@@ -1198,7 +1313,7 @@
             length: document.getElementById('length'),
             source: document.getElementById('source'),
             colorOptions: document.querySelectorAll('.color-option'),
-            customColorGroup: document.getElementById('customColorGroup'),
+            customColorInput: document.querySelector('.custom-color-input'),
             customColor: document.getElementById('customColor'),
             closeSettingsModal: document.getElementById('closeSettingsModal'),
             cancelSettings: document.getElementById('cancelSettings'),
@@ -1210,7 +1325,14 @@
             closePine: document.getElementById('closePine'),
             addSymbol: document.getElementById('addSymbol'),
             symbolList: document.getElementById('symbolList'),
-            currentTF: document.getElementById('currentTF')
+            currentTF: document.getElementById('currentTF'),
+            symbolChips: document.getElementById('symbolChips'),
+            navLeft: document.getElementById('navLeft'),
+            navRight: document.getElementById('navRight'),
+            autoScroll: document.getElementById('autoScroll'),
+            resetChart: document.getElementById('resetChart'),
+            zoomIn: document.getElementById('zoomIn'),
+            zoomOut: document.getElementById('zoomOut')
         };
 
         // Initialize CodeMirror
@@ -1286,9 +1408,9 @@ if (sell_signal)
             return map[tf] || 60000;
         }
 
-        function generateInitialCandles() {
+        function generateInitialCandles(symbol, timeframe) {
             const now = Date.now();
-            const interval = getTimeframeInMs(state.timeframe);
+            const interval = getTimeframeInMs(timeframe);
             const candlesData = [];
             let price = 50000 + Math.random() * 10000;
             
@@ -1302,7 +1424,7 @@ if (sell_signal)
                 const low = Math.min(open, close) - Math.random() * volatility * 0.5;
                 const volume = 100 + Math.random() * 200;
                 
-                candlesData.push({ time, open, high, low, close, volume });
+                candlesData.push({ time, open, high, low, close, volume, symbol });
                 price = close;
             }
             
@@ -1718,13 +1840,69 @@ if (sell_signal)
         // UI Event Listeners
         elements.symbolItems.forEach(item => {
             item.addEventListener('click', () => {
+                const symbol = item.dataset.symbol;
+                
+                // Add symbol chip if not already exists
+                if (!document.querySelector(`.symbol-chip[data-symbol="${symbol}"]`)) {
+                    const chip = document.createElement('div');
+                    chip.className = 'symbol-chip';
+                    chip.dataset.symbol = symbol;
+                    chip.innerHTML = `
+                        ${symbol}
+                        <div class="chip-close">×</div>
+                    `;
+                    elements.symbolChips.appendChild(chip);
+                    
+                    // Add close event
+                    chip.querySelector('.chip-close').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        chip.remove();
+                        if (elements.symbolChips.children.length === 0) {
+                            addDefaultSymbol();
+                        }
+                    });
+                    
+                    // Add click event to switch chart
+                    chip.addEventListener('click', () => {
+                        state.symbol = symbol;
+                        state.candles = generateInitialCandles(symbol, state.timeframe);
+                        resetChart();
+                    });
+                }
+                
+                // Reset active state
                 document.querySelectorAll('.symbol-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                state.symbol = item.dataset.symbol;
-                resetChart();
                 elements.symbolList.classList.add('hidden');
             });
         });
+
+        function addDefaultSymbol() {
+            const chip = document.createElement('div');
+            chip.className = 'symbol-chip';
+            chip.dataset.symbol = 'BTC/USD';
+            chip.innerHTML = `
+                BTC/USD
+                <div class="chip-close">×</div>
+            `;
+            elements.symbolChips.appendChild(chip);
+            
+            // Add close event
+            chip.querySelector('.chip-close').addEventListener('click', (e) => {
+                e.stopPropagation();
+                chip.remove();
+                if (elements.symbolChips.children.length === 0) {
+                    addDefaultSymbol();
+                }
+            });
+            
+            // Add click event
+            chip.addEventListener('click', () => {
+                state.symbol = 'BTC/USD';
+                state.candles = generateInitialCandles('BTC/USD', state.timeframe);
+                resetChart();
+            });
+        }
 
         elements.addSymbol.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1745,6 +1923,9 @@ if (sell_signal)
                 state.timeframe = option.dataset.tf;
                 elements.currentTF.textContent = state.timeframe;
                 elements.timeframeList.classList.add('hidden');
+                
+                // Update all symbol charts
+                state.candles = generateInitialCandles(state.symbol, state.timeframe);
                 resetChart();
             });
         });
@@ -1833,7 +2014,7 @@ if (sell_signal)
                     option.classList.remove('active');
                 });
                 elements.colorOptions[0].classList.add('active');
-                elements.customColorGroup.style.display = 'none';
+                elements.customColorInput.style.display = 'none';
                 
                 // Show settings modal
                 elements.settingsModal.style.display = 'flex';
@@ -1856,9 +2037,9 @@ if (sell_signal)
                 option.classList.add('active');
                 
                 if (option.dataset.color === 'custom') {
-                    elements.customColorGroup.style.display = 'block';
+                    elements.customColorInput.style.display = 'block';
                 } else {
-                    elements.customColorGroup.style.display = 'none';
+                    elements.customColorInput.style.display = 'none';
                 }
             });
         });
@@ -1872,6 +2053,7 @@ if (sell_signal)
                     option.classList.remove('active');
                 }
             });
+            elements.customColorInput.style.display = 'block';
         });
 
         elements.applySettings.addEventListener('click', () => {
@@ -1938,6 +2120,84 @@ if (sell_signal)
             }
         }
 
+        // Navigation Controls
+        elements.navLeft.addEventListener('click', () => {
+            const shift = Math.floor((state.visibleRange.end - state.visibleRange.start) * 0.3);
+            const newStart = Math.max(0, state.visibleRange.start - shift);
+            const newEnd = Math.min(state.candles.length - 1, state.visibleRange.end - shift);
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            state.autoScroll = false;
+            elements.autoScroll.classList.remove('active');
+            renderChart();
+        });
+
+        elements.navRight.addEventListener('click', () => {
+            const shift = Math.floor((state.visibleRange.end - state.visibleRange.start) * 0.3);
+            const newStart = Math.min(state.candles.length - (state.visibleRange.end - state.visibleRange.start + 1), state.visibleRange.start + shift);
+            const newEnd = Math.min(state.candles.length - 1, state.visibleRange.end + shift);
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            state.autoScroll = false;
+            elements.autoScroll.classList.remove('active');
+            renderChart();
+        });
+
+        elements.autoScroll.addEventListener('click', () => {
+            state.autoScroll = !state.autoScroll;
+            elements.autoScroll.classList.toggle('active', state.autoScroll);
+            
+            if (state.autoScroll) {
+                state.visibleRange = {
+                    start: Math.max(0, state.candles.length - 100),
+                    end: state.candles.length - 1
+                };
+                renderChart();
+            }
+        });
+
+        elements.resetChart.addEventListener('click', () => {
+            state.visibleRange = {
+                start: Math.max(0, state.candles.length - 100),
+                end: state.candles.length - 1
+            };
+            state.autoScroll = true;
+            elements.autoScroll.classList.add('active');
+            renderChart();
+        });
+
+        elements.zoomIn.addEventListener('click', () => {
+            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
+            const newLength = Math.max(10, Math.floor(currentLength * 0.8));
+            
+            const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
+            const half = Math.floor(newLength / 2);
+            
+            const newStart = Math.max(0, center - half);
+            const newEnd = Math.min(state.candles.length - 1, center + half);
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            state.autoScroll = false;
+            elements.autoScroll.classList.remove('active');
+            renderChart();
+        });
+
+        elements.zoomOut.addEventListener('click', () => {
+            const currentLength = state.visibleRange.end - state.visibleRange.start + 1;
+            const newLength = Math.min(500, Math.floor(currentLength * 1.25));
+            
+            const center = Math.round((state.visibleRange.start + state.visibleRange.end) / 2);
+            const half = Math.floor(newLength / 2);
+            
+            const newStart = Math.max(0, center - half);
+            const newEnd = Math.min(state.candles.length - 1, center + half);
+            
+            state.visibleRange = { start: newStart, end: newEnd };
+            state.autoScroll = false;
+            elements.autoScroll.classList.remove('active');
+            renderChart();
+        });
+
         // Initialize Functions
         function updateYAxisRange() {
             const visibleCandles = state.candles.slice(state.visibleRange.start, state.visibleRange.end + 1);
@@ -1985,18 +2245,71 @@ if (sell_signal)
         }
 
         function resetChart() {
-            state.candles = generateInitialCandles();
+            state.candles = generateInitialCandles(state.symbol, state.timeframe);
             state.currentPrice = state.candles[state.candles.length - 1].close;
             
             updateYAxisRange();
             
             state.visibleRange = {
-                start: Math.max(0, state.candles.length - 200),
+                start: Math.max(0, state.candles.length - 100),
                 end: state.candles.length - 1
             };
             
             renderChart();
             updateActiveIndicators();
+        }
+
+        // Auto-update simulation
+        function startSimulation() {
+            if (state.simulationInterval) clearInterval(state.simulationInterval);
+            
+            const interval = getTimeframeInMs(state.timeframe) / 2;
+            state.simulationInterval = setInterval(() => {
+                if (state.candles.length === 0) return;
+                
+                const last = state.candles[state.candles.length - 1];
+                const volatility = last.close * 0.01;
+                const change = (Math.random() - 0.5) * volatility * 2;
+                const open = last.close;
+                const close = open + change;
+                const high = Math.max(open, close) + Math.random() * volatility * 0.3;
+                const low = Math.min(open, close) - Math.random() * volatility * 0.3;
+                const volume = 100 + Math.random() * 200;
+                
+                const newCandle = { 
+                    time: Date.now(), 
+                    open, 
+                    high, 
+                    low, 
+                    close, 
+                    volume,
+                    symbol: state.symbol
+                };
+                
+                // Update current price
+                state.currentPrice = close;
+                
+                // Add new candle
+                state.candles.push(newCandle);
+                
+                // Keep only last 20000 candles
+                if (state.candles.length > 20000) {
+                    state.candles = state.candles.slice(-20000);
+                }
+                
+                // Update Y-axis if needed
+                updateYAxisRange();
+                
+                // Auto-follow logic
+                if (state.autoScroll) {
+                    state.visibleRange = {
+                        start: Math.max(0, state.candles.length - 100),
+                        end: state.candles.length - 1
+                    };
+                }
+                
+                renderChart();
+            }, interval);
         }
 
         // Initialize
@@ -2006,6 +2319,10 @@ if (sell_signal)
             resetChart();
             updateActiveIndicators();
             chartCanvas.style.cursor = 'grab';
+            startSimulation();
+            
+            // Add default symbol chip
+            addDefaultSymbol();
         }
 
         // Start the application
