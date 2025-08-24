@@ -2,467 +2,603 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Quotex Pro — Starter</title>
   <link rel="icon" href="https://i.imgur.com/5nHaOsf_d.jpeg" />
   <style>
-    /* Tailwind-like minimal styles (no Tailwind dependency) */
+    /* Tailwind-like minimal styles */
     :root{
       --bg:#0b1020;
       --panel:#0f1724;
       --muted:#94a3b8;
       --accent:#22c55e;
       --danger:#ef4444;
-      --glass:rgba(255,255,255,0.03)
+      --glass:rgba(255,255,255,0.03);
+      --header-height: 60px;
+      --footer-height: 60px;
     }
     html,body{
       height:100%;
       margin:0;
+      padding:0;
       background:var(--bg);
       color:#e6eef8;
-      font-family:Inter, system-ui, sans-serif
+      font-family:Inter, system-ui, sans-serif;
+      overflow: hidden;
     }
     .app{
       display:flex;
+      flex-direction: column;
       height:100vh;
-      gap:12px;
-      padding:12px
-    }
-    .sidebar{
-      width:300px;
-      background:var(--panel);
-      border-radius:10px;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px
-    }
-    .main{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:10px
-    }
-    .topbar{
-      height:48px;
-      background:var(--panel);
-      border-radius:8px;
-      padding:8px;
-      display:flex;
-      align-items:center;
-      gap:8px
-    }
-    .chart-wrap{
-      flex:1;
-      background:linear-gradient(180deg,#071025 0%, #081428 100%);
-      border-radius:10px;
-      padding:8px
-    }
-    button{
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,0.03);
-      color:inherit;
-      padding:6px 10px;
-      border-radius:8px;
-      cursor:pointer
-    }
-    select,input,textarea{
-      background:#071022;
-      border:1px solid rgba(255,255,255,0.04);
-      color:inherit;
-      padding:6px;
-      border-radius:6px
-    }
-    .controls{
-      display:flex;
-      gap:8px;
-      align-items:center
-    }
-    .editor{
-      height:220px;
-      resize:vertical
-    }
-    .small{
-      font-size:13px;
-      color:var(--muted)
-    }
-    .badge{
-      padding:6px 8px;
-      border-radius:8px;
-      background:rgba(255,255,255,0.03)
-    }
-    .footer{
-      height:40px;
-      display:flex;
-      gap:8px;
-      align-items:center
     }
 
-    /* تحسين العرض على الشاشات الصغيرة */
-    @media (max-width: 500px) {
-      .sidebar {
-        padding: 10px;
-      }
-      h3 {
-        font-size: 1.1rem !important;
-      }
-      .small {
-        font-size: 12px;
-      }
-      .badge, button, input, select {
-        font-size: 13px;
-        padding: 5px 8px;
-      }
-      .topbar {
-        height: 40px;
-        padding: 6px;
-      }
-      .chart-wrap {
-        padding: 6px;
-      }
+    /* Header */
+    .header {
+      height: var(--header-height);
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .header img {
+      width: 32px;
+      border-radius: 6px;
+    }
+    .header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .header .pair {
+      margin-right: auto;
+      font-size: 1.1rem;
+      color: #60d394;
     }
 
-    @media(max-width:900px){
-      .sidebar{display:none}
+    /* Chart */
+    .chart-wrap {
+      flex: 1;
+      background: linear-gradient(180deg, #071025 0%, #081428 100%);
+      padding: 8px;
+      border-radius: 10px;
+      margin: 0 8px;
+    }
+
+    /* Footer Icons */
+    .footer-icons {
+      height: var(--footer-height);
+      background: var(--panel);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .icon-btn {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 50%;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .icon-btn:active {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Timeframe Popup */
+    .tf-popup {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 10px 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+      min-width: 180px;
+    }
+    .tf-popup.active {
+      display: block;
+    }
+    .tf-popup button {
+      display: block;
+      width: 100%;
+      padding: 10px 16px;
+      text-align: center;
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .tf-popup button:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Desktop View: Sidebar */
+    .sidebar {
+      width: 300px;
+      background: var(--panel);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .topbar {
+      height: 48px;
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button, select, input, textarea {
+      background: #071022;
+      border: 1px solid rgba(255,255,255,0.04);
+      color: inherit;
+      padding: 6px;
+      border-radius: 6px;
+    }
+    button {
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .badge {
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* Mobile: Hide sidebar on small screens */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .app { flex-direction: column; }
+      .header, .footer-icons { display: flex; }
+      .chart-wrap { margin: 8px; }
+    }
+
+    /* Desktop: Hide mobile header/footer */
+    @media (min-width: 901px) {
+      .header, .footer-icons, .tf-popup { display: none !important; }
+      .main { flex-direction: column; }
     }
   </style>
-  <!-- Lightweight Charts CDN -->
   <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
+  <!-- Mobile Layout -->
   <div class="app">
-    <div class="sidebar" id="sidebar">
-      <!-- الشعار والاسم جنب بعض -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" style="width:40px;border-radius:6px">
-        <h3 style="margin:0;font-size:1.3rem;">Quotex Pro</h3>
-      </div>
-
-      <!-- رسالة توجيهية -->
-      <div class="small" style="margin-bottom:12px; padding:8px; background:rgba(34,197,94,0.1); border-radius:6px; text-align:center;">
-        لن تستشكف إذا فتحت في الهاتف أو الحاسوب
-      </div>
-
-      <div class="small">رمز:</div>
-      <select id="symbolSelect">
-        <option value="TEST/USDT">TEST/USDT</option>
-        <option value="BTC/USDT">BTC/USDT</option>
-        <option value="ETH/USDT">ETH/USDT</option>
-      </select>
-
-      <div class="small">الإطار الزمني (TF):</div>
-      <select id="tfSelect">
-        <option value="5">5s</option>
-        <option value="15">15s</option>
-        <option value="60" selected>1m</option>
-        <option value="300">5m</option>
-        <option value="900">15m</option>
-      </select>
-
-      <div class="small">إعدادات البوت</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="playBtn">تشغيل</button>
-        <button id="stopBtn">إيقاف</button>
-      </div>
-
-      <div class="small">سرعة التيك (ms)</div>
-      <input id="tickSpeed" type="number" value="2000" />
-
-      <div class="small">عدد الشموع على الشاشة</div>
-      <input id="barsOnScreen" type="number" value="120" />
-
-      <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
-        <button id="exportCsv">تصدير CSV</button>
-        <button id="saveProfile">حفظ الإعدادات</button>
-        <button id="loadProfile">تحميل الإعدادات</button>
-      </div>
-
-      <div style="flex:1"></div>
-      <div class="small">Logs</div>
-      <pre id="logs" style="height:120px;overflow:auto;background:#071022;padding:8px;border-radius:6px"></pre>
+    <!-- Header (Mobile) -->
+    <div class="header">
+      <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" />
+      <h3>Quotex Pro</h3>
+      <div class="pair" id="mobilePair">TEST/USDT</div>
     </div>
 
-    <div class="main">
-      <div class="topbar">
-        <div class="badge" id="pairBadge">TEST/USDT</div>
-        <div style="flex:1"></div>
-        <div class="small" id="statusBadge">status: disconnected</div>
-      </div>
+    <!-- Chart -->
+    <div class="chart-wrap">
+      <div id="chart" style="width:100%;height:100%;min-height:420px"></div>
+    </div>
 
-      <div class="chart-wrap">
-        <div id="chart" style="width:100%;height:100%;min-height:420px"></div>
-      </div>
+    <!-- Footer Icons (Mobile) -->
+    <div class="footer-icons">
+      <div class="icon-btn" id="tfBtn">🕒</div>
+      <div class="icon-btn" id="playBtn">▶️</div>
+      <div class="icon-btn" id="stopBtn">⏹️</div>
+      <div class="icon-btn" id="editBtn">✏️</div>
+    </div>
 
-      <div style="display:flex;gap:10px">
-        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
-          <div class="small">محرر المؤشرات (اكتب دالة run(ohlcv,helpers))</div>
-          <textarea id="editor" class="editor">// مثال:
+    <!-- Timeframe Popup -->
+    <div class="tf-popup" id="tfPopup">
+      <button data-tf="5">5 ثواني</button>
+      <button data-tf="15">15 ثانية</button>
+      <button data-tf="60">1 دقيقة</button>
+      <button data-tf="300">5 دقائق</button>
+      <button data-tf="900">15 دقيقة</button>
+    </div>
+  </div>
+
+  <!-- Desktop Layout -->
+  <div class="sidebar" id="sidebar" style="display: none">
+    <h3 style="margin:0;font-size:1.3rem;">Quotex Pro</h3>
+    <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" style="width:40px;border-radius:6px;margin-top:6px">
+
+    <div class="small">رمز:</div>
+    <select id="symbolSelect">
+      <option value="TEST/USDT">TEST/USDT</option>
+      <option value="BTC/USDT">BTC/USDT</option>
+      <option value="ETH/USDT">ETH/USDT</option>
+    </select>
+
+    <div class="small">الإطار الزمني (TF):</div>
+    <select id="tfSelect">
+      <option value="5">5s</option>
+      <option value="15">15s</option>
+      <option value="60" selected>1m</option>
+      <option value="300">5m</option>
+      <option value="900">15m</option>
+    </select>
+
+    <div class="small">إعدادات البوت</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="desktopPlay">تشغيل</button>
+      <button id="desktopStop">إيقاف</button>
+    </div>
+
+    <div class="small">سرعة التيك (ms)</div>
+    <input id="tickSpeed" type="number" value="2000" />
+
+    <div class="small">عدد الشموع على الشاشة</div>
+    <input id="barsOnScreen" type="number" value="120" />
+
+    <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
+      <button id="exportCsv">تصدير CSV</button>
+      <button id="saveProfile">حفظ الإعدادات</button>
+      <button id="loadProfile">تحميل الإعدادات</button>
+    </div>
+
+    <div style="flex:1"></div>
+    <div class="small">Logs</div>
+    <pre id="logs" style="height:120px;overflow:auto;background:#071022;padding:8px;border-radius:6px"></pre>
+  </div>
+
+  <div class="main" style="display: none">
+    <div class="topbar">
+      <div class="badge" id="pairBadge">TEST/USDT</div>
+      <div style="flex:1"></div>
+      <div class="small" id="statusBadge">status: disconnected</div>
+    </div>
+
+    <div class="chart-wrap">
+      <div id="chart-desktop" style="width:100%;height:100%;min-height:420px;display:none"></div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+        <div class="small">محرر المؤشرات</div>
+        <textarea id="editor" class="editor">// مثال:
 function run(ohlcv,helpers){
-  // simple SMA cross on close
   const closes = ohlcv.map(b=>b.close);
   const sma10 = helpers.sma(closes,10);
   const sma30 = helpers.sma(closes,30);
   const signals = [];
   const last = ohlcv[ohlcv.length-1];
-  const idx = ohlcv.length-1;
-  if(sma10[idx] && sma30[idx]){
-    if(sma10[idx] > sma30[idx]){
-      signals.push({ time: last.time, position:'belowBar', color:'#22c55e', shape:'arrowUp', text:'BUY' });
-    }else if(sma10[idx] < sma30[idx]){
-      signals.push({ time: last.time, position:'aboveBar', color:'#ef4444', shape:'arrowDown', text:'SELL' });
-    }
+  if(sma10[sma10.length-1] > sma30[sma30.length-1]){
+    signals.push({ time: last.time, position:'belowBar', color:'#22c55e', shape:'arrowUp', text:'BUY' });
+  } else if(sma10[sma10.length-1] < sma30[sma30.length-1]){
+    signals.push({ time: last.time, position:'aboveBar', color:'#ef4444', shape:'arrowDown', text:'SELL' });
   }
   return signals;
 }
 </textarea>
-          <div style="display:flex;gap:8px">
-            <button id="runBtn">تشغيل الكود (على آخر N)</button>
-            <button id="saveIndicator">حفظ المؤشر</button>
-            <button id="clearMarkers">إخفاء الإشارات</button>
-            <button id="exportPng">تصدير صورة</button>
-          </div>
-        </div>
-
-        <div style="width:340px;background:var(--panel);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px">
-          <div class="small">معاينات</div>
-          <div id="markerPreview" style="min-height:120px;background:#071022;padding:8px;border-radius:6px;overflow:auto"></div>
-          <div class="small">حفظ / تحميل إشارات (محلياً)</div>
-          <div style="display:flex;gap:8px">
-            <button id="downloadSignals">تنزيل إشارات</button>
-            <button id="uploadSignals">رفع إشارات</button>
-          </div>
+        <div style="display:flex;gap:8px">
+          <button id="runBtn">تشغيل الكود</button>
+          <button id="clearMarkers">إخفاء الإشارات</button>
+          <button id="exportPng">تصدير صورة</button>
         </div>
       </div>
 
-      <div class="footer">
-        <div class="small">Quotex Pro — Starter</div>
-        <div style="flex:1"></div>
-        <div class="small">© 2025</div>
+      <div style="width:340px;background:var(--panel);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px">
+        <div class="small">معاينة الإشارات</div>
+        <div id="markerPreview" style="min-height:120px;background:#071022;padding:8px;border-radius:6px;overflow:auto"></div>
+        <div class="small">حفظ / تحميل إشارات</div>
+        <div style="display:flex;gap:8px">
+          <button id="downloadSignals">تنزيل</button>
+          <button id="uploadSignals">رفع</button>
+        </div>
       </div>
+    </div>
+
+    <div class="footer">
+      <div class="small">Quotex Pro — Starter</div>
+      <div style="flex:1"></div>
+      <div class="small">© 2025</div>
     </div>
   </div>
 
-<script>
-// ----------------- Utilities & State -----------------
-const state = {
-  ohlcv: [],
-  lastBar: null,
-  ws: null,
-  playing: false,
-  worker: null,
-  symbol: 'TEST/USDT',
-  tf: 60,
-  barsOnScreen: 120,
-  tickSpeed: 2000,
-}
+  <script>
+    // ----------------- State & Shared Elements -----------------
+    const state = {
+      ohlcv: [],
+      lastBar: null,
+      ws: null,
+      playing: false,
+      worker: null,
+      symbol: 'TEST/USDT',
+      tf: 60,
+      barsOnScreen: 120,
+      tickSpeed: 2000,
+    };
 
-const logEl = document.getElementById('logs');
-function log(...args){ const s = args.join(' '); console.log(...args); logEl.textContent = (new Date()).toLocaleTimeString() + ' | ' + s + '\n' + logEl.textContent }
-
-// ----------------- Chart Init -----------------
-const chartContainer = document.getElementById('chart');
-const chart = LightweightCharts.createChart(chartContainer, {
-  layout: { background: { color: '#071025' }, textColor: '#d8e7ff' },
-  rightPriceScale: { visible: true },
-  timeScale: { timeVisible: true, secondsVisible: true }
-});
-const candleSeries = chart.addCandlestickSeries({
-  upColor: '#22c55e', downColor: '#ef4444', borderVisible: true, wickUpColor: '#22c55e', wickDownColor: '#ef4444'
-});
-
-// keep markers
-let currentMarkers = [];
-function applyMarkers(markers){
-  currentMarkers = markers.map(m=>({
-    time: m.time,
-    position: m.position || (m.pos==='below'?'belowBar':'aboveBar'),
-    color: m.color || (m.text && m.text.toLowerCase().includes('buy')? '#22c55e':'#ef4444'),
-    shape: m.shape || (m.position==='belowBar'?'arrowUp':'arrowDown'),
-    text: m.text || ''
-  }));
-  candleSeries.setMarkers(currentMarkers);
-  previewMarkers(currentMarkers);
-}
-function previewMarkers(ms){ const el = document.getElementById('markerPreview'); el.textContent = JSON.stringify(ms.slice(-10), null, 2) }
-
-// ----------------- Helpers for user indicators -----------------
-const helpers = {
-  sma: (arr,period)=>{
-    const out = new Array(arr.length).fill(null);
-    let sum=0; for(let i=0;i<arr.length;i++){
-      sum += arr[i]; if(i>=period) sum -= arr[i-period];
-      if(i>=period-1) out[i] = sum/period;
-    } return out;
-  },
-  ema: (arr,period)=>{
-    const out = new Array(arr.length).fill(null);
-    const k = 2/(period+1); let prev=null; for(let i=0;i<arr.length;i++){ if(prev===null){ prev=arr[i]; out[i]=arr[i]; } else { prev = arr[i]*k + prev*(1-k); out[i]=prev } } return out;
-  },
-  rsi: (arr, period)=>{
-    const out = new Array(arr.length).fill(null);
-    let gains=0, losses=0; for(let i=1;i<arr.length;i++){
-      const change = arr[i]-arr[i-1]; if(i<=period){ if(change>0) gains+=change; else losses+=Math.abs(change); if(i===period){ const rs = gains/losses; out[i]=100 - (100/(1+rs)); }} else { const change = arr[i]-arr[i-1]; gains = (gains*(period-1) + Math.max(0,change))/period; losses = (losses*(period-1) + Math.max(0,-change))/period; const rs = losses===0? 100 : gains/losses; out[i] = 100 - (100/(1+rs)); }} return out;
-  },
-  findBarIndexByTime: (time)=> state.ohlcv.findIndex(b=>b.time===time)
-};
-
-// ----------------- Web Worker Sandbox (via Blob) -----------------
-function createWorkerFromCode(userCode){
-  // worker script: receives {cmd:'run', ohlcv, helpers} and must postMessage {type:'signals', signals}
-  const workerSrc = `
-    self.onmessage = function(e){
-      const data = e.data;
-      if(data.cmd==='run'){
-        try{
-          const ohlcv = data.ohlcv;
-          // recreate helpers but only numeric functions
-          const helpers = {
-            sma: ${helpers.sma.toString()},
-            ema: ${helpers.ema.toString()},
-            rsi: ${helpers.rsi.toString()},
-            findBarIndexByTime: ${helpers.findBarIndexByTime.toString()}
-          };
-          // user code
-          ${userCode}
-          if(typeof run !== 'function') throw new Error('run function not found');
-          // execute with timeout guard
-          let finished=false; const timeout = setTimeout(()=>{ if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
-          const res = run(ohlcv,helpers);
-          finished=true; clearTimeout(timeout);
-          postMessage({type:'signals', signals: res});
-        }catch(err){ postMessage({type:'error', message: err.message}); }
-      }
+    const logEl = document.getElementById('logs');
+    function log(...args) {
+      const s = args.join(' ');
+      console.log(...args);
+      logEl.textContent = (new Date()).toLocaleTimeString() + ' | ' + s + '\n' + logEl.textContent;
     }
-  `;
-  const blob = new Blob([workerSrc], { type: 'application/javascript' });
-  const url = URL.createObjectURL(blob);
-  return new Worker(url);
-}
 
-// ----------------- WS client with fallback simulator -----------------
-const wsUrl = 'ws://localhost:8081';
-let reconnectTimer = null;
-function connectWS(){
-  try{
-    const ws = new WebSocket(wsUrl);
-    state.ws = ws;
-    ws.onopen = ()=>{ document.getElementById('statusBadge').textContent='status: connected'; log('WS connected'); }
-    ws.onmessage = (ev)=>{ try{ const msg = JSON.parse(ev.data); if(msg.type==='history'){ setHistory(msg.data); } else if(msg.type==='update'){ onIncomingBar(msg.data); } }catch(e){ log('ws parse err', e.message) } }
-    ws.onclose = ()=>{ document.getElementById('statusBadge').textContent='status: disconnected'; log('WS closed — fallback to simulator'); scheduleReconnect(); }
-    ws.onerror = (e)=>{ log('WS error', e.message); ws.close(); }
-  }catch(e){ log('ws start failed', e.message); scheduleReconnect(); }
-}
-function scheduleReconnect(){ if(reconnectTimer) return; reconnectTimer = setTimeout(()=>{ reconnectTimer=null; connectWS(); }, 3000); }
+    // ----------------- Chart Init (Mobile & Desktop) -----------------
+    const chart = LightweightCharts.createChart(document.getElementById('chart'), {
+      layout: { background: { color: '#071025' }, textColor: '#d8e7ff' },
+      rightPriceScale: { visible: true },
+      timeScale: { timeVisible: true, secondsVisible: true }
+    });
+    const candleSeries = chart.addCandlestickSeries({
+      upColor: '#22c55e', downColor: '#ef4444', borderVisible: true, wickUpColor: '#22c55e', wickDownColor: '#ef4444'
+    });
 
-// fallback internal simulator
-let simInterval = null;
-function startSimulator(){ stopSimulator(); state.ohlcv = []; const now = Math.floor(Date.now()/1000) - state.barsOnScreen*state.tf; let last={time:now,open:100,high:100,low:100,close:100,volume:0}; const hist=[]; for(let i=0;i<state.barsOnScreen;i++){ last = genNextBar(last, state.tf); hist.push(last); } setHistory(hist); simInterval = setInterval(()=>{ const next = genNextBar(state.ohlcv[state.ohlcv.length-1], state.tf); onIncomingBar(next); }, state.tickSpeed); }
-function stopSimulator(){ if(simInterval) clearInterval(simInterval); simInterval=null; }
-function genNextBar(prev, tf){ const open = prev.close; const change = (Math.random()-0.5) * 0.02 * open; const close = +(open + change).toFixed(6); const high = +(Math.max(open, close) + Math.random()*0.002*open).toFixed(6); const low = +(Math.min(open, close) - Math.random()*0.002*open).toFixed(6); const time = prev.time + tf; return { time, open, high, low, close, volume: Math.floor(Math.random()*1000) } }
+    // ----------------- Helpers & Worker -----------------
+    const helpers = {
+      sma: (arr, period) => {
+        const out = new Array(arr.length).fill(null);
+        let sum = 0;
+        for (let i = 0; i < arr.length; i++) {
+          sum += arr[i];
+          if (i >= period) sum -= arr[i - period];
+          if (i >= period - 1) out[i] = sum / period;
+        }
+        return out;
+      },
+      ema: (arr, period) => {
+        const out = new Array(arr.length).fill(null);
+        const k = 2 / (period + 1);
+        let prev = null;
+        for (let i = 0; i < arr.length; i++) {
+          if (prev === null) { prev = arr[i]; out[i] = arr[i]; }
+          else { prev = arr[i] * k + prev * (1 - k); out[i] = prev; }
+        }
+        return out;
+      },
+      rsi: (arr, period) => {
+        const out = new Array(arr.length).fill(null);
+        let gains = 0, losses = 0;
+        for (let i = 1; i < arr.length; i++) {
+          const change = arr[i] - arr[i - 1];
+          if (i <= period) {
+            if (change > 0) gains += change;
+            else losses += Math.abs(change);
+            if (i === period) {
+              const rs = gains / losses;
+              out[i] = 100 - (100 / (1 + rs));
+            }
+          } else {
+            gains = (gains * (period - 1) + Math.max(0, change)) / period;
+            losses = (losses * (period - 1) + Math.max(0, -change)) / period;
+            const rs = losses === 0 ? 100 : gains / losses;
+            out[i] = 100 - (100 / (1 + rs));
+          }
+        }
+        return out;
+      },
+      findBarIndexByTime: (time) => state.ohlcv.findIndex(b => b.time === time)
+    };
 
-// ----------------- Data flow -----------------
-function setHistory(hist){ state.ohlcv = hist.slice(); candleSeries.setData(hist.map(b=>({time:b.time,open:b.open,high:b.high,low:b.low,close:b.close}))); state.lastBar = hist[hist.length-1]; }
-function onIncomingBar(bar){ // decide update vs append
-  const last = state.ohlcv[state.ohlcv.length-1];
-  if(!last || bar.time > last.time){ state.ohlcv.push(bar); state.lastBar = bar; if(state.ohlcv.length > 5000) state.ohlcv.shift(); candleSeries.update(bar); }
-  else if(bar.time === last.time){ state.ohlcv[state.ohlcv.length-1] = bar; candleSeries.update(bar); state.lastBar = bar; }
-  // after update, run worker on last N (simulate run on close as required)
-  if(state.playing){ runUserCodeOnLatest(); }
-}
+    function createWorkerFromCode(userCode) {
+      const workerSrc = `
+        self.onmessage = function(e){
+          const data = e.data;
+          if(data.cmd==='run'){
+            try{
+              const ohlcv = data.ohlcv;
+              const helpers = {
+                sma: ${helpers.sma.toString()},
+                ema: ${helpers.ema.toString()},
+                rsi: ${helpers.rsi.toString()},
+                findBarIndexByTime: ${helpers.findBarIndexByTime.toString()}
+              };
+              ${userCode}
+              if(typeof run !== 'function') throw new Error('run function not found');
+              let finished=false;
+              const timeout = setTimeout(()=>{ if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
+              const res = run(ohlcv,helpers);
+              finished=true; clearTimeout(timeout);
+              postMessage({type:'signals', signals: res});
+            }catch(err){ postMessage({type:'error', message: err.message}); }
+          }
+        }
+      `;
+      const blob = new Blob([workerSrc], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      return new Worker(url);
+    }
 
-// ----------------- Run user code -----------------
-function runUserCodeOnLatest(){ try{
-  const code = document.getElementById('editor').value;
-  if(state.worker){ state.worker.terminate(); state.worker=null; }
-  state.worker = createWorkerFromCode(code);
-  state.worker.onmessage = (e)=>{
-    if(e.data.type==='signals'){ applyMarkers(e.data.signals || []); }
-    else if(e.data.type==='error'){ log('Worker error', e.data.message); }
-  };
-  state.worker.postMessage({ cmd:'run', ohlcv: state.ohlcv.slice(-Math.max(300, state.barsOnScreen)) });
-}catch(err){ log('run err', err.message) }}
+    function applyMarkers(markers) {
+      const mapped = markers.map(m => ({
+        time: m.time,
+        position: m.position || (m.pos === 'below' ? 'belowBar' : 'aboveBar'),
+        color: m.color || (m.text && m.text.toLowerCase().includes('buy') ? '#22c55e' : '#ef4444'),
+        shape: m.shape || (m.position === 'belowBar' ? 'arrowUp' : 'arrowDown'),
+        text: m.text || ''
+      }));
+      candleSeries.setMarkers(mapped);
+      document.getElementById('markerPreview').textContent = JSON.stringify(mapped.slice(-10), null, 2);
+    }
 
-// ----------------- UI wiring -----------------
-document.getElementById('playBtn').onclick = ()=>{
-  if(state.playing) return; state.playing=true; document.getElementById('playBtn').textContent='قيد التشغيل'; log('start');
-  // try to connect WS; if not connected, start simulator
-  connectWS(); setTimeout(()=>{ if(!state.ws || state.ws.readyState!==1){ startSimulator(); } }, 500);
-};
-document.getElementById('stopBtn').onclick = ()=>{ state.playing=false; document.getElementById('playBtn').textContent='تشغيل'; stopSimulator(); if(state.ws){ state.ws.close(); state.ws=null } log('stopped'); };
+    // ----------------- Simulator & WS -----------------
+    const wsUrl = 'ws://localhost:8081';
+    let simInterval = null;
+    function startSimulator() {
+      stopSimulator();
+      state.ohlcv = [];
+      const now = Math.floor(Date.now() / 1000) - state.barsOnScreen * state.tf;
+      let last = { time: now, open: 100, high: 100, low: 100, close: 100, volume: 0 };
+      const hist = [];
+      for (let i = 0; i < state.barsOnScreen; i++) {
+        last = genNextBar(last, state.tf);
+        hist.push(last);
+      }
+      setHistory(hist);
+      simInterval = setInterval(() => {
+        const next = genNextBar(state.ohlcv[state.ohlcv.length - 1], state.tf);
+        onIncomingBar(next);
+      }, state.tickSpeed);
+    }
+    function stopSimulator() { if (simInterval) clearInterval(simInterval); simInterval = null; }
+    function genNextBar(prev, tf) {
+      const open = prev.close;
+      const change = (Math.random() - 0.5) * 0.02 * open;
+      const close = +(open + change).toFixed(6);
+      const high = +(Math.max(open, close) + Math.random() * 0.002 * open).toFixed(6);
+      const low = +(Math.min(open, close) - Math.random() * 0.002 * open).toFixed(6);
+      const time = prev.time + tf;
+      return { time, open, high, low, close, volume: Math.floor(Math.random() * 1000) };
+    }
+    function setHistory(hist) {
+      state.ohlcv = hist.slice();
+      candleSeries.setData(hist.map(b => ({ time: b.time, open: b.open, high: b.high, low: b.low, close: b.close })));
+      state.lastBar = hist[hist.length - 1];
+    }
+    function onIncomingBar(bar) {
+      const last = state.ohlcv[state.ohlcv.length - 1];
+      if (!last || bar.time > last.time) {
+        state.ohlcv.push(bar);
+        candleSeries.update(bar);
+      } else if (bar.time === last.time) {
+        state.ohlcv[state.ohlcv.length - 1] = bar;
+        candleSeries.update(bar);
+      }
+      if (state.playing) runUserCodeOnLatest();
+    }
 
-document.getElementById('tfSelect').onchange = (e)=>{ state.tf = Number(e.target.value); log('tf', state.tf); };
-document.getElementById('symbolSelect').onchange = (e)=>{ state.symbol = e.target.value; document.getElementById('pairBadge').textContent = state.symbol };
-document.getElementById('tickSpeed').onchange = (e)=>{ state.tickSpeed = Number(e.target.value); if(simInterval){ stopSimulator(); startSimulator(); } };
-document.getElementById('barsOnScreen').onchange = (e)=>{ state.barsOnScreen = Number(e.target.value); };
+    function runUserCodeOnLatest() {
+      const code = document.getElementById('editor').value;
+      if (state.worker) state.worker.terminate();
+      state.worker = createWorkerFromCode(code);
+      state.worker.onmessage = (e) => {
+        if (e.data.type === 'signals') applyMarkers(e.data.signals || []);
+        else if (e.data.type === 'error') log('Worker error', e.data.message);
+      };
+      state.worker.postMessage({ cmd: 'run', ohlcv: state.ohlcv.slice(-Math.max(300, state.barsOnScreen)) });
+    }
 
-document.getElementById('runBtn').onclick = ()=>{ runUserCodeOnLatest(); };
-document.getElementById('clearMarkers').onclick = ()=>{ applyMarkers([]); };
+    // ----------------- UI Controls -----------------
+    // Mobile buttons
+    document.getElementById('tfBtn').onclick = () => {
+      const popup = document.getElementById('tfPopup');
+      popup.classList.toggle('active');
+    };
+    document.getElementById('playBtn').onclick = () => {
+      document.getElementById('playBtn').textContent = '▶️';
+      document.getElementById('stopBtn').textContent = '⏹️';
+      state.playing = true;
+      startSimulator();
+      log('تشغيل');
+    };
+    document.getElementById('stopBtn').onclick = () => {
+      state.playing = false;
+      stopSimulator();
+      log('إيقاف');
+    };
+    document.getElementById('editBtn').onclick = () => {
+      document.getElementById('editor').focus();
+    };
 
-// save/load settings locally
-document.getElementById('saveProfile').onclick = ()=>{ const payload = { symbol:state.symbol, tf:state.tf, tickSpeed: state.tickSpeed, barsOnScreen: state.barsOnScreen, indicator: document.getElementById('editor').value }; localStorage.setItem('quotex_pro_profile', JSON.stringify(payload)); log('profile saved'); };
-document.getElementById('loadProfile').onclick = ()=>{ const p = localStorage.getItem('quotex_pro_profile'); if(!p) return log('no profile'); const cfg = JSON.parse(p); document.getElementById('symbolSelect').value = cfg.symbol; document.getElementById('tfSelect').value = cfg.tf; document.getElementById('tickSpeed').value = cfg.tickSpeed; document.getElementById('barsOnScreen').value = cfg.barsOnScreen; document.getElementById('editor').value = cfg.indicator; log('profile loaded'); };
+    // Timeframe selection
+    document.querySelectorAll('#tfPopup button').forEach(btn => {
+      btn.onclick = () => {
+        const tf = parseInt(btn.getAttribute('data-tf'));
+        state.tf = tf;
+        document.getElementById('tfPopup').classList.remove('active');
+        startSimulator(); // إعادة التهيئة
+        log('تم تغيير الإطار الزمني إلى', tf, 'ثانية');
+      };
+    });
 
-// export CSV
-document.getElementById('exportCsv').onclick = ()=>{
-  const csv = ['time,open,high,low,close,volume', ...state.ohlcv.map(b=>`${b.time},${b.open},${b.high},${b.low},${b.close},${b.volume}`)].join('\n');
-  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='ohlcv.csv'; a.click(); URL.revokeObjectURL(url);
-};
+    // Symbol change
+    document.getElementById('symbolSelect').onchange = (e) => {
+      state.symbol = e.target.value;
+      document.getElementById('pairBadge').textContent = e.target.value;
+      document.getElementById('mobilePair').textContent = e.target.value;
+    };
 
-// export PNG
-document.getElementById('exportPng').onclick = async ()=>{
-  const img = await chart.takeScreenshot(); const a=document.createElement('a'); a.href=img; a.download='chart.png'; a.click(); };
+    // Desktop buttons (sync with mobile)
+    document.getElementById('desktopPlay').onclick = () => document.getElementById('playBtn').click();
+    document.getElementById('desktopStop').onclick = () => document.getElementById('stopBtn').click();
 
-// download signals
-document.getElementById('downloadSignals').onclick = ()=>{ const data = JSON.stringify(currentMarkers); const blob = new Blob([data],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='signals.json'; a.click(); };
+    // Run, clear, export
+    document.getElementById('runBtn').onclick = runUserCodeOnLatest;
+    document.getElementById('clearMarkers').onclick = () => applyMarkers([]);
 
-// initial small history
-(function init(){ const now = Math.floor(Date.now()/1000); let last={time:now - 60*120, open:100,high:100,low:100,close:100,volume:0}; const hist=[]; for(let i=0;i<120;i++){ last = genNextBar(last, 60); hist.push(last); } setHistory(hist); })();
+    // Save/Load
+    document.getElementById('saveProfile').onclick = () => {
+      localStorage.setItem('quotex_pro_profile', JSON.stringify({
+        symbol: state.symbol, tf: state.tf, tickSpeed: state.tickSpeed, barsOnScreen: state.barsOnScreen, indicator: document.getElementById('editor').value
+      }));
+      log('تم حفظ الإعدادات');
+    };
+    document.getElementById('loadProfile').onclick = () => {
+      const p = localStorage.getItem('quotex_pro_profile');
+      if (!p) return log('لا توجد إعدادات محفوظة');
+      const cfg = JSON.parse(p);
+      document.getElementById('symbolSelect').value = cfg.symbol;
+      document.getElementById('tfSelect').value = cfg.tf;
+      document.getElementById('tickSpeed').value = cfg.tickSpeed;
+      document.getElementById('barsOnScreen').value = cfg.barsOnScreen;
+      document.getElementById('editor').value = cfg.indicator;
+      state.symbol = cfg.symbol;
+      state.tf = cfg.tf;
+      document.getElementById('mobilePair').textContent = cfg.symbol;
+      log('تم تحميل الإعدادات');
+    };
 
-// make chart responsive
-window.addEventListener('resize', ()=> chart.applyOptions({}));
+    // Export
+    document.getElementById('exportCsv').onclick = () => {
+      const csv = ['time,open,high,low,close,volume', ...state.ohlcv.map(b => `${b.time},${b.open},${b.high},${b.low},${b.close},${b.volume}`)].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ohlcv.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
 
-log('Quotex Pro Starter loaded');
-</script>
+    document.getElementById('exportPng').onclick = async () => {
+      const img = await chart.takeScreenshot();
+      const a = document.createElement('a');
+      a.href = img;
+      a.download = 'chart.png';
+      a.click();
+    };
 
-<!--
-================ ws-server.js (backend simulator) ================
-Node.js WebSocket server (ws). Save as ws-server.js
-Run: npm install ws express
-node ws-server.js
+    // Initial data
+    (function init() {
+      const now = Math.floor(Date.now() / 1000);
+      let last = { time: now - 60 * 120, open: 100, high: 100, low: 100, close: 100, volume: 0 };
+      const hist = [];
+      for (let i = 0; i < 120; i++) {
+        last = genNextBar(last, 60);
+        hist.push(last);
+      }
+      setHistory(hist);
+    })();
 
-This server sends a 'history' message once, then periodically 'update' messages.
---> 
-
-<details>
-<summary style="cursor:pointer;margin-top:12px;color:var(--muted)">ws-server.js (click to expand)</summary>
-
-```js
-// ws-server.js
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8081 });
-console.log('WS server listening on :8081');
-
-function genNextBar(prev, tfSeconds){
-  const open = prev.close;
-  const change = (Math.random()-0.5) * 0.02 * open;
-  const close = +(open + change).toFixed(6);
-  const high = +(Math.max(open, close) + Math.random()*0.002*open).toFixed(6);
-  const low = +(Math.min(open, close) - Math.random()*0.002*open).toFixed(6);
-  const time = prev.time + tfSeconds;
-  return { time, open, high, low, close, volume: Math.floor(Math.random()*1000) };
-}
-
-wss.on('connection', ws => {
-  console.log('client connected');
-  let last = { time: Math.floor(Date.now()/1000) - 3600, open: 100, high:100, low:100, close:100, volume:0 };
-  const hist = [];
-  for(let i=0;i<120;i++){ last = genNextBar(last, 60); hist.push(last); }
-  ws.send(JSON.stringify({ type:'history', data: hist }));
-
-  const interval = setInterval(()=>{
-    last = genNextBar(last, 60);
-    if(ws.readyState===WebSocket.OPEN){ ws.send(JSON.stringify({ type:'update', data: last })); }
-  }, 2000);
-
-  ws.on('close', ()=>{ clearInterval(interval); console.log('client disconnected'); });
-});
+    // Responsive
+    window.addEventListener('resize', () => chart.applyOptions({}));
+    log('Quotex Pro محمل');
+  </script>
+</body>
+</html>
