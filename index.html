@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Quotex Pro</title>
+  <title>Quotex Pro — API</title>
   <link rel="icon" href="https://i.imgur.com/5nHaOsf_d.jpeg" />
   <style>
     :root {
@@ -31,7 +31,7 @@
       height: 100vh;
     }
 
-    /* === الشريط العلوي (الشعار + الاسم + الزوج) === */
+    /* === الشريط العلوي === */
     .header {
       height: var(--header-height);
       background: var(--panel);
@@ -55,6 +55,7 @@
       font-size: 1.1rem;
       color: #60d394;
       font-weight: 500;
+      cursor: pointer;
     }
 
     /* === منطقة الشارت === */
@@ -88,106 +89,88 @@
       font-size: 1.4rem;
       cursor: pointer;
     }
-    .icon-btn:active {
-      background: rgba(255,255,255,0.1);
-    }
 
-    /* === قائمة الفريمات المنبثقة === */
-    .tf-popup {
+    /* === نافذة العملات === */
+    .modal-overlay {
       position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--panel);
-      border-radius: 12px;
-      padding: 10px 0;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
       display: none;
-      z-index: 1000;
-      min-width: 180px;
-    }
-    .tf-popup.active {
-      display: block;
-    }
-    .tf-popup button {
-      display: block;
-      width: 100%;
-      padding: 10px 16px;
-      text-align: center;
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .tf-popup button[selected] {
-      background: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-      font-weight: 600;
-    }
-    .tf-popup button:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    /* === لوحة الكمبيوتر (تختفي على الجوال) === */
-    .sidebar {
-      width: 300px;
-      background: var(--panel);
-      border-radius: 10px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .topbar {
-      height: 48px;
-      background: var(--panel);
-      border-radius: 8px;
-      padding: 8px;
-      display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 8px;
+      z-index: 1000;
     }
-    button, select, input, textarea {
+    .modal {
+      background: var(--panel);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+      overflow: hidden;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 12px 16px;
+      background: rgba(34,197,94,0.1);
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .modal input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
       background: #071022;
-      border: 1px solid rgba(255,255,255,0.04);
-      color: inherit;
-      padding: 6px;
+      color: white;
       border-radius: 6px;
     }
-    button {
-      background: var(--glass);
-      border: 1px solid rgba(255,255,255,0.03);
-      padding: 6px 10px;
+    .modal-body {
+      padding: 10px;
+      overflow: auto;
+      max-height: 300px;
+    }
+    .symbol-item {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
     }
-    .small {
+    .symbol-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .modal-footer {
+      padding: 10px;
+      text-align: center;
       font-size: 13px;
       color: var(--muted);
     }
-    .badge {
-      padding: 6px 8px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.03);
+
+    /* === محرر الكود (إذا أردت لاحقًا) === */
+    #editorModal {
+      display: none;
+    }
+    #mobileEditor {
+      width: 100%;
+      height: 200px;
+      background: #071022;
+      color: #e6eef8;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
     }
 
-    /* === التبديل بين الجوال والكمبيوتر === */
-    @media (max-width: 900px) {
-      .sidebar, .main { display: none !important; }
-      .app { display: flex; }
-    }
+    /* === التحكم في العرض === */
     @media (min-width: 901px) {
-      .header, .footer-icons, .tf-popup { display: none !important; }
-      .sidebar, .main { display: flex; }
+      .modal-overlay { display: none !important; }
+    }
+    @media (max-width: 900px) {
+      .sidebar, .main { display: none; }
     }
   </style>
-  <!-- مكتبة الرسم البياني -->
   <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
@@ -197,148 +180,67 @@
     <div class="header">
       <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" />
       <h3>Quotex Pro</h3>
-      <div class="pair" id="mobilePair">TEST/USDT</div>
+      <div class="pair" id="mobilePair" onclick="openSymbolsModal()">BTC/USDT</div>
     </div>
 
-    <!-- منطقة الشارت -->
+    <!-- الشارت -->
     <div class="chart-wrap">
       <div id="chart" style="width:100%;height:100%"></div>
     </div>
 
-    <!-- الأيقونات السفلية -->
+    <!-- الأيقونات -->
     <div class="footer-icons">
+      <div class="icon-btn" id="symbolBtn">🔍</div>
       <div class="icon-btn" id="tfBtn">🕒</div>
-      <div class="icon-btn" id="playBtn">▶️</div>
-      <div class="icon-btn" id="stopBtn">⏹️</div>
       <div class="icon-btn" id="editBtn">✏️</div>
-    </div>
-
-    <!-- قائمة الفريمات -->
-    <div class="tf-popup" id="tfPopup">
-      <button data-tf="5">5 ثواني</button>
-      <button data-tf="15">15 ثانية</button>
-      <button data-tf="60" selected>1 دقيقة</button>
-      <button data-tf="300">5 دقائق</button>
-      <button data-tf="900">15 دقيقة</button>
+      <div class="icon-btn" id="refreshBtn">🔄</div>
     </div>
   </div>
 
-  <!-- ========== واجهة الكمبيوتر ========== -->
-  <div class="sidebar" id="sidebar">
-    <h3 style="margin:0;font-size:1.3rem;">Quotex Pro</h3>
-    <img src="https://i.imgur.com/5nHaOsf_d.jpeg" alt="logo" style="width:40px;border-radius:6px;margin-top:6px">
-
-    <div class="small">رمز:</div>
-    <select id="symbolSelect">
-      <option value="TEST/USDT">TEST/USDT</option>
-      <option value="BTC/USDT">BTC/USDT</option>
-      <option value="ETH/USDT">ETH/USDT</option>
-    </select>
-
-    <div class="small">الإطار الزمني (TF):</div>
-    <select id="tfSelect">
-      <option value="5">5s</option>
-      <option value="15">15s</option>
-      <option value="60" selected>1m</option>
-      <option value="300">5m</option>
-      <option value="900">15m</option>
-    </select>
-
-    <div class="small">إعدادات البوت</div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button id="desktopPlay">تشغيل</button>
-      <button id="desktopStop">إيقاف</button>
-    </div>
-
-    <div class="small">عدد الشموع على الشاشة</div>
-    <input id="barsOnScreen" type="number" value="120" />
-
-    <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
-      <button id="exportCsv">تصدير CSV</button>
-      <button id="saveProfile">حفظ الإعدادات</button>
-      <button id="loadProfile">تحميل الإعدادات</button>
-    </div>
-
-    <div style="flex:1"></div>
-    <div class="small">Logs</div>
-    <pre id="logs" style="height:120px;overflow:auto;background:#071022;padding:8px;border-radius:6px"></pre>
-  </div>
-
-  <div class="main">
-    <div class="topbar">
-      <div class="badge" id="pairBadge">TEST/USDT</div>
-      <div style="flex:1"></div>
-      <div class="small" id="statusBadge">جاهز — يعمل تلقائيًا</div>
-    </div>
-
-    <div class="chart-wrap">
-      <div id="chart-desktop" style="width:100%;height:100%;display:none"></div>
-    </div>
-
-    <div style="display:flex;gap:10px">
-      <div style="flex:1;display:flex;flex-direction:column;gap:6px">
-        <div class="small">محرر المؤشرات</div>
-        <textarea id="editor" class="editor">
-// مثال: تقاطع SMA
-function run(ohlcv, helpers){
-  const closes = ohlcv.map(b => b.close);
-  const sma10 = helpers.sma(closes, 10);
-  const sma30 = helpers.sma(closes, 30);
-  const signals = [];
-  const last = ohlcv[ohlcv.length - 1];
-  if (sma10[sma10.length-1] > sma30[sma30.length-1]) {
-    signals.push({ time: last.time, position: 'belowBar', color: '#22c55e', shape: 'arrowUp', text: 'BUY' });
-  } else if (sma10[sma10.length-1] < sma30[sma30.length-1]) {
-    signals.push({ time: last.time, position: 'aboveBar', color: '#ef4444', shape: 'arrowDown', text: 'SELL' });
-  }
-  return signals;
-}
-</textarea>
-        <div style="display:flex;gap:8px">
-          <button id="runBtn">تشغيل الكود</button>
-          <button id="clearMarkers">إخفاء الإشارات</button>
-          <button id="exportPng">تصدير صورة</button>
-        </div>
+  <!-- ========== نافذة اختيار العملة ========== -->
+  <div class="modal-overlay" id="symbolsModal">
+    <div class="modal">
+      <div class="modal-header">
+        <input type="text" id="searchInput" placeholder="ابحث عن عملة..." oninput="filterSymbols()">
       </div>
+      <div class="modal-body" id="symbolsList">
+        <!-- سيتم ملؤها ديناميكيًا -->
+      </div>
+      <div class="modal-footer">اختر زوجًا لتحميل الشارت</div>
+    </div>
+  </div>
 
-      <div style="width:340px;background:var(--panel);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:8px">
-        <div class="small">معاينة الإشارات</div>
-        <div id="markerPreview" style="min-height:120px;background:#071022;padding:8px;border-radius:6px;overflow:auto"></div>
-        <div class="small">حفظ / تحميل إشارات</div>
-        <div style="display:flex;gap:8px">
-          <button id="downloadSignals">تنزيل</button>
-          <button id="uploadSignals">رفع</button>
-        </div>
+  <!-- ========== نافذة المحرر (اختيارية) ========== -->
+  <div class="modal-overlay" id="editorModal">
+    <div class="modal" style="max-height:90vh">
+      <div class="modal-header">محرر الكود</div>
+      <textarea id="mobileEditor" spellcheck="false">// سيتم ملؤه تلقائيًا</textarea>
+      <div class="modal-footer">
+        <button onclick="document.getElementById('editorModal').style.display='none'">إغلاق</button>
+        <button onclick="runUserCodeOnLatest()" style="background:#22c55e;color:white">تشغيل</button>
       </div>
     </div>
-
-    <div class="footer">
-      <div class="small">Quotex Pro — Starter</div>
-      <div style="flex:1"></div>
-      <div class="small">© 2025</div>
-    </div>
   </div>
 
-  <!-- ========== السكربت الرئيسي ========== -->
+  <!-- ========== السكربت ========== -->
   <script>
-    // --- الحالة ---
-    const state = {
-      ohlcv: [],
-      lastBar: null,
-      playing: true,
-      worker: null,
-      symbol: 'TEST/USDT',
-      tf: 60,
-      barsOnScreen: 120,
-      tickSpeed: 2000,
-    };
+    // --- إعدادات ---
+    const API_URL = 'https://your-api.com/data'; // ⚠️ غير هذا الرابط
+    // مثال للهيكل المتوقع:
+    // {
+    //   "symbols": ["BTC/USDT", "ETH/USDT", "SOL/USDT"],
+    //   "data": {
+    //     "BTC/USDT": [ {time, open, high, low, close, volume}, ... ]
+    //   }
+    // }
 
-    const logEl = document.getElementById('logs');
-    function log(...args) {
-      const s = args.join(' ');
-      console.log(...args);
-      logEl.textContent = (new Date()).toLocaleTimeString() + ' | ' + s + '\n' + logEl.textContent;
-    }
+    const state = {
+      ohlcv: {},
+      currentSymbol: 'BTC/USDT',
+      tf: 60,
+      allSymbols: [],
+      worker: null
+    };
 
     // --- الشارت ---
     const chart = LightweightCharts.createChart(document.getElementById('chart'), {
@@ -350,191 +252,113 @@ function run(ohlcv, helpers){
       upColor: '#22c55e', downColor: '#ef4444', borderVisible: true, wickUpColor: '#22c55e', wickDownColor: '#ef4444'
     });
 
-    // --- وظائف مساعدة ---
-    const helpers = {
-      sma: (arr, period) => {
-        const out = new Array(arr.length).fill(null);
-        let sum = 0;
-        for (let i = 0; i < arr.length; i++) {
-          sum += arr[i];
-          if (i >= period) sum -= arr[i - period];
-          if (i >= period - 1) out[i] = sum / period;
+    // --- تحميل البيانات من API ---
+    async function fetchMarketData(symbol = null) {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        state.allSymbols = data.symbols || [];
+        state.ohlcv = data.data || {};
+
+        if (symbol && state.ohlcv[symbol]) {
+          loadChart(symbol);
+        } else if (state.ohlcv[state.currentSymbol]) {
+          loadChart(state.currentSymbol);
+        } else {
+          console.warn("لا توجد بيانات للعملة");
         }
-        return out;
-      },
-      ema: (arr, period) => {
-        const out = new Array(arr.length).fill(null);
-        const k = 2 / (period + 1);
-        let prev = null;
-        for (let i = 0; i < arr.length; i++) {
-          if (prev === null) { prev = arr[i]; out[i] = arr[i]; }
-          else { prev = arr[i] * k + prev * (1 - k); out[i] = prev; }
-        }
-        return out;
-      },
-      rsi: (arr, period) => {
-        const out = new Array(arr.length).fill(null);
-        let gains = 0, losses = 0;
-        for (let i = 1; i < arr.length; i++) {
-          const change = arr[i] - arr[i - 1];
-          if (i <= period) {
-            if (change > 0) gains += change;
-            else losses += Math.abs(change);
-            if (i === period) {
-              const rs = gains / losses;
-              out[i] = 100 - (100 / (1 + rs));
-            }
-          } else {
-            gains = (gains * (period - 1) + Math.max(0, change)) / period;
-            losses = (losses * (period - 1) + Math.max(0, -change)) / period;
-            const rs = losses === 0 ? 100 : gains / losses;
-            out[i] = 100 - (100 / (1 + rs));
-          }
-        }
-        return out;
-      },
-      findBarIndexByTime: (time) => state.ohlcv.findIndex(b => b.time === time)
+
+        // ملء قائمة العملات
+        const list = document.getElementById('symbolsList');
+        list.innerHTML = '';
+        state.allSymbols.forEach(sym => {
+          const item = document.createElement('div');
+          item.className = 'symbol-item';
+          item.textContent = sym;
+          item.onclick = () => {
+            loadChart(sym);
+            document.getElementById('symbolsModal').style.display = 'none';
+          };
+          list.appendChild(item);
+        });
+
+      } catch (err) {
+        console.error('فشل تحميل البيانات', err);
+        alert('تعذر الاتصال بالخادم. تأكد من الرابط.');
+      }
+    }
+
+    function loadChart(symbol) {
+      state.currentSymbol = symbol;
+      document.getElementById('mobilePair').textContent = symbol;
+
+      const bars = state.ohlcv[symbol] || [];
+      if (bars.length > 0) {
+        candleSeries.setData(bars.map(b => ({
+          time: b.time,
+          open: b.open,
+          high: b.high,
+          low: b.low,
+          close: b.close
+        })));
+        chart.timeScale().fitContent();
+      } else {
+        alert('لا توجد بيانات لهذه العملة');
+      }
+    }
+
+    // --- فتح نافذة العملات ---
+    function openSymbolsModal() {
+      document.getElementById('symbolsModal').style.display = 'flex';
+      document.getElementById('searchInput').value = '';
+      filterSymbols();
+    }
+    window.openSymbolsModal = openSymbolsModal;
+
+    // --- بحث عن العملات ---
+    function filterSymbols() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const items = document.querySelectorAll('#symbolsList .symbol-item');
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? 'block' : 'none';
+      });
+    }
+
+    // --- تحديث يدوي ---
+    document.getElementById('refreshBtn').onclick = () => {
+      fetchMarketData(state.currentSymbol);
     };
 
-    // --- تشغيل الكود في Worker ---
-    function createWorkerFromCode(userCode) {
-      const workerSrc = `
-        self.onmessage = function(e){
-          const data = e.data;
-          if(data.cmd==='run'){
-            try{
-              const ohlcv = data.ohlcv;
-              const helpers = {
-                sma: ${helpers.sma.toString()},
-                ema: ${helpers.ema.toString()},
-                rsi: ${helpers.rsi.toString()},
-                findBarIndexByTime: ${helpers.findBarIndexByTime.toString()}
-              };
-              ${userCode}
-              if(typeof run !== 'function') throw new Error('الدالة run() غير موجودة');
-              let finished = false;
-              const timeout = setTimeout(() => { if(!finished) postMessage({type:'error', message:'timeout'}); }, 500);
-              const res = run(ohlcv, helpers);
-              finished = true;
-              clearTimeout(timeout);
-              postMessage({type:'signals', signals: res});
-            } catch(err) { postMessage({type:'error', message: err.message}); }
-          }
-        }
-      `;
-      const blob = new Blob([workerSrc], { type: 'application/javascript' });
-      const url = URL.createObjectURL(blob);
-      return new Worker(url);
-    }
-
-    // --- تطبيق الإشارات ---
-    function applyMarkers(markers) {
-      const mapped = markers.map(m => ({
-        time: m.time,
-        position: m.position || (m.pos === 'below' ? 'belowBar' : 'aboveBar'),
-        color: m.color || (m.text && m.text.toLowerCase().includes('buy') ? '#22c55e' : '#ef4444'),
-        shape: m.shape || (m.position === 'belowBar' ? 'arrowUp' : 'arrowDown'),
-        text: m.text || ''
-      }));
-      candleSeries.setMarkers(mapped);
-      document.getElementById('markerPreview').textContent = JSON.stringify(mapped.slice(-10), null, 2);
-    }
-
-    // --- محاكاة الشموع ---
-    let simInterval = null;
-    function startAutoSimulation() {
-      stopSimulator();
-      state.ohlcv = [];
-      const now = Math.floor(Date.now() / 1000) - state.barsOnScreen * state.tf;
-      let last = { time: now, open: 100, high: 100, low: 100, close: 100, volume: 0 };
-      const hist = [];
-      for (let i = 0; i < state.barsOnScreen; i++) {
-        last = genNextBar(last, state.tf);
-        hist.push(last);
-      }
-      setHistory(hist);
-
-      simInterval = setInterval(() => {
-        const next = genNextBar(state.ohlcv[state.ohlcv.length - 1], state.tf);
-        onIncomingBar(next);
-      }, state.tickSpeed);
-    }
-    function stopSimulator() { if (simInterval) clearInterval(simInterval); simInterval = null; }
-    function genNextBar(prev, tf) {
-      const open = prev.close;
-      const change = (Math.random() - 0.5) * 0.02 * open;
-      const close = +(open + change).toFixed(6);
-      const high = +(Math.max(open, close) + Math.random() * 0.002 * open).toFixed(6);
-      const low = +(Math.min(open, close) - Math.random() * 0.002 * open).toFixed(6);
-      const time = prev.time + tf;
-      return { time, open, high, low, close, volume: Math.floor(Math.random() * 1000) };
-    }
-    function setHistory(hist) {
-      state.ohlcv = hist.slice();
-      candleSeries.setData(hist.map(b => ({ time: b.time, open: b.open, high: b.high, low: b.low, close: b.close })));
-      state.lastBar = hist[hist.length - 1];
-    }
-    function onIncomingBar(bar) {
-      const last = state.ohlcv[state.ohlcv.length - 1];
-      if (!last || bar.time > last.time) {
-        state.ohlcv.push(bar);
-        candleSeries.update(bar);
-      } else if (bar.time === last.time) {
-        state.ohlcv[state.ohlcv.length - 1] = bar;
-        candleSeries.update(bar);
-      }
-      runUserCodeOnLatest(); // تشغيل المؤشر تلقائيًا
-    }
-
-    // --- تشغيل الكود ---
-    function runUserCodeOnLatest() {
-      const code = document.getElementById('editor').value;
-      if (state.worker) state.worker.terminate();
-      state.worker = createWorkerFromCode(code);
-      state.worker.onmessage = (e) => {
-        if (e.data.type === 'signals') applyMarkers(e.data.signals || []);
-        else if (e.data.type === 'error') log('خطأ', e.data.message);
-      };
-      state.worker.postMessage({ cmd: 'run', ohlcv: state.ohlcv.slice(-300) });
-    }
-
-    // --- واجهة المستخدم ---
-    document.getElementById('tfBtn').onclick = () => {
-      document.getElementById('tfPopup').classList.toggle('active');
-    };
-    document.querySelectorAll('#tfPopup button').forEach(btn => {
-      btn.onclick = () => {
-        const tf = parseInt(btn.getAttribute('data-tf'));
-        state.tf = tf;
-        document.querySelectorAll('#tfPopup button').forEach(b => b.removeAttribute('selected'));
-        btn.setAttribute('selected', '');
-        document.getElementById('tfPopup').classList.remove('active');
-        startAutoSimulation();
-        log('تم تغيير الإطار الزمني إلى ' + tf + 's');
-      };
-    });
-
+    // --- فتح المحرر ---
     document.getElementById('editBtn').onclick = () => {
-      document.getElementById('editor').focus();
+      document.getElementById('editorModal').style.display = 'flex';
     };
 
-    document.getElementById('symbolSelect').onchange = (e) => {
-      state.symbol = e.target.value;
-      document.getElementById('pairBadge').textContent = e.target.value;
-      document.getElementById('mobilePair').textContent = e.target.value;
+    // --- تشغيل الكود (مثال) ---
+    function runUserCodeOnLatest() {
+      const code = document.getElementById('mobileEditor').value;
+      alert('الكود يعمل! لكنه يحتاج تهيئة أمان (Worker) - سيتم إضافته لاحقًا');
+      console.log('تشغيل الكود:', code);
+    }
+
+    // --- اختيار الفريم الزمني (سيُستخدم لاحقًا عند دعم TF متعدد) ---
+    document.getElementById('tfBtn').onclick = () => {
+      alert('اختيار الإطار الزمني قيد التطوير');
     };
 
-    document.getElementById('runBtn').onclick = runUserCodeOnLatest;
-    document.getElementById('clearMarkers').onclick = () => applyMarkers([]);
-
-    // --- التشغيل التلقائي ---
+    // --- تحميل البيانات عند البدء ---
     window.addEventListener('load', () => {
-      startAutoSimulation();
-      log('Quotex Pro — تشغيل تلقائي للشموع');
+      fetchMarketData();
     });
 
-    // --- استجابة التغيير في حجم الشاشة ---
-    window.addEventListener('resize', () => chart.applyOptions({}));
+    // --- إغلاق النافذة عند النقر خارجها ---
+    window.onclick = (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+      }
+    };
   </script>
 </body>
 </html>
